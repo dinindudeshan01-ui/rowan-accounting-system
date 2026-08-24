@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SearchableSelect } from '@/components/SearchableSelect';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { supabase } from '@/lib/supabase';
 
 type InvoiceRow = {
@@ -41,20 +42,27 @@ export default function InvoicesListPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; number: string } | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  async function handleDelete(id: string, invoiceNumber: string) {
-    if (!confirm(`Delete invoice ${invoiceNumber}? This also removes its ledger posting. This cannot be undone.`)) {
-      return;
-    }
+  function requestDelete(id: string, invoiceNumber: string) {
+    setDeleteError(null);
+    setPendingDelete({ id, number: invoiceNumber });
+  }
+
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    const { id } = pendingDelete;
     setDeletingId(id);
     const { error } = await supabase.rpc('delete_invoice', { p_invoice_id: id });
     setDeletingId(null);
     if (error) {
-      alert(`Failed to delete invoice: ${error.message}`);
+      setDeleteError(error.message);
       return;
     }
     setRows((prev) => prev.filter((r) => r.id !== id));
     setSelectedId((prev) => (prev === id ? null : prev));
+    setPendingDelete(null);
   }
 
   useEffect(() => {
@@ -165,7 +173,7 @@ export default function InvoicesListPage() {
                             <Link href={`/accounting/invoice?id=${r.id}`} className="font-bold text-rowan-navy hover:text-rowan-red">Edit</Link>
                             <Link href={`/accounting/invoice/${r.id}/print`} className="font-bold text-rowan-navy hover:text-rowan-red">Print</Link>
                             <button
-                              onClick={() => handleDelete(r.id, r.invoice_number)}
+                              onClick={() => requestDelete(r.id, r.invoice_number)}
                               disabled={deletingId === r.id}
                               className="font-bold text-red-500 hover:text-red-700 disabled:opacity-40"
                             >
@@ -223,7 +231,7 @@ export default function InvoicesListPage() {
                     <Link href={`/accounting/invoice?id=${selected.id}`} className="text-rowan-navy hover:text-rowan-red">Edit</Link>
                     <Link href={`/accounting/invoice/${selected.id}/print`} className="text-rowan-navy hover:text-rowan-red">Print</Link>
                     <button
-                      onClick={() => handleDelete(selected.id, selected.invoice_number)}
+                      onClick={() => requestDelete(selected.id, selected.invoice_number)}
                       disabled={deletingId === selected.id}
                       className="text-red-500 hover:text-red-700 disabled:opacity-40"
                     >
@@ -251,6 +259,41 @@ export default function InvoicesListPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Delete invoice"
+        message={
+          pendingDelete
+            ? `Delete invoice ${pendingDelete.number}? This also removes its ledger posting. This cannot be undone.`
+            : ''
+        }
+        confirmLabel="Delete"
+        danger
+        loading={deletingId === pendingDelete?.id}
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          setPendingDelete(null);
+          setDeleteError(null);
+        }}
+      />
+
+      {deleteError && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-sm p-5">
+            <h3 className="text-sm font-bold text-rowan-red uppercase tracking-wide mb-3">Delete failed</h3>
+            <p className="text-[13px] text-gray-600 leading-relaxed mb-5">{deleteError}</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setDeleteError(null)}
+                className="px-4 py-2 rounded-lg text-[12px] font-bold text-white bg-rowan-navy hover:bg-rowan-navyLight transition"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
