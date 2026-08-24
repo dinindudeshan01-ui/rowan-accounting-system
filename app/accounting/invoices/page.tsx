@@ -150,14 +150,14 @@ export default function InvoicesListPage() {
 
       {viewImage && (
         <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6"
+          className="fixed inset-0 bg-black/40 z-50"
           onClick={() => setViewImage(null)}
         >
           <div
-            className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="fixed top-0 right-0 h-full w-full sm:w-[440px] bg-white shadow-2xl overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white">
               <h3 className="text-sm font-black text-rowan-navy">Attached document — {viewImage.label}</h3>
               <button
                 onClick={() => setViewImage(null)}

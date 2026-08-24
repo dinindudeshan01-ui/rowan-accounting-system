@@ -19,6 +19,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/201.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -41,6 +42,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/202.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -63,6 +65,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/203.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -85,6 +88,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/204.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -107,6 +111,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/205.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -129,6 +134,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/206.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -151,6 +157,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/207.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -173,6 +180,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/208.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -195,6 +203,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/209.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -217,6 +226,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/210.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -239,6 +249,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/211.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -261,6 +272,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/212.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -283,6 +295,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/213.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -305,6 +318,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/214.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -327,6 +341,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/215.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -349,6 +364,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/216.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -371,6 +387,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/217.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -393,6 +410,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/218.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -415,6 +433,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/219.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -437,6 +456,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/220.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -459,6 +479,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/221.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -485,6 +506,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/222.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -507,6 +529,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/223.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -533,6 +556,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/224.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -555,6 +579,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/225.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -581,6 +606,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/226.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -607,6 +633,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/227.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -635,6 +662,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/228.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -661,6 +689,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/229.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -687,6 +716,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/230.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -713,6 +743,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/231.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -739,6 +770,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/232.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -763,6 +795,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/233.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -787,6 +820,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/234.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -811,6 +845,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/235.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -833,6 +868,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/236.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -855,6 +891,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/237.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -877,6 +914,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/238.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -899,6 +937,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/239.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -921,6 +960,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/240.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -943,6 +983,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/241.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -965,6 +1006,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/242.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -987,6 +1029,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/243.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1009,6 +1052,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/244.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1031,6 +1075,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/245.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1053,6 +1098,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/246.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1075,6 +1121,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/247.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1097,6 +1144,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/248.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1119,6 +1167,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/249.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1141,6 +1190,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/250.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1163,6 +1213,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/251.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1185,6 +1236,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/252.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1207,6 +1259,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/253.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1229,6 +1282,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/254.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1251,6 +1305,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/255.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1273,6 +1328,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/256.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1295,6 +1351,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/257.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1317,6 +1374,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/258.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1341,6 +1399,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/259.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1363,6 +1422,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/260.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1385,6 +1445,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/261.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1407,6 +1468,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/262.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1435,6 +1497,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/263.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1459,6 +1522,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/264.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1483,6 +1547,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/265.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1507,6 +1572,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/266.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1533,6 +1599,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/267.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1555,6 +1622,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/268.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1579,6 +1647,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/269.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1601,6 +1670,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/270.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1623,6 +1693,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/271.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1645,6 +1716,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/272.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1667,6 +1739,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/273.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1689,6 +1762,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/274.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1711,6 +1785,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/275.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1733,6 +1808,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/276.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1755,6 +1831,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/277.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1777,6 +1854,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/278.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1799,6 +1877,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/279.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1821,6 +1900,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/280.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1843,6 +1923,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/281.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1865,6 +1946,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/282.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1887,6 +1969,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/283.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1909,6 +1992,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/284.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1931,6 +2015,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/285.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1953,6 +2038,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/286.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1975,6 +2061,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/287.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -1997,6 +2084,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/288.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2019,6 +2107,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/289.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2041,6 +2130,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/290.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2063,6 +2153,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/291.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2085,6 +2176,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/292.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2107,6 +2199,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/293.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2129,6 +2222,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/294.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2151,6 +2245,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/295.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2173,6 +2268,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/296.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2195,6 +2291,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/297.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2217,6 +2314,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/298.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2239,6 +2337,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/299.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2261,6 +2360,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/300.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2285,6 +2385,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/301.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2307,6 +2408,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/302.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2329,6 +2431,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/303.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2351,6 +2454,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/304.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2373,6 +2477,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/305.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2395,6 +2500,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/306.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2417,6 +2523,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/307.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2439,6 +2546,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/308.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2461,6 +2569,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/309.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2483,6 +2592,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/310.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2505,6 +2615,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/311.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2527,6 +2638,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/312.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2549,6 +2661,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/313.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2571,6 +2684,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/314.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2593,6 +2707,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/315.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2615,6 +2730,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/316.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2637,6 +2753,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/317.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2659,6 +2776,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/318.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2681,6 +2799,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/319.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2703,6 +2822,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/320.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2725,6 +2845,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/321.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2747,6 +2868,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/322.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2769,6 +2891,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/323.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2791,6 +2914,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/324.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2813,6 +2937,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/325.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2835,6 +2960,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/326.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2857,6 +2983,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/327.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2879,6 +3006,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/328.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2901,6 +3029,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/329.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2923,6 +3052,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/330.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2945,6 +3075,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/331.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2967,6 +3098,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/332.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -2989,6 +3121,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/333.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3011,6 +3144,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/334.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3033,6 +3167,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/335.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3055,6 +3190,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/336.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3077,6 +3213,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/337.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3099,6 +3236,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/338.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3121,6 +3259,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/339.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3143,6 +3282,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/340.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3165,6 +3305,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/341.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3189,6 +3330,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/342.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3211,6 +3353,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/343.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3233,6 +3376,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/344.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3255,6 +3399,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/345.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3277,6 +3422,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/346.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3299,6 +3445,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/347.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3321,6 +3468,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/348.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3343,6 +3491,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/349.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3365,6 +3514,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/350.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3387,6 +3537,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/351.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3409,6 +3560,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/352.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3431,6 +3583,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/353.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3453,6 +3606,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/354.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3475,6 +3629,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/355.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3497,6 +3652,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/356.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3519,6 +3675,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/357.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3541,6 +3698,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/358.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3563,6 +3721,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/359.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3585,6 +3744,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/360.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3607,6 +3767,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/361.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3629,6 +3790,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/362.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3651,6 +3813,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/363.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3673,6 +3836,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/364.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3695,6 +3859,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/365.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3717,6 +3882,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/366.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3739,6 +3905,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/367.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3761,6 +3928,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/368.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3783,6 +3951,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/369.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3805,6 +3974,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/370.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3827,6 +3997,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/371.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3849,6 +4020,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/372.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3871,6 +4043,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/373.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3893,6 +4066,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/374.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3915,6 +4089,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/375.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3937,6 +4112,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/376.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3959,6 +4135,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/377.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -3983,6 +4160,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/378.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4005,6 +4183,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/379.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4027,6 +4206,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/380.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4049,6 +4229,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/381.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4071,6 +4252,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/382.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4095,6 +4277,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/383.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4117,6 +4300,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/384.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4139,6 +4323,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/385.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4161,6 +4346,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/386.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4183,6 +4369,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/387.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4205,6 +4392,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/388.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4227,6 +4415,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/389.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4249,6 +4438,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/390.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4271,6 +4461,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/391.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4293,6 +4484,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/392.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4315,6 +4507,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/393.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4337,6 +4530,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/394.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4359,6 +4553,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/395.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4381,6 +4576,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/396.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4403,6 +4599,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/397.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4425,6 +4622,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/398.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4447,6 +4645,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/399.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
@@ -4469,6 +4668,7 @@ begin
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/400.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
     subtotal = excluded.subtotal,
