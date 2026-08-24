@@ -5,6 +5,7 @@ import path from 'path';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 // One-time migration endpoint: uploads public/lady-j-invoices/*.webp into
 // the Supabase Storage bucket "lady-j-invoices" using the service role key
@@ -48,15 +49,22 @@ export async function GET(req: NextRequest) {
   }
 
   const results: { file: string; ok: boolean; error?: string }[] = [];
+  const CONCURRENCY = 20;
 
-  for (const file of files) {
-    const filePath = path.join(imageDir, file);
-    const buffer = fs.readFileSync(filePath);
-    const { error } = await supabaseAdmin.storage.from(BUCKET).upload(file, buffer, {
-      contentType: 'image/webp',
-      upsert: true,
-    });
-    results.push({ file, ok: !error, error: error?.message });
+  for (let i = 0; i < files.length; i += CONCURRENCY) {
+    const batch = files.slice(i, i + CONCURRENCY);
+    const batchResults = await Promise.all(
+      batch.map(async (file) => {
+        const filePath = path.join(imageDir, file);
+        const buffer = fs.readFileSync(filePath);
+        const { error } = await supabaseAdmin.storage.from(BUCKET).upload(file, buffer, {
+          contentType: 'image/webp',
+          upsert: true,
+        });
+        return { file, ok: !error, error: error?.message };
+      })
+    );
+    results.push(...batchResults);
   }
 
   const okCount = results.filter((r) => r.ok).length;
