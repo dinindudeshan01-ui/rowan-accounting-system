@@ -9,6 +9,7 @@ import { ComboBox, ComboOption } from '@/components/ComboBox';
 import { SearchableSelect } from '@/components/SearchableSelect';
 import { PartyModal } from '@/components/PartyModal';
 import { ItemModal } from '@/components/ItemModal';
+import { InvoiceImagePanel } from '@/components/InvoiceImagePanel';
 import { supabase } from '@/lib/supabase';
 import {
   Party,
@@ -97,6 +98,7 @@ function InvoiceForm() {
   const [bankAccName, setBankAccName] = useState('');
   const [bankAccNo, setBankAccNo] = useState('');
   const [memo, setMemo] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const [vatRate, setVatRate] = useState('18');
   const [scllRate, setScllRate] = useState('2.5');
@@ -146,6 +148,7 @@ function InvoiceForm() {
         setMemo(inv.memo ?? '');
         setVatRate(String(inv.vat_rate));
         setScllRate(String(inv.sscl_rate));
+        setImageUrl(inv.image_url ?? null);
         if (inv.customer_id) {
           const c = await supabase.from('customers').select('*').eq('id', inv.customer_id).single();
           if (c.data) setCustomer(c.data as Party);
@@ -349,7 +352,7 @@ function InvoiceForm() {
 
   return (
     <div className="min-h-screen bg-rowan-bg p-6">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-[1500px] mx-auto">
         <div className="flex justify-between items-center mb-4">
           <div>
             <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
@@ -403,6 +406,7 @@ function InvoiceForm() {
           </div>
         )}
 
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6 items-start">
         <div className="bg-white rounded-lg shadow-lg p-6">
           {/* Header */}
           <div className="grid grid-cols-2 gap-8 mb-6">
@@ -595,6 +599,9 @@ function InvoiceForm() {
               )}
             </div>
           </div>
+        </div>
+
+        <InvoiceImagePanel imageUrl={imageUrl} invoiceId={invoiceId} onReplaced={setImageUrl} />
         </div>
       </div>
 
