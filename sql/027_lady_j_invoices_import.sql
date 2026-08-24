@@ -2,6 +2,8 @@
 -- LADY J SCANNED INVOICES — DATA IMPORT
 -- Generated from lib/data/lady-j-raw-invoices.json (200 invoices, 236 lines).
 -- Safe to re-run: upserts on legacy_id, so running twice won't duplicate.
+-- invoice_number uses the original scan ID (LJ-201, LJ-202, ...)
+-- instead of the generic auto-assigned INV-000xxx sequence.
 -- Run sql/026_lady_j_scan_columns.sql BEFORE this file.
 -- ============================================================
 
@@ -11,14 +13,15 @@ declare
 begin
   -- Legacy invoice #201
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-11-24'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 201,
+    'LJ-201', '2025-11-24'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 201,
     'OK', 710700, 710700,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/201.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -34,14 +37,15 @@ begin
 
   -- Legacy invoice #202
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 202,
+    'LJ-202', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 202,
     'OK', 301780, 301780,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/202.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -57,14 +61,15 @@ begin
 
   -- Legacy invoice #203
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-11-26'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 203,
+    'LJ-203', '2025-11-26'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 203,
     'OK', 165900, 165900,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/203.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -80,14 +85,15 @@ begin
 
   -- Legacy invoice #204
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-11-26'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 204,
+    'LJ-204', '2025-11-26'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 204,
     'OK', 226060, 226060,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/204.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -103,14 +109,15 @@ begin
 
   -- Legacy invoice #205
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-11-26'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 205,
+    'LJ-205', '2025-11-26'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 205,
     'OK', 216270, 216270,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/205.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -126,14 +133,15 @@ begin
 
   -- Legacy invoice #206
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 206,
+    'LJ-206', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 206,
     'OK', 378000, 378000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/206.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -149,14 +157,15 @@ begin
 
   -- Legacy invoice #207
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 207,
+    'LJ-207', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 207,
     'OK', 645150, 645150,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/207.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -172,14 +181,15 @@ begin
 
   -- Legacy invoice #208
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 208,
+    'LJ-208', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 208,
     'OK', 574200, 574200,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/208.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -195,14 +205,15 @@ begin
 
   -- Legacy invoice #209
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 209,
+    'LJ-209', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 209,
     'OK', 525780, 525780,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/209.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -218,14 +229,15 @@ begin
 
   -- Legacy invoice #210
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 210,
+    'LJ-210', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 210,
     'OK', 206480, 206480,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/210.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -241,14 +253,15 @@ begin
 
   -- Legacy invoice #211
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 211,
+    'LJ-211', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 211,
     'N/A', 0, 0,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/211.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -264,14 +277,15 @@ begin
 
   -- Legacy invoice #212
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 212,
+    'LJ-212', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 212,
     'OK', 74760, 74760,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/212.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -287,14 +301,15 @@ begin
 
   -- Legacy invoice #213
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 213,
+    'LJ-213', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 213,
     'OK', 126850, 126850,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/213.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -310,14 +325,15 @@ begin
 
   -- Legacy invoice #214
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 214,
+    'LJ-214', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 214,
     'OK', 123900, 123900,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/214.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -333,14 +349,15 @@ begin
 
   -- Legacy invoice #215
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 215,
+    'LJ-215', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 215,
     'OK', 126380, 126380,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/215.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -356,14 +373,15 @@ begin
 
   -- Legacy invoice #216
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 216,
+    'LJ-216', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 216,
     'OK', 180120, 180120,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/216.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -379,14 +397,15 @@ begin
 
   -- Legacy invoice #217
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 217,
+    'LJ-217', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 217,
     'OK', 94800, 94800,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/217.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -402,14 +421,15 @@ begin
 
   -- Legacy invoice #218
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 218,
+    'LJ-218', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 218,
     'OK', 59000, 59000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/218.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -425,14 +445,15 @@ begin
 
   -- Legacy invoice #219
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 219,
+    'LJ-219', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 219,
     'OK', 215670, 215670,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/219.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -448,14 +469,15 @@ begin
 
   -- Legacy invoice #220
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 220,
+    'LJ-220', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 220,
     'OK', 194020, 194020,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/220.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -471,14 +493,15 @@ begin
 
   -- Legacy invoice #221
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 221,
+    'LJ-221', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 221,
     'OK', 192360, 192360,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/221.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -498,14 +521,15 @@ begin
 
   -- Legacy invoice #222
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 222,
+    'LJ-222', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 222,
     'OK', 357080, 357080,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/222.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -521,14 +545,15 @@ begin
 
   -- Legacy invoice #223
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 223,
+    'LJ-223', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 223,
     'MISMATCH', 418450, 418450,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/223.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -548,14 +573,15 @@ begin
 
   -- Legacy invoice #224
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 224,
+    'LJ-224', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 224,
     'OK', 213300, 213300,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/224.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -571,14 +597,15 @@ begin
 
   -- Legacy invoice #225
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 225,
+    'LJ-225', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 225,
     'OK', 309390, 309390,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/225.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -598,14 +625,15 @@ begin
 
   -- Legacy invoice #226
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 226,
+    'LJ-226', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 226,
     'OK', 317080, 317080,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/226.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -625,14 +653,15 @@ begin
 
   -- Legacy invoice #227
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 227,
+    'LJ-227', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 227,
     'MISMATCH', 589440, 589440,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/227.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -654,14 +683,15 @@ begin
 
   -- Legacy invoice #228
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 228,
+    'LJ-228', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 228,
     'OK', 287750, 287750,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/228.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -681,14 +711,15 @@ begin
 
   -- Legacy invoice #229
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 229,
+    'LJ-229', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 229,
     'OK', 283510, 283510,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/229.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -708,14 +739,15 @@ begin
 
   -- Legacy invoice #230
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 230,
+    'LJ-230', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 230,
     'OK', 296800, 296800,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/230.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -735,14 +767,15 @@ begin
 
   -- Legacy invoice #231
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 231,
+    'LJ-231', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 231,
     'OK', 379350, 379350,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/231.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -762,14 +795,15 @@ begin
 
   -- Legacy invoice #232
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 232,
+    'LJ-232', '2025-12-05'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 232,
     'OK', 291000, 291000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/232.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -787,14 +821,15 @@ begin
 
   -- Legacy invoice #233
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-13'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 233,
+    'LJ-233', '2025-12-13'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 233,
     'N/A', 116100, 116100,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/233.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -812,14 +847,15 @@ begin
 
   -- Legacy invoice #234
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-13'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 234,
+    'LJ-234', '2025-12-13'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 234,
     'OK', 263160, 263160,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/234.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -837,14 +873,15 @@ begin
 
   -- Legacy invoice #235
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 235,
+    'LJ-235', '2026-01-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 235,
     'OK', 331500, 331500,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/235.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -860,14 +897,15 @@ begin
 
   -- Legacy invoice #236
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 236,
+    'LJ-236', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 236,
     'OK', 179310, 179310,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/236.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -883,14 +921,15 @@ begin
 
   -- Legacy invoice #237
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 237,
+    'LJ-237', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 237,
     'OK', 448560, 448560,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/237.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -906,14 +945,15 @@ begin
 
   -- Legacy invoice #238
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 238,
+    'LJ-238', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 238,
     'OK', 317730, 317730,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/238.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -929,14 +969,15 @@ begin
 
   -- Legacy invoice #239
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 239,
+    'LJ-239', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 239,
     'OK', 509970, 509970,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/239.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -952,14 +993,15 @@ begin
 
   -- Legacy invoice #240
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 240,
+    'LJ-240', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 240,
     'OK', 106920, 106920,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/240.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -975,14 +1017,15 @@ begin
 
   -- Legacy invoice #241
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 241,
+    'LJ-241', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 241,
     'N/A', 0, 0,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/241.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -998,14 +1041,15 @@ begin
 
   -- Legacy invoice #242
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 242,
+    'LJ-242', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 242,
     'OK', 415540, 415540,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/242.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1021,14 +1065,15 @@ begin
 
   -- Legacy invoice #243
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 243,
+    'LJ-243', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 243,
     'OK', 207690, 207690,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/243.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1044,14 +1089,15 @@ begin
 
   -- Legacy invoice #244
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 244,
+    'LJ-244', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 244,
     'OK', 381150, 381150,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/244.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1067,14 +1113,15 @@ begin
 
   -- Legacy invoice #245
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 245,
+    'LJ-245', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 245,
     'OK', 557140, 557140,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/245.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1090,14 +1137,15 @@ begin
 
   -- Legacy invoice #246
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 246,
+    'LJ-246', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 246,
     'OK', 123750, 123750,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/246.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1113,14 +1161,15 @@ begin
 
   -- Legacy invoice #247
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 247,
+    'LJ-247', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 247,
     'OK', 428970, 428970,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/247.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1136,14 +1185,15 @@ begin
 
   -- Legacy invoice #248
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 248,
+    'LJ-248', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 248,
     'N/A', 0, 0,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/248.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1159,14 +1209,15 @@ begin
 
   -- Legacy invoice #249
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 249,
+    'LJ-249', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 249,
     'OK', 357000, 357000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/249.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1182,14 +1233,15 @@ begin
 
   -- Legacy invoice #250
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 250,
+    'LJ-250', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 250,
     'OK', 219300, 219300,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/250.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1205,14 +1257,15 @@ begin
 
   -- Legacy invoice #251
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 251,
+    'LJ-251', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 251,
     'OK', 378700, 378700,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/251.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1228,14 +1281,15 @@ begin
 
   -- Legacy invoice #252
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 252,
+    'LJ-252', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 252,
     'OK', 502320, 502320,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/252.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1251,14 +1305,15 @@ begin
 
   -- Legacy invoice #253
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 253,
+    'LJ-253', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 253,
     'OK', 224280, 224280,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/253.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1274,14 +1329,15 @@ begin
 
   -- Legacy invoice #254
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 254,
+    'LJ-254', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 254,
     'OK', 58740, 58740,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/254.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1297,14 +1353,15 @@ begin
 
   -- Legacy invoice #255
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 255,
+    'LJ-255', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 255,
     'OK', 94800, 94800,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/255.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1320,14 +1377,15 @@ begin
 
   -- Legacy invoice #256
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 256,
+    'LJ-256', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 256,
     'OK', 116920, 116920,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/256.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1343,14 +1401,15 @@ begin
 
   -- Legacy invoice #257
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 257,
+    'LJ-257', '2025-12-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 257,
     'OK', 164650, 164650,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/257.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1366,14 +1425,15 @@ begin
 
   -- Legacy invoice #258
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 258,
+    'LJ-258', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 258,
     'OK', 210140, 210140,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/258.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1391,14 +1451,15 @@ begin
 
   -- Legacy invoice #259
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 259,
+    'LJ-259', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 259,
     'OK', 213600, 213600,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/259.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1414,14 +1475,15 @@ begin
 
   -- Legacy invoice #260
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 260,
+    'LJ-260', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 260,
     'OK', 206980, 206980,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/260.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1437,14 +1499,15 @@ begin
 
   -- Legacy invoice #261
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 261,
+    'LJ-261', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 261,
     'OK', 292810, 292810,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/261.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1460,14 +1523,15 @@ begin
 
   -- Legacy invoice #262
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 262,
+    'LJ-262', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 262,
     'OK', 227800, 227800,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/262.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1489,14 +1553,15 @@ begin
 
   -- Legacy invoice #263
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 263,
+    'LJ-263', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 263,
     'OK', 155420, 155420,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/263.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1514,14 +1579,15 @@ begin
 
   -- Legacy invoice #264
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 264,
+    'LJ-264', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 264,
     'OK', 206060, 206060,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/264.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1539,14 +1605,15 @@ begin
 
   -- Legacy invoice #265
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 265,
+    'LJ-265', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 265,
     'OK', 200320, 200320,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/265.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1564,14 +1631,15 @@ begin
 
   -- Legacy invoice #266
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 266,
+    'LJ-266', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 266,
     'OK', 342950, 342950,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/266.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1591,14 +1659,15 @@ begin
 
   -- Legacy invoice #267
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 267,
+    'LJ-267', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 267,
     'N/A', 0, 0,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/267.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1614,14 +1683,15 @@ begin
 
   -- Legacy invoice #268
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 268,
+    'LJ-268', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 268,
     'OK', 334050, 334050,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/268.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1639,14 +1709,15 @@ begin
 
   -- Legacy invoice #269
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 269,
+    'LJ-269', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 269,
     'OK', 190440, 190440,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/269.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1662,14 +1733,15 @@ begin
 
   -- Legacy invoice #270
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 270,
+    'LJ-270', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 270,
     'OK', 244110, 244110,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/270.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1685,14 +1757,15 @@ begin
 
   -- Legacy invoice #271
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 271,
+    'LJ-271', '2025-12-06'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 271,
     'OK', 130350, 130350,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/271.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1708,14 +1781,15 @@ begin
 
   -- Legacy invoice #272
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 272,
+    'LJ-272', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 272,
     'OK', 723600, 723600,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/272.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1731,14 +1805,15 @@ begin
 
   -- Legacy invoice #273
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 273,
+    'LJ-273', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 273,
     'OK', 487760, 487760,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/273.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1754,14 +1829,15 @@ begin
 
   -- Legacy invoice #274
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 274,
+    'LJ-274', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 274,
     'OK', 428980, 428980,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/274.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1777,14 +1853,15 @@ begin
 
   -- Legacy invoice #275
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 275,
+    'LJ-275', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 275,
     'OK', 311500, 311500,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/275.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1800,14 +1877,15 @@ begin
 
   -- Legacy invoice #276
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 276,
+    'LJ-276', '2026-01-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 276,
     'OK', 509970, 509970,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/276.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1823,14 +1901,15 @@ begin
 
   -- Legacy invoice #277
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 277,
+    'LJ-277', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 277,
     'OK', 31680, 31680,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/277.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1846,14 +1925,15 @@ begin
 
   -- Legacy invoice #278
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 278,
+    'LJ-278', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 278,
     'OK', 48300, 48300,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/278.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1869,14 +1949,15 @@ begin
 
   -- Legacy invoice #279
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 279,
+    'LJ-279', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 279,
     'OK', 203550, 203550,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/279.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1892,14 +1973,15 @@ begin
 
   -- Legacy invoice #280
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 280,
+    'LJ-280', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 280,
     'OK', 129690, 129690,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/280.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1915,14 +1997,15 @@ begin
 
   -- Legacy invoice #281
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 281,
+    'LJ-281', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 281,
     'OK', 97900, 97900,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/281.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1938,14 +2021,15 @@ begin
 
   -- Legacy invoice #282
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 282,
+    'LJ-282', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 282,
     'OK', 161070, 161070,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/282.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1961,14 +2045,15 @@ begin
 
   -- Legacy invoice #283
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 283,
+    'LJ-283', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 283,
     'OK', 43660, 43660,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/283.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -1984,14 +2069,15 @@ begin
 
   -- Legacy invoice #284
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 284,
+    'LJ-284', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 284,
     'OK', 161370, 161370,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/284.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2007,14 +2093,15 @@ begin
 
   -- Legacy invoice #285
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 285,
+    'LJ-285', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 285,
     'OK', 35400, 35400,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/285.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2030,14 +2117,15 @@ begin
 
   -- Legacy invoice #286
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 286,
+    'LJ-286', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 286,
     'OK', 54180, 54180,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/286.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2053,14 +2141,15 @@ begin
 
   -- Legacy invoice #287
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 287,
+    'LJ-287', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 287,
     'OK', 35550, 35550,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/287.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2076,14 +2165,15 @@ begin
 
   -- Legacy invoice #288
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 288,
+    'LJ-288', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 288,
     'OK', 151110, 151110,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/288.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2099,14 +2189,15 @@ begin
 
   -- Legacy invoice #289
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 289,
+    'LJ-289', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 289,
     'OK', 292810, 292810,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/289.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2122,14 +2213,15 @@ begin
 
   -- Legacy invoice #290
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 290,
+    'LJ-290', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 290,
     'OK', 241740, 241740,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/290.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2145,14 +2237,15 @@ begin
 
   -- Legacy invoice #291
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 291,
+    'LJ-291', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 291,
     'OK', 554400, 554400,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/291.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2168,14 +2261,15 @@ begin
 
   -- Legacy invoice #292
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 292,
+    'LJ-292', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 292,
     'OK', 139700, 139700,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/292.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2191,14 +2285,15 @@ begin
 
   -- Legacy invoice #293
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 293,
+    'LJ-293', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 293,
     'OK', 241740, 241740,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/293.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2214,14 +2309,15 @@ begin
 
   -- Legacy invoice #294
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 294,
+    'LJ-294', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 294,
     'OK', 296370, 296370,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/294.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2237,14 +2333,15 @@ begin
 
   -- Legacy invoice #295
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 295,
+    'LJ-295', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 295,
     'OK', 37760, 37760,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/295.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2260,14 +2357,15 @@ begin
 
   -- Legacy invoice #296
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 296,
+    'LJ-296', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 296,
     'MISMATCH', 162840, 162840,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/296.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2283,14 +2381,15 @@ begin
 
   -- Legacy invoice #297
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 297,
+    'LJ-297', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 297,
     'OK', 133100, 133100,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/297.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2306,14 +2405,15 @@ begin
 
   -- Legacy invoice #298
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 298,
+    'LJ-298', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 298,
     'OK', 83740, 83740,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/298.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2329,14 +2429,15 @@ begin
 
   -- Legacy invoice #299
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 299,
+    'LJ-299', '2026-02-03'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 299,
     'OK', 603680, 603680,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/299.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2352,14 +2453,15 @@ begin
 
   -- Legacy invoice #300
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 300,
+    'LJ-300', '2026-01-17'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 300,
     'OK', 200250, 200250,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/300.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2377,14 +2479,15 @@ begin
 
   -- Legacy invoice #301
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 301,
+    'LJ-301', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 301,
     'OK', 418830, 418830,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/301.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2400,14 +2503,15 @@ begin
 
   -- Legacy invoice #302
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 302,
+    'LJ-302', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 302,
     'OK', 87000, 87000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/302.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2423,14 +2527,15 @@ begin
 
   -- Legacy invoice #303
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 303,
+    'LJ-303', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 303,
     'OK', 335710, 335710,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/303.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2446,14 +2551,15 @@ begin
 
   -- Legacy invoice #304
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 304,
+    'LJ-304', '2026-02-15'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 304,
     'OK', 187030, 187030,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/304.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2469,14 +2575,15 @@ begin
 
   -- Legacy invoice #305
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 305,
+    'LJ-305', '2026-02-15'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 305,
     'OK', 100570, 100570,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/305.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2492,14 +2599,15 @@ begin
 
   -- Legacy invoice #306
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 306,
+    'LJ-306', '2026-02-15'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 306,
     'OK', 261900, 261900,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/306.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2515,14 +2623,15 @@ begin
 
   -- Legacy invoice #307
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 307,
+    'LJ-307', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 307,
     'OK', 349830, 349830,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/307.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2538,14 +2647,15 @@ begin
 
   -- Legacy invoice #308
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 308,
+    'LJ-308', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 308,
     'OK', 93090, 93090,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/308.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2561,14 +2671,15 @@ begin
 
   -- Legacy invoice #309
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 309,
+    'LJ-309', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 309,
     'OK', 187620, 187620,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/309.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2584,14 +2695,15 @@ begin
 
   -- Legacy invoice #310
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 310,
+    'LJ-310', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 310,
     'OK', 353920, 353920,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/310.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2607,14 +2719,15 @@ begin
 
   -- Legacy invoice #311
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 311,
+    'LJ-311', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 311,
     'OK', 194950, 194950,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/311.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2630,14 +2743,15 @@ begin
 
   -- Legacy invoice #312
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 312,
+    'LJ-312', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 312,
     'OK', 75840, 75840,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/312.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2653,14 +2767,15 @@ begin
 
   -- Legacy invoice #313
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 313,
+    'LJ-313', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 313,
     'OK', 319800, 319800,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/313.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2676,14 +2791,15 @@ begin
 
   -- Legacy invoice #314
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 314,
+    'LJ-314', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 314,
     'OK', 272340, 272340,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/314.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2699,14 +2815,15 @@ begin
 
   -- Legacy invoice #315
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 315,
+    'LJ-315', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 315,
     'OK', 71200, 71200,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/315.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2722,14 +2839,15 @@ begin
 
   -- Legacy invoice #316
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 316,
+    'LJ-316', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 316,
     'OK', 222750, 222750,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/316.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2745,14 +2863,15 @@ begin
 
   -- Legacy invoice #317
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 317,
+    'LJ-317', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 317,
     'OK', 307310, 307310,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/317.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2768,14 +2887,15 @@ begin
 
   -- Legacy invoice #318
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 318,
+    'LJ-318', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 318,
     'OK', 109810, 109810,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/318.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2791,14 +2911,15 @@ begin
 
   -- Legacy invoice #319
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 319,
+    'LJ-319', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 319,
     'OK', 173800, 173800,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/319.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2814,14 +2935,15 @@ begin
 
   -- Legacy invoice #320
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 320,
+    'LJ-320', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 320,
     'OK', 182850, 182850,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/320.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2837,14 +2959,15 @@ begin
 
   -- Legacy invoice #321
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 321,
+    'LJ-321', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 321,
     'OK', 175950, 175950,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/321.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2860,14 +2983,15 @@ begin
 
   -- Legacy invoice #322
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 322,
+    'LJ-322', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 322,
     'OK', 150890, 150890,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/322.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2883,14 +3007,15 @@ begin
 
   -- Legacy invoice #323
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 323,
+    'LJ-323', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 323,
     'OK', 248850, 248850,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/323.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2906,14 +3031,15 @@ begin
 
   -- Legacy invoice #324
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 324,
+    'LJ-324', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 324,
     'OK', 120000, 120000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/324.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2929,14 +3055,15 @@ begin
 
   -- Legacy invoice #325
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 325,
+    'LJ-325', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 325,
     'OK', 326370, 326370,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/325.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2952,14 +3079,15 @@ begin
 
   -- Legacy invoice #326
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 326,
+    'LJ-326', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 326,
     'OK', 237000, 237000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/326.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2975,14 +3103,15 @@ begin
 
   -- Legacy invoice #327
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 327,
+    'LJ-327', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 327,
     'OK', 57960, 57960,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/327.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -2998,14 +3127,15 @@ begin
 
   -- Legacy invoice #328
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 328,
+    'LJ-328', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 328,
     'OK', 166690, 166690,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/328.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3021,14 +3151,15 @@ begin
 
   -- Legacy invoice #329
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 329,
+    'LJ-329', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 329,
     'OK', 142400, 142400,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/329.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3044,14 +3175,15 @@ begin
 
   -- Legacy invoice #330
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 330,
+    'LJ-330', '2026-03-21'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 330,
     'OK', 110400, 110400,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/330.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3067,14 +3199,15 @@ begin
 
   -- Legacy invoice #331
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 331,
+    'LJ-331', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 331,
     'OK', 370530, 370530,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/331.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3090,14 +3223,15 @@ begin
 
   -- Legacy invoice #332
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 332,
+    'LJ-332', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 332,
     'OK', 94010, 94010,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/332.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3113,14 +3247,15 @@ begin
 
   -- Legacy invoice #333
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 333,
+    'LJ-333', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 333,
     'OK', 107440, 107440,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/333.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3136,14 +3271,15 @@ begin
 
   -- Legacy invoice #334
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 334,
+    'LJ-334', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 334,
     'OK', 573540, 573540,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/334.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3159,14 +3295,15 @@ begin
 
   -- Legacy invoice #335
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 335,
+    'LJ-335', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 335,
     'OK', 205400, 205400,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/335.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3182,14 +3319,15 @@ begin
 
   -- Legacy invoice #336
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 336,
+    'LJ-336', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 336,
     'OK', 302080, 302080,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/336.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3205,14 +3343,15 @@ begin
 
   -- Legacy invoice #337
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 337,
+    'LJ-337', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 337,
     'OK', 250750, 250750,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/337.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3228,14 +3367,15 @@ begin
 
   -- Legacy invoice #338
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 338,
+    'LJ-338', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 338,
     'OK', 238580, 238580,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/338.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3251,14 +3391,15 @@ begin
 
   -- Legacy invoice #339
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 339,
+    'LJ-339', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 339,
     'OK', 180670, 180670,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/339.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3274,14 +3415,15 @@ begin
 
   -- Legacy invoice #340
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 340,
+    'LJ-340', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 340,
     'N/A', 0, 0,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/340.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3297,14 +3439,15 @@ begin
 
   -- Legacy invoice #341
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 341,
+    'LJ-341', '2026-03-28'::date, 'Lady J, Borella', 'LKR', 'issued', 'lady_j_scan', 341,
     'OK', 616150, 616150,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/341.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3322,14 +3465,15 @@ begin
 
   -- Legacy invoice #342
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 342,
+    'LJ-342', current_date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 342,
     'OK', 297000, 297000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/342.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3345,14 +3489,15 @@ begin
 
   -- Legacy invoice #343
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 343,
+    'LJ-343', '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 343,
     'OK', 337800, 337800,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/343.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3368,14 +3513,15 @@ begin
 
   -- Legacy invoice #344
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 344,
+    'LJ-344', '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 344,
     'N/A', 0, 0,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/344.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3391,14 +3537,15 @@ begin
 
   -- Legacy invoice #345
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 345,
+    'LJ-345', '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 345,
     'OK', 325000, 325000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/345.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3414,14 +3561,15 @@ begin
 
   -- Legacy invoice #346
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 346,
+    'LJ-346', '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 346,
     'OK', 558920, 558920,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/346.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3437,14 +3585,15 @@ begin
 
   -- Legacy invoice #347
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 347,
+    'LJ-347', '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 347,
     'OK', 153180, 153180,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/347.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3460,14 +3609,15 @@ begin
 
   -- Legacy invoice #348
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 348,
+    'LJ-348', '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 348,
     'OK', 216460, 216460,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/348.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3483,14 +3633,15 @@ begin
 
   -- Legacy invoice #349
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 349,
+    'LJ-349', '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 349,
     'OK', 297000, 297000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/349.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3506,14 +3657,15 @@ begin
 
   -- Legacy invoice #350
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 350,
+    'LJ-350', '2026-04-08'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 350,
     'OK', 331200, 331200,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/350.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3529,14 +3681,15 @@ begin
 
   -- Legacy invoice #351
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 351,
+    'LJ-351', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 351,
     'OK', 423660, 423660,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/351.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3552,14 +3705,15 @@ begin
 
   -- Legacy invoice #352
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 352,
+    'LJ-352', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 352,
     'OK', 87000, 87000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/352.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3575,14 +3729,15 @@ begin
 
   -- Legacy invoice #353
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 353,
+    'LJ-353', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 353,
     'OK', 136500, 136500,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/353.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3598,14 +3753,15 @@ begin
 
   -- Legacy invoice #354
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 354,
+    'LJ-354', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 354,
     'OK', 319190, 319190,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/354.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3621,14 +3777,15 @@ begin
 
   -- Legacy invoice #355
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 355,
+    'LJ-355', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 355,
     'OK', 201190, 201190,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/355.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3644,14 +3801,15 @@ begin
 
   -- Legacy invoice #356
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 356,
+    'LJ-356', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 356,
     'OK', 101460, 101460,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/356.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3667,14 +3825,15 @@ begin
 
   -- Legacy invoice #357
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 357,
+    'LJ-357', '2026-02-15'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 357,
     'OK', 263250, 263250,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/357.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3690,14 +3849,15 @@ begin
 
   -- Legacy invoice #358
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 358,
+    'LJ-358', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 358,
     'OK', 341550, 341550,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/358.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3713,14 +3873,15 @@ begin
 
   -- Legacy invoice #359
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 359,
+    'LJ-359', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 359,
     'OK', 80910, 80910,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/359.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3736,14 +3897,15 @@ begin
 
   -- Legacy invoice #360
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 360,
+    'LJ-360', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 360,
     'OK', 335340, 335340,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/360.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3759,14 +3921,15 @@ begin
 
   -- Legacy invoice #361
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 361,
+    'LJ-361', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 361,
     'OK', 226800, 226800,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/361.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3782,14 +3945,15 @@ begin
 
   -- Legacy invoice #362
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 362,
+    'LJ-362', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 362,
     'OK', 113760, 113760,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/362.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3805,14 +3969,15 @@ begin
 
   -- Legacy invoice #363
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 363,
+    'LJ-363', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 363,
     'OK', 74760, 74760,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/363.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3828,14 +3993,15 @@ begin
 
   -- Legacy invoice #364
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 364,
+    'LJ-364', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 364,
     'OK', 112970, 112970,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/364.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3851,14 +4017,15 @@ begin
 
   -- Legacy invoice #365
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 365,
+    'LJ-365', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 365,
     'OK', 164220, 164220,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/365.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3874,14 +4041,15 @@ begin
 
   -- Legacy invoice #366
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 366,
+    'LJ-366', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 366,
     'OK', 282130, 282130,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/366.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3897,14 +4065,15 @@ begin
 
   -- Legacy invoice #367
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 367,
+    'LJ-367', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 367,
     'OK', 61410, 61410,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/367.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3920,14 +4089,15 @@ begin
 
   -- Legacy invoice #368
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 368,
+    'LJ-368', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 368,
     'OK', 255960, 255960,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/368.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3943,14 +4113,15 @@ begin
 
   -- Legacy invoice #369
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 369,
+    'LJ-369', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 369,
     'OK', 131200, 131200,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/369.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3966,14 +4137,15 @@ begin
 
   -- Legacy invoice #370
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 370,
+    'LJ-370', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 370,
     'OK', 145600, 145600,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/370.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -3989,14 +4161,15 @@ begin
 
   -- Legacy invoice #371
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 371,
+    'LJ-371', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 371,
     'OK', 71100, 71100,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/371.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4012,14 +4185,15 @@ begin
 
   -- Legacy invoice #372
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 372,
+    'LJ-372', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 372,
     'OK', 116000, 116000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/372.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4035,14 +4209,15 @@ begin
 
   -- Legacy invoice #373
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 373,
+    'LJ-373', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 373,
     'OK', 241740, 241740,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/373.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4058,14 +4233,15 @@ begin
 
   -- Legacy invoice #374
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 374,
+    'LJ-374', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 374,
     'OK', 311260, 311260,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/374.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4081,14 +4257,15 @@ begin
 
   -- Legacy invoice #375
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 375,
+    'LJ-375', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 375,
     'OK', 360240, 360240,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/375.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4104,14 +4281,15 @@ begin
 
   -- Legacy invoice #376
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 376,
+    'LJ-376', '2026-03-20'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 376,
     'OK', 201780, 201780,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/376.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4127,14 +4305,15 @@ begin
 
   -- Legacy invoice #377
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 377,
+    'LJ-377', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 377,
     'OK', 616150, 616150,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/377.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4152,14 +4331,15 @@ begin
 
   -- Legacy invoice #378
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 378,
+    'LJ-378', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 378,
     'OK', 170430, 170430,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/378.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4175,14 +4355,15 @@ begin
 
   -- Legacy invoice #379
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 379,
+    'LJ-379', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 379,
     'OK', 156420, 156420,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/379.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4198,14 +4379,15 @@ begin
 
   -- Legacy invoice #380
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 380,
+    'LJ-380', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 380,
     'OK', 157320, 157320,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/380.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4221,14 +4403,15 @@ begin
 
   -- Legacy invoice #381
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 381,
+    'LJ-381', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 381,
     'OK', 182160, 182160,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/381.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4244,14 +4427,15 @@ begin
 
   -- Legacy invoice #382
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 382,
+    'LJ-382', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 382,
     'MISMATCH', 353920, 353920,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/382.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4269,14 +4453,15 @@ begin
 
   -- Legacy invoice #383
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 383,
+    'LJ-383', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 383,
     'OK', 371220, 371220,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/383.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4292,14 +4477,15 @@ begin
 
   -- Legacy invoice #384
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 384,
+    'LJ-384', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 384,
     'OK', 113760, 113760,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/384.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4315,14 +4501,15 @@ begin
 
   -- Legacy invoice #385
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 385,
+    'LJ-385', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 385,
     'OK', 104280, 104280,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/385.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4338,14 +4525,15 @@ begin
 
   -- Legacy invoice #386
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 386,
+    'LJ-386', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 386,
     'OK', 257830, 257830,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/386.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4361,14 +4549,15 @@ begin
 
   -- Legacy invoice #387
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 387,
+    'LJ-387', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 387,
     'OK', 308570, 308570,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/387.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4384,14 +4573,15 @@ begin
 
   -- Legacy invoice #388
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 388,
+    'LJ-388', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 388,
     'OK', 583810, 583810,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/388.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4407,14 +4597,15 @@ begin
 
   -- Legacy invoice #389
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 389,
+    'LJ-389', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 389,
     'OK', 241740, 241740,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/389.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4430,14 +4621,15 @@ begin
 
   -- Legacy invoice #390
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 390,
+    'LJ-390', '2026-03-28'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 390,
     'OK', 186900, 186900,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/390.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4453,14 +4645,15 @@ begin
 
   -- Legacy invoice #391
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 391,
+    'LJ-391', '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 391,
     'OK', 2050000, 2050000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/391.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4476,14 +4669,15 @@ begin
 
   -- Legacy invoice #392
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 392,
+    'LJ-392', '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 392,
     'OK', 297000, 297000,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/392.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4499,14 +4693,15 @@ begin
 
   -- Legacy invoice #393
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 393,
+    'LJ-393', '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 393,
     'OK', 475200, 475200,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/393.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4522,14 +4717,15 @@ begin
 
   -- Legacy invoice #394
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 394,
+    'LJ-394', '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 394,
     'OK', 528510, 528510,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/394.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4545,14 +4741,15 @@ begin
 
   -- Legacy invoice #395
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 395,
+    'LJ-395', '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 395,
     'OK', 316140, 316140,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/395.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4568,14 +4765,15 @@ begin
 
   -- Legacy invoice #396
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 396,
+    'LJ-396', '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 396,
     'OK', 82500, 82500,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/396.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4591,14 +4789,15 @@ begin
 
   -- Legacy invoice #397
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 397,
+    'LJ-397', '2026-03-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 397,
     'OK', 462990, 462990,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/397.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4614,14 +4813,15 @@ begin
 
   -- Legacy invoice #398
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-08-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 398,
+    'LJ-398', '2026-08-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 398,
     'OK', 584730, 584730,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/398.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4637,14 +4837,15 @@ begin
 
   -- Legacy invoice #399
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-08-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 399,
+    'LJ-399', '2026-08-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 399,
     'OK', 157320, 157320,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/399.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
@@ -4660,14 +4861,15 @@ begin
 
   -- Legacy invoice #400
   insert into invoices (
-    invoice_date, purchaser_name, currency, status, source, legacy_id,
+    invoice_number, invoice_date, purchaser_name, currency, status, source, legacy_id,
     match_status, subtotal, total_amount, image_url
   ) values (
-    '2026-08-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 400,
+    'LJ-400', '2026-08-04'::date, 'Lady J, Maharagama', 'LKR', 'issued', 'lady_j_scan', 400,
     'OK', 222780, 222780,
     'https://SUPABASE_PROJECT.supabase.co/storage/v1/object/public/lady-j-invoices/400.webp'
   )
   on conflict (legacy_id) where legacy_id is not null do update set
+    invoice_number = excluded.invoice_number,
     invoice_date = excluded.invoice_date,
     purchaser_name = excluded.purchaser_name,
     match_status = excluded.match_status,
