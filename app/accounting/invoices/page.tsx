@@ -16,6 +16,7 @@ type InvoiceRow = {
   purchaser_name: string;
   total_amount: number;
   amount_paid: number;
+  image_url: string | null;
 };
 
 function fmtDate(d: string | null) {
@@ -34,11 +35,12 @@ export default function InvoicesListPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [viewImage, setViewImage] = useState<{ url: string; label: string } | null>(null);
 
   useEffect(() => {
     supabase
       .from('invoices')
-      .select('id, invoice_number, invoice_date, due_date, currency, status, purchaser_name, total_amount, amount_paid')
+      .select('id, invoice_number, invoice_date, due_date, currency, status, purchaser_name, total_amount, amount_paid, image_url')
       .order('invoice_date', { ascending: false })
       .then(({ data }) => {
         setRows((data ?? []) as InvoiceRow[]);
@@ -126,6 +128,14 @@ export default function InvoicesListPage() {
                         {r.status === 'draft' ? '—' : `${r.currency} ${balance.toFixed(2)}`}
                       </td>
                       <td className="px-4 py-2.5 text-right space-x-3">
+                        {r.image_url && (
+                          <button
+                            onClick={() => setViewImage({ url: r.image_url as string, label: r.invoice_number })}
+                            className="font-bold text-rowan-navy hover:text-rowan-red"
+                          >
+                            View
+                          </button>
+                        )}
                         <Link href={`/accounting/invoice?id=${r.id}`} className="font-bold text-rowan-navy hover:text-rowan-red">Edit</Link>
                         <Link href={`/accounting/invoice/${r.id}/print`} className="font-bold text-rowan-navy hover:text-rowan-red">Print</Link>
                       </td>
@@ -137,6 +147,31 @@ export default function InvoicesListPage() {
           )}
         </div>
       </div>
+
+      {viewImage && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6"
+          onClick={() => setViewImage(null)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-sm font-black text-rowan-navy">Attached document — {viewImage.label}</h3>
+              <button
+                onClick={() => setViewImage(null)}
+                className="text-gray-400 hover:text-rowan-red font-bold text-lg leading-none"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-4">
+              <img src={viewImage.url} alt={`Invoice ${viewImage.label} scan`} className="w-full rounded-lg border border-gray-200" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

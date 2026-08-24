@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { RowanWordmark } from '@/components/RowanMark';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { getLadyJInvoices, LadyJInvoice } from '@/lib/ladyJInvoices';
 
 const STATUS_STYLES: Record<string, string> = {
@@ -16,10 +17,19 @@ function fmtMoney(n: number) {
 }
 
 export default function LadyJInvoicesPage() {
-  const invoices = useMemo(() => getLadyJInvoices(), []);
+  const [invoices, setInvoices] = useState<LadyJInvoice[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedId, setSelectedId] = useState<number | null>(invoices[0]?.id ?? null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  useEffect(() => {
+    getLadyJInvoices().then((data) => {
+      setInvoices(data);
+      setSelectedId((prev) => prev ?? data[0]?.id ?? null);
+      setLoading(false);
+    });
+  }, []);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -57,6 +67,11 @@ export default function LadyJInvoicesPage() {
           </Link>
         </div>
 
+        {loading ? (
+          <div className="p-16 flex justify-center">
+            <LoadingSpinner size="lg" />
+          </div>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
           {/* Left: list */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
@@ -186,6 +201,7 @@ export default function LadyJInvoicesPage() {
             )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );

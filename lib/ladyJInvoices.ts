@@ -1,5 +1,4 @@
-import rawInvoices from './data/lady-j-raw-invoices.json';
-import attachments from './data/lady-j-attachments.json';
+import { supabase } from './supabase';
 
 export type LadyJLineItem = {
   id: number | string;
@@ -14,7 +13,8 @@ export type LadyJLineItem = {
 };
 
 export type LadyJInvoice = {
-  id: number;
+  id: number; // legacy_id, kept for display ("Invoice #201") and search
+  uuid: string; // real invoices.id, needed for links to /accounting/invoice/[id]/print etc.
   date: string | null;
   customer: string;
   lines: LadyJLineItem[];
@@ -23,45 +23,65 @@ export type LadyJInvoice = {
   imageUrl: string | null;
 };
 
-const attachmentMap = attachments as Record<string, string>;
+/**
+ * Lady J scanned invoices now live in the same `invoices` / `invoice_lines`
+ * tables as regular invoices, tagged with source = 'lady_j_scan' and a
+ * legacy_id carried over from the original scanned-invoice spreadsheet.
+ * See sql/026_lady_j_scan_columns.sql and sql/027_lady_j_invoices_import.sql.
+ */
+export async function getLadyJInvoices(): Promise<LadyJInvoice[]> {
+  const { data: invoices, error: invErr } = await supabase
+    .from('invoices')
+    .select('id, legacy_id, invoice_date, purchaser_name, total_amount, match_status, image_url')
+    .eq('source', 'lady_j_scan')
+    .order('legacy_id', { ascending: true });
 
-function isLegendRow(row: any): boolean {
-  return typeof row.id !== 'number';
-}
-
-/** Group the flat RAW_INVOICES rows (one row per line item) into one record per invoice id. */
-export function getLadyJInvoices(): LadyJInvoice[] {
-  const byId = new Map<number, LadyJLineItem[]>();
-
-  for (const row of rawInvoices as any[]) {
-    if (isLegendRow(row)) continue;
-    const id = row.id as number;
-    if (!byId.has(id)) byId.set(id, []);
-    byId.get(id)!.push(row as LadyJLineItem);
+  if (invErr || !invoices) {
+    console.error('Failed to load Lady J invoices:', invErr?.message);
+    return [];
   }
 
-  const invoices: LadyJInvoice[] = [];
-  for (const [id, lines] of byId.entries()) {
-    const total = lines.reduce((sum, l) => sum + (l.total || 0), 0);
-    const hasMismatch = lines.some((l) => l.status === 'MISMATCH');
-    const hasNA = lines.every((l) => l.status === 'N/A');
-    const status: LadyJInvoice['status'] = hasMismatch ? 'MISMATCH' : hasNA ? 'N/A' : 'OK';
-    const imgPath = attachmentMap[String(id)];
-    invoices.push({
-      id,
-      date: lines[0]?.date ?? null,
-      customer: lines[0]?.customer ?? 'Unknown',
-      lines,
-      total,
-      status,
-      imageUrl: imgPath ? `/${imgPath}` : null,
+  const ids = invoices.map((i) => i.id);
+  const { data: lines, error: lineErr } = await supabase
+    .from('invoice_lines')
+    .select('invoice_id, line_no, code, description, qty, unit_price')
+    .in('invoice_id', ids.length ? ids : ['00000000-0000-0000-0000-000000000000'])
+    .order('line_no', { ascending: true });
+
+  if (lineErr) {
+    console.error('Failed to load Lady J invoice lines:', lineErr.message);
+  }
+
+  const linesByInvoice = new Map<string, LadyJLineItem[]>();
+  for (const l of lines ?? []) {
+    const arr = linesByInvoice.get(l.invoice_id) ?? [];
+    arr.push({
+      id: l.line_no,
+      date: null,
+      code: l.code ?? 'N/A',
+      customer: '',
+      item: l.description,
+      qty: Number(l.qty) || 0,
+      price: Number(l.unit_price) || 0,
+      total: (Number(l.qty) || 0) * (Number(l.unit_price) || 0),
+      status: '',
     });
+    linesByInvoice.set(l.invoice_id, arr);
   }
 
-  invoices.sort((a, b) => a.id - b.id);
-  return invoices;
+  return invoices.map((inv) => ({
+    id: inv.legacy_id ?? 0,
+    uuid: inv.id,
+    date: inv.invoice_date,
+    customer: inv.purchaser_name,
+    lines: linesByInvoice.get(inv.id) ?? [],
+    total: Number(inv.total_amount) || 0,
+    status: (inv.match_status as LadyJInvoice['status']) ?? 'N/A',
+    imageUrl: inv.image_url ?? null,
+  }));
 }
 
-export function getLadyJInvoiceById(id: number): LadyJInvoice | undefined {
-  return getLadyJInvoices().find((inv) => inv.id === id);
+export async function getLadyJInvoiceById(legacyId: number): Promise<LadyJInvoice | undefined> {
+  const all = await getLadyJInvoices();
+  return all.find((inv) => inv.id === legacyId);
 }
