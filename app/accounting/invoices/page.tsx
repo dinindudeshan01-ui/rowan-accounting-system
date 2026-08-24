@@ -40,6 +40,22 @@ export default function InvoicesListPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  async function handleDelete(id: string, invoiceNumber: string) {
+    if (!confirm(`Delete invoice ${invoiceNumber}? This also removes its ledger posting. This cannot be undone.`)) {
+      return;
+    }
+    setDeletingId(id);
+    const { error } = await supabase.rpc('delete_invoice', { p_invoice_id: id });
+    setDeletingId(null);
+    if (error) {
+      alert(`Failed to delete invoice: ${error.message}`);
+      return;
+    }
+    setRows((prev) => prev.filter((r) => r.id !== id));
+    setSelectedId((prev) => (prev === id ? null : prev));
+  }
 
   useEffect(() => {
     supabase
@@ -148,6 +164,13 @@ export default function InvoicesListPage() {
                           <td className="px-4 py-2.5 text-right space-x-3" onClick={(e) => e.stopPropagation()}>
                             <Link href={`/accounting/invoice?id=${r.id}`} className="font-bold text-rowan-navy hover:text-rowan-red">Edit</Link>
                             <Link href={`/accounting/invoice/${r.id}/print`} className="font-bold text-rowan-navy hover:text-rowan-red">Print</Link>
+                            <button
+                              onClick={() => handleDelete(r.id, r.invoice_number)}
+                              disabled={deletingId === r.id}
+                              className="font-bold text-red-500 hover:text-red-700 disabled:opacity-40"
+                            >
+                              {deletingId === r.id ? 'Deleting…' : 'Delete'}
+                            </button>
                           </td>
                         </tr>
                       );
@@ -199,6 +222,13 @@ export default function InvoicesListPage() {
                   <div className="flex gap-3 text-[12px] font-bold">
                     <Link href={`/accounting/invoice?id=${selected.id}`} className="text-rowan-navy hover:text-rowan-red">Edit</Link>
                     <Link href={`/accounting/invoice/${selected.id}/print`} className="text-rowan-navy hover:text-rowan-red">Print</Link>
+                    <button
+                      onClick={() => handleDelete(selected.id, selected.invoice_number)}
+                      disabled={deletingId === selected.id}
+                      className="text-red-500 hover:text-red-700 disabled:opacity-40"
+                    >
+                      {deletingId === selected.id ? 'Deleting…' : 'Delete'}
+                    </button>
                   </div>
 
                   <div>
