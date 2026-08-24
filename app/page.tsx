@@ -55,6 +55,7 @@ const MODULES: ModuleDef[] = [
     tiles: [
       { label: 'Invoices', desc: 'Search, filter, and browse all invoices.', href: '/accounting/invoices' },
       { label: 'New Invoice', desc: 'Create a customer tax invoice.', href: '/accounting/invoice' },
+      { label: 'Lady J Invoices (Scanned)', desc: 'Browse all 196 scanned Lady J invoices with source photos.', href: '/accounting/lady-j-invoices' },
     ],
   },
   {
