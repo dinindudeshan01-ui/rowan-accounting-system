@@ -179,8 +179,8 @@ export function DrillDownModal({ target, onClose }: { target: DrillDownTarget | 
                       <td className="px-4 py-2.5 text-gray-500">{r.entry_date ? fmtDate(r.entry_date) : '—'}</td>
                       <td className="px-4 py-2.5 font-bold text-rowan-navy">
                         {link ? (
-                          <Link href={link} className="hover:text-rowan-red">
-                            {sourceLabel(r)}
+                          <Link href={link} target="_blank" rel="noopener noreferrer" className="hover:text-rowan-red">
+                            {sourceLabel(r)} ↗
                           </Link>
                         ) : (
                           sourceLabel(r)

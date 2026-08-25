@@ -355,7 +355,15 @@ function InvoiceForm() {
       <div className="max-w-[1500px] mx-auto">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => (window.history.length > 1 ? router.back() : router.push('/accounting/invoices'))}
+                className="text-xs font-bold text-rowan-navy hover:text-rowan-red inline-flex items-center gap-1"
+              >
+                ← Back
+              </button>
+              <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">Dashboard</Link>
+            </div>
             <div className="flex items-center gap-2 mt-1">
               <RowanMark size={26} />
               <h1 className="text-xl font-black text-rowan-navy">{invoiceId ? 'Edit Invoice' : 'New Invoice'}</h1>
