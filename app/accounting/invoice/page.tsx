@@ -103,6 +103,7 @@ function InvoiceForm() {
   const [vatRate, setVatRate] = useState('18');
   const [scllRate, setScllRate] = useState('2.5');
   const [ssclRegistered, setSsclRegistered] = useState(false);
+  const [vatRegistered, setVatRegistered] = useState(false);
 
   const [lines, setLines] = useState<InvoiceLine[]>([emptyLine(), emptyLine(), emptyLine()]);
 
@@ -115,8 +116,12 @@ function InvoiceForm() {
   useEffect(() => {
     listParties('customer').then(setCustomers).catch(() => {});
     listItems().then(setItems).catch(() => {});
-    supabase.from('tax_settings').select('sscl_registered').single().then(({ data }) => {
-      if (data) setSsclRegistered(data.sscl_registered);
+    supabase.from('tax_settings').select('sscl_registered, vat_registered').single().then(({ data }) => {
+      if (data) {
+        setSsclRegistered(data.sscl_registered);
+        setVatRegistered(data.vat_registered);
+        if (!data.vat_registered) setVatRate('0');
+      }
     });
     if (!editId) {
       supabase.rpc('next_invoice_number_preview').then(({ data }) => {
@@ -237,7 +242,7 @@ function InvoiceForm() {
   const subtotal = lineTotals.reduce((s, n) => s + n, 0);
   const scllAmt = ssclRegistered ? subtotal * ((parseFloat(scllRate) || 0) / 100) : 0;
   const exclVat = subtotal + scllAmt;
-  const vatAmt = exclVat * ((parseFloat(vatRate) || 0) / 100);
+  const vatAmt = vatRegistered ? exclVat * ((parseFloat(vatRate) || 0) / 100) : 0;
   const grandTotal = exclVat + vatAmt;
   const balanceDue = grandTotal - amountPaid;
   const isLocked = status === 'void' || amountPaid > 0;
@@ -547,7 +552,13 @@ function InvoiceForm() {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-[9px] font-bold text-gray-400 uppercase mb-1">VAT %</label>
-                  <input value={vatRate} onChange={(e) => setVatRate(e.target.value)} className="w-full border border-gray-200 rounded px-2 py-1" />
+                  <input
+                    value={vatRate}
+                    onChange={(e) => setVatRate(e.target.value)}
+                    disabled={!vatRegistered}
+                    title={!vatRegistered ? 'VAT is off — company is not VAT registered (Settings)' : ''}
+                    className="w-full border border-gray-200 rounded px-2 py-1 disabled:bg-gray-100 disabled:text-gray-400"
+                  />
                 </div>
                 {ssclRegistered && (
                   <div>
@@ -566,7 +577,9 @@ function InvoiceForm() {
                     <tr><td className="p-1.5 text-right text-gray-500">SSCL ({scllRate}%):</td><td className="text-right p-1.5 font-bold">{fmt(scllAmt)}</td></tr>
                   )}
                   <tr><td className="p-1.5 text-right font-bold text-rowan-navy">Total (Excl. VAT):</td><td className="text-right p-1.5 border-t border-gray-200 font-bold">{fmt(exclVat)}</td></tr>
-                  <tr><td className="p-1.5 text-right text-gray-500">VAT ({vatRate}%):</td><td className="text-right p-1.5 font-bold">{fmt(vatAmt)}</td></tr>
+                  {vatRegistered && (
+                    <tr><td className="p-1.5 text-right text-gray-500">VAT ({vatRate}%):</td><td className="text-right p-1.5 font-bold">{fmt(vatAmt)}</td></tr>
+                  )}
                   <tr className="bg-rowan-bg"><td className="p-2 text-right font-black text-rowan-navy">Invoice Total:</td><td className="text-right p-2 font-black text-rowan-navy text-base">{currency} {fmt(grandTotal)}</td></tr>
                   {amountPaid > 0 && (
                     <>

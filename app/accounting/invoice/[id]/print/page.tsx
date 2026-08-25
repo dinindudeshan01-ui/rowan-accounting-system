@@ -52,6 +52,7 @@ export default function InvoicePrintPage() {
   const [invoice, setInvoice] = useState<InvoiceRow | null>(null);
   const [lines, setLines] = useState<LineRow[]>([]);
   const [ssclRegistered, setSsclRegistered] = useState(false);
+  const [vatRegistered, setVatRegistered] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -60,14 +61,17 @@ export default function InvoicePrintPage() {
       const [{ data: inv }, { data: ls }, { data: tax }] = await Promise.all([
         supabase.from('invoices').select('*').eq('id', id).single(),
         supabase.from('invoice_lines').select('*').eq('invoice_id', id).order('line_no'),
-        supabase.from('tax_settings').select('sscl_registered').single(),
+        supabase.from('tax_settings').select('sscl_registered, vat_registered').single(),
       ]);
       if (!inv) {
         setNotFound(true);
       } else {
         setInvoice(inv as InvoiceRow);
         setLines((ls ?? []) as LineRow[]);
-        if (tax) setSsclRegistered(tax.sscl_registered);
+        if (tax) {
+          setSsclRegistered(tax.sscl_registered);
+          setVatRegistered(tax.vat_registered);
+        }
       }
       setLoading(false);
     })();
@@ -94,7 +98,7 @@ export default function InvoicePrintPage() {
   const subtotal = lineTotals.reduce((s, n) => s + n, 0);
   const scllAmt = ssclRegistered ? subtotal * (invoice.sscl_rate / 100) : 0;
   const exclVat = subtotal + scllAmt;
-  const vatAmt = exclVat * (invoice.vat_rate / 100);
+  const vatAmt = vatRegistered ? exclVat * (invoice.vat_rate / 100) : 0;
   const grandTotal = exclVat + vatAmt;
 
   // Pad the line table out to a minimum of 8 rows so short invoices still
@@ -225,7 +229,9 @@ export default function InvoicePrintPage() {
                     <tr><td className="p-1 text-right text-gray-600">SSCL ({invoice.sscl_rate}%):</td><td className="text-right p-1 font-bold">{fmt(scllAmt)}</td></tr>
                   )}
                   <tr><td className="p-1 text-right font-bold">Total (Excl. VAT):</td><td className="text-right p-1 border-t border-gray-400 font-bold">{fmt(exclVat)}</td></tr>
-                  <tr><td className="p-1 text-right text-gray-600">VAT ({invoice.vat_rate}%):</td><td className="text-right p-1 font-bold">{fmt(vatAmt)}</td></tr>
+                  {vatRegistered && (
+                    <tr><td className="p-1 text-right text-gray-600">VAT ({invoice.vat_rate}%):</td><td className="text-right p-1 font-bold">{fmt(vatAmt)}</td></tr>
+                  )}
                   <tr className="bg-gray-100 font-bold"><td className="p-1 text-right">Grand Total:</td><td className="text-right p-1">{invoice.currency} {fmt(grandTotal)}</td></tr>
                 </tbody>
               </table>
@@ -234,7 +240,8 @@ export default function InvoicePrintPage() {
 
           <div className="flex justify-between items-end mt-4">
             <p className="text-[8px] text-gray-400">
-              Statutory Declarations: VAT {invoice.vat_rate}% {ssclRegistered ? `| SSCL ${invoice.sscl_rate}% on 85% Turnover` : ''}
+              Statutory Declarations: {vatRegistered ? `VAT ${invoice.vat_rate}% ` : ''}{ssclRegistered ? `| SSCL ${invoice.sscl_rate}% on 85% Turnover` : ''}
+              {!vatRegistered && !ssclRegistered ? 'Not VAT / SSCL registered.' : ''}
             </p>
             <div className="text-center w-32">
               <div className="h-6 border-b border-[#06154b]" />
