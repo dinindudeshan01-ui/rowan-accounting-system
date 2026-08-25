@@ -24,6 +24,21 @@ function fmtDate(d: string | null) {
   return d ?? '—';
 }
 
+/** Natural sort for invoice numbers like "LJ-9" vs "LJ-10" — splits into
+ *  the non-numeric prefix and the numeric tail, comparing the number as
+ *  an integer so 2 sorts before 10, not after. */
+function invoiceNumberParts(s: string): [string, number] {
+  const m = s.match(/^(.*?)(\d+)\s*$/);
+  if (!m) return [s, 0];
+  return [m[1], parseInt(m[2], 10)];
+}
+function compareInvoiceNumbers(a: string, b: string) {
+  const [prefixA, numA] = invoiceNumberParts(a);
+  const [prefixB, numB] = invoiceNumberParts(b);
+  if (prefixA !== prefixB) return prefixA.localeCompare(prefixB);
+  return numA - numB;
+}
+
 function fmtMoney(currency: string, n: number) {
   return `${currency} ${n.toFixed(2)}`;
 }
@@ -40,6 +55,7 @@ export default function InvoicesListPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'number_asc' | 'number_desc' | 'date_desc' | 'date_asc'>('number_asc');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; number: string } | null>(null);
@@ -80,12 +96,29 @@ export default function InvoicesListPage() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return rows.filter((r) => {
+    const list = rows.filter((r) => {
       const matchesSearch = !q || r.invoice_number.toLowerCase().includes(q) || r.purchaser_name.toLowerCase().includes(q);
       const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [rows, search, statusFilter]);
+    const sorted = [...list];
+    switch (sortBy) {
+      case 'number_asc':
+        sorted.sort((a, b) => compareInvoiceNumbers(a.invoice_number, b.invoice_number));
+        break;
+      case 'number_desc':
+        sorted.sort((a, b) => compareInvoiceNumbers(b.invoice_number, a.invoice_number));
+        break;
+      case 'date_asc':
+        sorted.sort((a, b) => a.invoice_date.localeCompare(b.invoice_date));
+        break;
+      case 'date_desc':
+      default:
+        sorted.sort((a, b) => b.invoice_date.localeCompare(a.invoice_date));
+        break;
+    }
+    return sorted;
+  }, [rows, search, statusFilter, sortBy]);
 
   const selected = rows.find((r) => r.id === selectedId) ?? null;
 
@@ -122,6 +155,17 @@ export default function InvoicesListPage() {
                   { value: 'issued', label: 'Issued' },
                   { value: 'paid', label: 'Paid' },
                   { value: 'void', label: 'Void' },
+                ]}
+              />
+              <SearchableSelect
+                value={sortBy}
+                onChange={(v) => setSortBy(v as typeof sortBy)}
+                className="w-56"
+                options={[
+                  { value: 'number_asc', label: 'Invoice # (1, 2, 3…)' },
+                  { value: 'number_desc', label: 'Invoice # (…3, 2, 1)' },
+                  { value: 'date_desc', label: 'Date (Newest first)' },
+                  { value: 'date_asc', label: 'Date (Oldest first)' },
                 ]}
               />
             </div>
