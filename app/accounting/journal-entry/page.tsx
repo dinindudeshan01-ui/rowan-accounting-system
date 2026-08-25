@@ -177,7 +177,7 @@ export default function JournalEntryPage() {
       .select('id, entry_number, entry_date, memo, status')
       .order('entry_date', { ascending: false })
       .order('created_at', { ascending: false })
-      .limit(50);
+      .limit(1000);
     if (start) query = query.gte('entry_date', start);
     if (end) query = query.lte('entry_date', end);
     const { data } = await query;
