@@ -451,6 +451,13 @@ function ProfitAndLoss() {
         setRunsB((runsResB?.data ?? []) as ProductionRunRow[]);
       }
       setLoading(false);
+    }).catch((err) => {
+      setError(err?.message ?? 'Failed to load report data from Supabase.');
+      setRowsA([]);
+      setRunsA([]);
+      setRowsB([]);
+      setRunsB([]);
+      setLoading(false);
     });
   }, [effectiveA.start, effectiveA.end, effectiveB.start, effectiveB.end, compare]);
 
@@ -659,6 +666,11 @@ function BalanceSheet() {
         if (resB.error) setError(resB.error.message);
         setRowsB((resB.data ?? []) as PLRow[]);
       }
+      setLoading(false);
+    }).catch((err) => {
+      setError(err?.message ?? 'Failed to load report data from Supabase.');
+      setRowsA([]);
+      setRowsB([]);
       setLoading(false);
     });
   }, [asOfA, asOfB, compare]);
