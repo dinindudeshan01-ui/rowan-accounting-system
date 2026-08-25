@@ -351,9 +351,9 @@ function InvoiceForm() {
   }
 
   return (
-    <div className="min-h-screen bg-rowan-bg p-6">
-      <div className="max-w-[1500px] mx-auto">
-        <div className="flex justify-between items-center mb-4">
+    <div className="h-screen overflow-hidden bg-rowan-bg p-6 flex flex-col">
+      <div className="max-w-[1500px] mx-auto w-full flex flex-col flex-1 min-h-0">
+        <div className="flex justify-between items-center mb-4 flex-shrink-0">
           <div>
             <div className="flex items-center gap-3">
               <button
@@ -414,8 +414,8 @@ function InvoiceForm() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6 items-start">
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6 items-start flex-1 min-h-0">
+        <div className="bg-white rounded-lg shadow-lg p-6 h-full overflow-y-auto">
           {/* Header */}
           <div className="grid grid-cols-2 gap-8 mb-6">
             <div>

@@ -104,7 +104,7 @@ export function InvoiceImagePanel({ imageUrl, invoiceId, onReplaced }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden sticky top-6 max-h-[85vh] flex flex-col">
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full flex flex-col">
       <div className="p-3 border-b border-gray-200 flex items-center justify-between">
         <div className="text-xs font-black text-rowan-navy uppercase">Scanned Document</div>
         <div className="flex items-center gap-1">
