@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { supabase } from '@/lib/supabase';
+import { DrillDownModal, DrillDownTarget } from '@/components/DrillDownModal';
 
 type PLRow = { account_type: string; subtype: string | null; account_code: string; account_name: string; amount: number };
 type ProductionRunRow = { style_id: string; qty: number; material_cost: number; labor_cost: number; overhead_cost: number; total_cost: number; run_date: string };
@@ -15,6 +16,30 @@ function fmt(n: number) {
 
 function fmtDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+/** A dollar amount that opens the drill-down transaction list when clicked. */
+function DrillAmount({
+  amount,
+  onClick,
+  className = '',
+  wrap = (s: React.ReactNode) => s,
+}: {
+  amount: number;
+  onClick?: () => void;
+  className?: string;
+  wrap?: (s: React.ReactNode) => React.ReactNode;
+}) {
+  if (!onClick) return <>{wrap(fmt(amount))}</>;
+  return (
+    <button
+      onClick={onClick}
+      className={`hover:underline hover:text-rowan-red decoration-dotted underline-offset-2 ${className}`}
+      title="View underlying transactions"
+    >
+      {wrap(fmt(amount))}
+    </button>
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -230,7 +255,7 @@ function computePL(rows: PLRow[], productionRuns: ProductionRunRow[]): PLStateme
 
 type PLSections = { manufacturing: boolean; trading: boolean; pl: boolean };
 
-function PLTable({ stmt, periodLabel, sections }: { stmt: PLStatement; periodLabel: string; sections: PLSections }) {
+function PLTable({ stmt, periodLabel, sections, start, end, onDrill }: { stmt: PLStatement; periodLabel: string; sections: PLSections; start: string; end: string; onDrill: (t: DrillDownTarget) => void }) {
   const noneSelected = !sections.manufacturing && !sections.trading && !sections.pl;
   return (
     <div>
@@ -295,16 +320,37 @@ function PLTable({ stmt, periodLabel, sections }: { stmt: PLStatement; periodLab
               {stmt.revenue.map((r) => (
                 <tr key={r.account_code} className="border-b border-gray-100">
                   <td className="p-2 pl-4 text-gray-600">{r.account_name}</td>
-                  <td className="p-2 text-right w-40">{fmt(Number(r.amount))}</td>
+                  <td className="p-2 text-right w-40">
+                    <DrillAmount
+                      amount={Number(r.amount)}
+                      onClick={() => onDrill({ label: r.account_name, accountCodes: [r.account_code], polarity: 'credit', start, end })}
+                    />
+                  </td>
                 </tr>
               ))}
               <tr className="border-b border-gray-200 font-semibold text-xs">
                 <td className="p-2 pl-4 text-right text-gray-500">Sales Revenue</td>
-                <td className="p-2 text-right w-40">{fmt(stmt.totalRevenue)}</td>
+                <td className="p-2 text-right w-40">
+                  <DrillAmount
+                    amount={stmt.totalRevenue}
+                    onClick={() => onDrill({ label: 'Sales Revenue', accountCodes: stmt.revenue.map((r) => r.account_code), polarity: 'credit', start, end })}
+                  />
+                </td>
               </tr>
               <tr className="border-b border-gray-200 font-semibold text-xs">
                 <td className="p-2 pl-4 text-right text-gray-500">Less: Cost of Goods Sold</td>
-                <td className="p-2 text-right w-40">({fmt(stmt.costOfGoodsSold)})</td>
+                <td className="p-2 text-right w-40">
+                  (
+                  <DrillAmount
+                    amount={stmt.costOfGoodsSold}
+                    onClick={
+                      stmt.cogsRows.length > 0
+                        ? () => onDrill({ label: 'Cost of Goods Sold', accountCodes: stmt.cogsRows.map((r) => r.account_code), polarity: 'debit', start, end })
+                        : undefined
+                    }
+                  />
+                  )
+                </td>
               </tr>
               <tr className={`border-b-2 border-rowan-navy font-bold ${stmt.grossProfit >= 0 ? '' : 'text-rowan-red'}`}>
                 <td className="p-2 text-right">Gross Profit</td>
@@ -348,13 +394,27 @@ function PLTable({ stmt, periodLabel, sections }: { stmt: PLStatement; periodLab
                 g.rows.map((r) => (
                   <tr key={r.account_code} className="border-b border-gray-100">
                     <td className="p-2 pl-4 text-gray-600">{r.account_name}</td>
-                    <td className="p-2 text-right w-40">{fmt(Number(r.amount))}</td>
+                    <td className="p-2 text-right w-40">
+                      <DrillAmount
+                        amount={Number(r.amount)}
+                        onClick={() => onDrill({ label: r.account_name, accountCodes: [r.account_code], polarity: 'debit', start, end })}
+                      />
+                    </td>
                   </tr>
                 ))
               )}
               <tr className="border-b border-gray-200 font-semibold text-xs">
                 <td className="p-2 pl-4 text-right text-gray-500">Subtotal — {g.subtype}</td>
-                <td className="p-2 text-right w-40">{fmt(g.subtotal)}</td>
+                <td className="p-2 text-right w-40">
+                  <DrillAmount
+                    amount={g.subtotal}
+                    onClick={
+                      g.rows.length > 0
+                        ? () => onDrill({ label: g.subtype, accountCodes: g.rows.map((r) => r.account_code), polarity: 'debit', start, end })
+                        : undefined
+                    }
+                  />
+                </td>
               </tr>
             </React.Fragment>
           ))}
@@ -369,7 +429,12 @@ function PLTable({ stmt, periodLabel, sections }: { stmt: PLStatement; periodLab
               {stmt.unclassified.map((r) => (
                 <tr key={r.account_code} className="border-b border-gray-100">
                   <td className="p-2 pl-4 text-gray-600">{r.account_name}</td>
-                  <td className="p-2 text-right w-40">{fmt(Number(r.amount))}</td>
+                  <td className="p-2 text-right w-40">
+                    <DrillAmount
+                      amount={Number(r.amount)}
+                      onClick={() => onDrill({ label: r.account_name, accountCodes: [r.account_code], polarity: 'debit', start, end })}
+                    />
+                  </td>
                 </tr>
               ))}
             </>
@@ -400,6 +465,7 @@ function ProfitAndLoss() {
   const [preparedBy, setPreparedBy] = useState('');
   const [sections, setSections] = useState<PLSections>({ manufacturing: true, trading: true, pl: true });
   const toggleSection = (key: keyof PLSections) => setSections((s) => ({ ...s, [key]: !s[key] }));
+  const [drillTarget, setDrillTarget] = useState<DrillDownTarget | null>(null);
 
   const options = mode === 'month' ? monthOptions : mode === 'year' ? yearOptions : [];
 
@@ -531,8 +597,8 @@ function ProfitAndLoss() {
       ) : compare ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-2 gap-8">
-            <PLTable stmt={stmtA} periodLabel={effectiveA.label} sections={sections} />
-            <PLTable stmt={stmtB} periodLabel={effectiveB.label} sections={sections} />
+            <PLTable stmt={stmtA} periodLabel={effectiveA.label} sections={sections} start={effectiveA.start} end={effectiveA.end} onDrill={setDrillTarget} />
+            <PLTable stmt={stmtB} periodLabel={effectiveB.label} sections={sections} start={effectiveB.start} end={effectiveB.end} onDrill={setDrillTarget} />
           </div>
           <div className="mt-6 border-t-2 border-rowan-navy pt-3 flex justify-end">
             <table className="text-sm">
@@ -548,8 +614,9 @@ function ProfitAndLoss() {
           </div>
         </>
       ) : (
-        <PLTable stmt={stmtA} periodLabel={effectiveA.label} sections={sections} />
+        <PLTable stmt={stmtA} periodLabel={effectiveA.label} sections={sections} start={effectiveA.start} end={effectiveA.end} onDrill={setDrillTarget} />
       )}
+      <DrillDownModal target={drillTarget} onClose={() => setDrillTarget(null)} />
     </div>
   );
 }
