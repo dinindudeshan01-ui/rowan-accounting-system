@@ -271,7 +271,7 @@ export default function ReceivePaymentPage() {
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
+              <Link href="/accounting/customers" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Back</Link>
               <div className="flex items-center gap-2 mt-1">
                 <RowanWordmark />
               </div>

@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { RowanMark, BrandRibbon } from '@/components/RowanMark';
 import { PresenceIndicator } from '@/components/PresenceIndicator';
 import { DashCard, DashGrid } from '@/components/DashCard';
-import { VendorCenterIcon, CreateBillIcon, PayBillsIcon } from '@/components/icons/RowanIcons';
+import { WriteCheckIcon, DepositIcon, ReconcileIcon } from '@/components/icons/RowanIcons';
 
 const currentUser = { id: 'demo-user', name: 'Dinindu' };
 
-export default function VendorsHub() {
+export default function BankHub() {
   return (
     <div className="min-h-screen bg-rowan-bg font-body">
       <div className="max-w-4xl mx-auto px-6 py-10">
@@ -24,9 +24,9 @@ export default function VendorsHub() {
               Accounting
             </Link>
             <span className="text-gray-300">/</span>
-            <span className="font-display text-xl tracking-wide text-rowan-navy">Vendors</span>
+            <span className="font-display text-xl tracking-wide text-rowan-navy">Bank</span>
           </div>
-          <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Vendors" />
+          <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Bank" />
         </div>
 
         <Link href="/accounting" className="text-xs font-bold text-rowan-navy hover:text-rowan-red mb-6 inline-block">
@@ -34,9 +34,9 @@ export default function VendorsHub() {
         </Link>
 
         <DashGrid>
-          <DashCard href="/accounting/vendors/center" label="Vendor Center" desc="Manage vendors and their transactions" icon={<VendorCenterIcon />} />
-          <DashCard href="/accounting/record-expense" label="Create Bill" desc="Log a vendor bill — pay now or later" icon={<CreateBillIcon />} />
-          <DashCard href="/accounting/pay-bills" label="Pay Bills" desc="Settle open vendor bills from a bank account" icon={<PayBillsIcon />} />
+          <DashCard href="/accounting/write-check" label="Write Checks" desc="Cut and print a check from a bank account" icon={<WriteCheckIcon />} />
+          <DashCard href="/accounting/make-deposit" label="Make Deposit" desc="Deposit non-invoice income into a bank account" icon={<DepositIcon />} />
+          <DashCard href="/accounting/reconcile" label="Reconcile" desc="Tick off cleared transactions against a statement" icon={<ReconcileIcon />} />
         </DashGrid>
       </div>
       <BrandRibbon />

@@ -61,6 +61,7 @@ export default function WriteCheckPage() {
   const [recent, setRecent] = useState<CheckRow[]>([]);
   const [recentLoading, setRecentLoading] = useState(true);
   const [voidingId, setVoidingId] = useState<string | null>(null);
+  const [lastCheckId, setLastCheckId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
@@ -170,7 +171,10 @@ export default function WriteCheckPage() {
       });
       setSuccessNote(`Check #${number} recorded and posted to the ledger.`);
       resetForm();
-      loadRecent();
+      const refreshed = await listRecentChecks();
+      setRecent(refreshed);
+      setRecentLoading(false);
+      setLastCheckId(refreshed.find((r) => r.check_number === number)?.id ?? null);
     } catch (e: any) {
       setError(e.message ?? 'Failed to write check.');
     } finally {
@@ -219,7 +223,7 @@ export default function WriteCheckPage() {
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
+              <Link href="/accounting/bank" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Back</Link>
               <div className="flex items-center gap-2 mt-1">
                 <RowanWordmark />
               </div>
@@ -231,7 +235,18 @@ export default function WriteCheckPage() {
           </div>
 
           {successNote && (
-            <div className="mb-4 bg-green-50 border border-green-300 text-green-800 text-sm px-4 py-2 rounded">{successNote}</div>
+            <div className="mb-4 bg-green-50 border border-green-300 text-green-800 text-sm px-4 py-2 rounded flex items-center justify-between gap-4">
+              <span>{successNote}</span>
+              {lastCheckId && (
+                <Link
+                  href={`/accounting/write-check/print/${lastCheckId}`}
+                  target="_blank"
+                  className="shrink-0 px-3 py-1 rounded bg-rowan-navy text-white text-xs font-bold hover:bg-rowan-red"
+                >
+                  Print Check
+                </Link>
+              )}
+            </div>
           )}
           {error && <div className="mb-4 bg-red-50 border border-red-300 text-rowan-red text-sm px-4 py-2 rounded">{error}</div>}
 
@@ -445,7 +460,14 @@ export default function WriteCheckPage() {
                           {r.status}
                         </span>
                       </td>
-                      <td className="p-2 text-right">
+                      <td className="p-2 text-right whitespace-nowrap">
+                        <Link
+                          href={`/accounting/write-check/print/${r.id}`}
+                          target="_blank"
+                          className="text-rowan-navy font-bold hover:underline mr-3"
+                        >
+                          Print
+                        </Link>
                         {r.status === 'posted' && (
                           <button disabled={voidingId === r.id} onClick={() => handleVoid(r.id)} className="text-rowan-red font-bold hover:underline disabled:opacity-50">
                             Void

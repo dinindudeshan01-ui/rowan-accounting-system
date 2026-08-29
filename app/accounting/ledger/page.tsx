@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { RowanMark, BrandRibbon } from '@/components/RowanMark';
 import { PresenceIndicator } from '@/components/PresenceIndicator';
 import { DashCard, DashGrid } from '@/components/DashCard';
-import { VendorCenterIcon, CreateBillIcon, PayBillsIcon } from '@/components/icons/RowanIcons';
+import { ChartOfAccountsIcon, JournalEntryIcon, AuditTrailIcon } from '@/components/icons/RowanIcons';
 
 const currentUser = { id: 'demo-user', name: 'Dinindu' };
 
-export default function VendorsHub() {
+export default function LedgerHub() {
   return (
     <div className="min-h-screen bg-rowan-bg font-body">
       <div className="max-w-4xl mx-auto px-6 py-10">
@@ -24,9 +24,9 @@ export default function VendorsHub() {
               Accounting
             </Link>
             <span className="text-gray-300">/</span>
-            <span className="font-display text-xl tracking-wide text-rowan-navy">Vendors</span>
+            <span className="font-display text-xl tracking-wide text-rowan-navy">Ledger</span>
           </div>
-          <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Vendors" />
+          <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Ledger" />
         </div>
 
         <Link href="/accounting" className="text-xs font-bold text-rowan-navy hover:text-rowan-red mb-6 inline-block">
@@ -34,9 +34,9 @@ export default function VendorsHub() {
         </Link>
 
         <DashGrid>
-          <DashCard href="/accounting/vendors/center" label="Vendor Center" desc="Manage vendors and their transactions" icon={<VendorCenterIcon />} />
-          <DashCard href="/accounting/record-expense" label="Create Bill" desc="Log a vendor bill — pay now or later" icon={<CreateBillIcon />} />
-          <DashCard href="/accounting/pay-bills" label="Pay Bills" desc="Settle open vendor bills from a bank account" icon={<PayBillsIcon />} />
+          <DashCard href="/accounting/chart-of-accounts" label="Chart of Accounts" desc="Every account, balances, opening entries" icon={<ChartOfAccountsIcon />} />
+          <DashCard href="/accounting/journal-entry" label="Journal Entry" desc="Record a manual journal entry" icon={<JournalEntryIcon />} />
+          <DashCard href="/accounting/audit-log" label="Audit Trail" desc="Every change made in the system" icon={<AuditTrailIcon />} />
         </DashGrid>
       </div>
       <BrandRibbon />

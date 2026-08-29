@@ -141,7 +141,7 @@ export default function ChartOfAccountsPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
+            <Link href="/accounting/ledger" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Back</Link>
             <h1 className="text-xl font-black text-rowan-navy mt-1">Chart of Accounts</h1>
           </div>
           <button

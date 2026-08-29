@@ -57,7 +57,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-rowan-bg p-6">
       <div className="max-w-2xl mx-auto">
-        <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
+        <Link href="/accounting" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Back</Link>
         <h1 className="text-xl font-black text-rowan-navy mt-1 mb-6">Admin</h1>
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">

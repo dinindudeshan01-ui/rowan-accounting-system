@@ -176,7 +176,7 @@ export function ItemModal({
                     value={draft.expense_account_id ?? ''}
                     onChange={(v) => set('expense_account_id', v || null)}
                     options={matchingAccounts.map((a) => ({ value: a.id, label: a.name, sublabel: a.code }))}
-                    emptyMessage="No accounts in this category yet — add one in Journal Entry or Record Expense."
+                    emptyMessage="No accounts in this category yet — add one in Journal Entry or Create Bill."
                   />
                 </div>
               )}

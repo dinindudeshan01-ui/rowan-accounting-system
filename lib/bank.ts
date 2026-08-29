@@ -83,6 +83,61 @@ export async function voidCheck(checkId: string) {
   if (error) throw error;
 }
 
+export type CheckLineForPrint = { line_no: number; description: string | null; amount: number; account: { code: string; name: string } | null };
+
+export type CheckForPrint = {
+  id: string;
+  check_number: string;
+  check_date: string;
+  memo: string | null;
+  total_amount: number;
+  status: 'posted' | 'void';
+  payee_type: PayeeType;
+  payee_name: string | null;
+  bank_account: { code: string; name: string } | null;
+  vendor: { display_name: string; address?: string | null; city?: string | null } | null;
+  customer: { display_name: string; address?: string | null; city?: string | null } | null;
+  lines: CheckLineForPrint[];
+};
+
+export async function getCheckForPrint(checkId: string): Promise<CheckForPrint> {
+  const { data: check, error } = await supabase
+    .from('checks')
+    .select(
+      'id, check_number, check_date, memo, total_amount, status, payee_type, payee_name, chart_of_accounts(code, name), vendors(display_name, address, city), customers(display_name, address, city)'
+    )
+    .eq('id', checkId)
+    .single();
+  if (error) throw error;
+  const { data: lines, error: linesError } = await supabase
+    .from('check_lines')
+    .select('line_no, description, amount, chart_of_accounts(code, name)')
+    .eq('check_id', checkId)
+    .order('line_no');
+  if (linesError) throw linesError;
+
+  const c: any = check;
+  return {
+    id: c.id,
+    check_number: c.check_number,
+    check_date: c.check_date,
+    memo: c.memo,
+    total_amount: c.total_amount,
+    status: c.status,
+    payee_type: c.payee_type,
+    payee_name: c.payee_name,
+    bank_account: c.chart_of_accounts ?? null,
+    vendor: c.vendors ?? null,
+    customer: c.customers ?? null,
+    lines: ((lines as any[]) ?? []).map((l) => ({
+      line_no: l.line_no,
+      description: l.description,
+      amount: l.amount,
+      account: l.chart_of_accounts ?? null,
+    })),
+  };
+}
+
 export async function listRecentChecks(limit = 25): Promise<CheckRow[]> {
   const { data, error } = await supabase
     .from('checks')

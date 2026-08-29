@@ -130,7 +130,9 @@ export function PartyCenter({ kind }: { kind: PartyKind }) {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
+            <Link href={kind === 'vendor' ? '/accounting/vendors' : '/accounting/customers'} className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
+              ← {kind === 'vendor' ? 'Vendors' : 'Customers'}
+            </Link>
             <h1 className="text-xl font-black text-rowan-navy mt-1">{label} Center</h1>
           </div>
           <button

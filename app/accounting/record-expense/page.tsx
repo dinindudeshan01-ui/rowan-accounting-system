@@ -223,20 +223,20 @@ export default function RecordExpensePage() {
 
   return (
     <div className="min-h-screen bg-rowan-bg p-6">
-      <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Record Expense" />
+      <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Create Bill" />
 
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
         <BrandRibbon />
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
+              <Link href="/accounting/vendors" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Vendors</Link>
               <div className="flex items-center gap-2 mt-1">
                 <RowanWordmark />
               </div>
             </div>
             <div className="text-right">
-              <h2 className="text-lg font-bold uppercase tracking-widest text-rowan-navy">Record Expense</h2>
+              <h2 className="text-lg font-bold uppercase tracking-widest text-rowan-navy">Create Bill</h2>
               <p className="text-[10px] font-mono text-gray-400 mt-1">{previewNumber ? `${previewNumber} (next)` : ''}</p>
             </div>
           </div>
