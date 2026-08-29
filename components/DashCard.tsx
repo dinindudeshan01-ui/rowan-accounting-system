@@ -25,12 +25,13 @@ export function DashCard({ href, label, desc, icon, disabled }: DashCardProps) {
 
   const inner = (
     <div
-      className={`group flex flex-col items-center text-center gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-8 transition ${
+      className={`group h-full flex flex-col items-center text-center gap-4 rounded-2xl border border-gray-200 bg-white px-6 py-8 transition ${
         disabled ? 'opacity-45 cursor-not-allowed grayscale' : 'hover:border-rowan-navy hover:shadow-lg hover:-translate-y-0.5'
       }`}
+      style={{ minHeight: 260 }}
     >
       <div className={`transition ${disabled ? '' : 'group-hover:scale-105'}`}>{sizedIcon}</div>
-      <div>
+      <div className="flex flex-col flex-1 justify-start">
         <div className="text-base font-bold uppercase tracking-wide text-rowan-navy">{label}</div>
         {desc && <div className="text-[13px] text-gray-500 mt-1.5 leading-snug">{desc}</div>}
         {disabled && <div className="text-[11px] font-bold text-rowan-red mt-1.5 uppercase">Coming later</div>}
@@ -39,9 +40,13 @@ export function DashCard({ href, label, desc, icon, disabled }: DashCardProps) {
   );
 
   if (disabled) return inner;
-  return <Link href={href}>{inner}</Link>;
+  return (
+    <Link href={href} className="h-full block">
+      {inner}
+    </Link>
+  );
 }
 
 export function DashGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">{children}</div>;
+  return <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 items-stretch">{children}</div>;
 }
