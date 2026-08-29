@@ -30,7 +30,6 @@ export default function MainDashboard() {
       </div>
 
       <div className="flex-1 min-h-0 flex flex-col items-center justify-center">
-        <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Choose a module</p>
         <RowanWheel
           modules={[
             { key: 'crm', href: '/crm', label: 'CRM', icon: <CrmIcon />, disabled: true },
