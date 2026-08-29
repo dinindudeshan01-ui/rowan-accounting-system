@@ -95,13 +95,16 @@ export default function AttachScansPage() {
 
   const loadMissing = useCallback(async () => {
     setLoading(true);
-    // Every invoice missing an attachment, regardless of where it came from —
-    // this used to be scoped to source = 'lady_j_scan' only, which is why it
-    // undercounted (~416) and hid non-Lady-J invoices with no file attached.
+    // Every invoice missing a *real* attachment, regardless of source.
+    // Two cases count as "missing": image_url is NULL, or it's one of the
+    // placeholder URLs left over from the 401-450 import (sql/031), which
+    // used a literal 'SUPABASE_PROJECT' template domain that was never
+    // swapped for the real project ref — those files were never actually
+    // uploaded, so the URL 404s even though the column isn't null.
     const { data: invoices, error } = await supabase
       .from('invoices')
-      .select('id, legacy_id, invoice_number, invoice_date, purchaser_name, total_amount')
-      .is('image_url', null)
+      .select('id, legacy_id, invoice_number, invoice_date, purchaser_name, total_amount, image_url')
+      .or('image_url.is.null,image_url.ilike.%SUPABASE_PROJECT%')
       .order('invoice_date', { ascending: true });
 
     if (error || !invoices) {
