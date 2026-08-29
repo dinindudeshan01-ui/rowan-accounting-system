@@ -47,7 +47,7 @@ const PALETTE = {
 function Badge({
   Icon,
   bg,
-  size = 48,
+  size = 64,
   className,
 }: {
   Icon: LucideIcon;
@@ -66,7 +66,7 @@ function Badge({
 }
 
 function makeIcon(Icon: LucideIcon, bg: string) {
-  return function Rendered({ color = '#06154b', size = 48, className, flat }: IconProps) {
+  return function Rendered({ color = '#06154b', size = 64, className, flat }: IconProps) {
     if (flat) return <Icon color={color} size={size} strokeWidth={2} className={className} />;
     return <Badge Icon={Icon} bg={bg} size={size} className={className} />;
   };

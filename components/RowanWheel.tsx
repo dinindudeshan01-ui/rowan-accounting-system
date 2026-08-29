@@ -19,8 +19,14 @@ export type WheelModule = {
  * assets). Falls back to a simple stacked list below sm breakpoints
  * since a wheel doesn't work well under ~420px.
  */
+/** Uniform badge size, in px, for every module orbiting the wheel —
+ * pinned explicitly for the same reason as DashCard's TILE_ICON_SIZE:
+ * different glyphs read as different sizes at the same nominal size
+ * unless we force it. */
+const WHEEL_ICON_SIZE = 68;
+
 export function RowanWheel({ modules }: { modules: WheelModule[] }) {
-  const radius = 190;
+  const radius = 250;
   const n = modules.length;
 
   return (
@@ -48,28 +54,31 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
         {/* Center mark */}
         <div
           className="absolute flex flex-col items-center justify-center rounded-full bg-white shadow-lg border border-gray-200"
-          style={{ width: 148, height: 148, left: radius + 60 - 74, top: radius + 60 - 74 }}
+          style={{ width: 190, height: 190, left: radius + 60 - 95, top: radius + 60 - 95 }}
         >
-          <RowanMark size={44} />
-          <span className="font-display text-xl tracking-wide text-rowan-navy mt-1">ROWAN</span>
+          <RowanMark size={58} />
+          <span className="font-display text-2xl tracking-wide text-rowan-navy mt-1.5">ROWAN</span>
         </div>
 
         {modules.map((m, i) => {
           const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
           const cx = radius + 60 + radius * Math.cos(angle);
           const cy = radius + 60 + radius * Math.sin(angle);
+          const sizedIcon = React.isValidElement(m.icon)
+            ? React.cloneElement(m.icon as React.ReactElement<{ size?: number }>, { size: WHEEL_ICON_SIZE })
+            : m.icon;
           const content = (
             <div
-              className={`group absolute flex flex-col items-center gap-2 -translate-x-1/2 -translate-y-1/2 transition ${
+              className={`group absolute flex flex-col items-center gap-2.5 -translate-x-1/2 -translate-y-1/2 transition ${
                 m.disabled ? 'opacity-45 cursor-not-allowed' : 'cursor-pointer hover:-translate-y-[calc(50%+4px)]'
               }`}
-              style={{ left: cx, top: cy, width: 108 }}
+              style={{ left: cx, top: cy, width: 132 }}
             >
-              <div className={`rounded-2xl shadow-md transition ${m.disabled ? '' : 'group-hover:shadow-xl'}`}>{m.icon}</div>
-              <span className="text-[11px] font-bold uppercase tracking-wide text-rowan-navy text-center leading-tight">
+              <div className={`rounded-2xl shadow-md transition ${m.disabled ? '' : 'group-hover:shadow-xl'}`}>{sizedIcon}</div>
+              <span className="text-sm font-bold uppercase tracking-wide text-rowan-navy text-center leading-tight">
                 {m.label}
               </span>
-              {m.disabled && <span className="text-[9px] font-bold text-rowan-red uppercase -mt-1">Coming later</span>}
+              {m.disabled && <span className="text-[10px] font-bold text-rowan-red uppercase -mt-1">Coming later</span>}
             </div>
           );
           return m.disabled ? (
@@ -83,12 +92,15 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
       </div>
 
       {/* Stacked fallback — below sm */}
-      <div className="sm:hidden grid grid-cols-3 gap-4 px-2">
+      <div className="sm:hidden grid grid-cols-2 gap-6 px-2">
         {modules.map((m) => {
+          const sizedIcon = React.isValidElement(m.icon)
+            ? React.cloneElement(m.icon as React.ReactElement<{ size?: number }>, { size: WHEEL_ICON_SIZE })
+            : m.icon;
           const content = (
-            <div className={`flex flex-col items-center gap-2 text-center ${m.disabled ? 'opacity-45' : ''}`}>
-              {m.icon}
-              <span className="text-[10px] font-bold uppercase tracking-wide text-rowan-navy leading-tight">{m.label}</span>
+            <div className={`flex flex-col items-center gap-2.5 text-center ${m.disabled ? 'opacity-45' : ''}`}>
+              {sizedIcon}
+              <span className="text-xs font-bold uppercase tracking-wide text-rowan-navy leading-tight">{m.label}</span>
             </div>
           );
           return m.disabled ? (

@@ -19,20 +19,20 @@ const currentUser = { id: 'demo-user', name: 'Dinindu' };
 export default function MainDashboard() {
   return (
     <div className="min-h-screen bg-rowan-bg font-body">
-      <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-3">
-            <RowanMark size={40} />
-            <span className="font-display text-3xl tracking-wide text-rowan-navy">ROWAN</span>
+            <RowanMark size={48} />
+            <span className="font-display text-4xl tracking-wide text-rowan-navy">ROWAN</span>
           </div>
           <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Dashboard" />
         </div>
 
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 text-center sm:text-left">
+        <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-10 text-center sm:text-left">
           Choose a module
         </p>
 
-        <div className="py-4">
+        <div className="py-6">
           <RowanWheel
             modules={[
               { key: 'crm', href: '/crm', label: 'CRM', icon: <CrmIcon />, disabled: true },
