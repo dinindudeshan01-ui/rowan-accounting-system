@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SearchableSelect } from '@/components/SearchableSelect';
 import { ConfirmModal } from '@/components/ConfirmModal';
@@ -51,6 +52,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function InvoicesListPage() {
+  const router = useRouter();
   const [rows, setRows] = useState<InvoiceRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -202,6 +204,7 @@ export default function InvoicesListPage() {
                         <tr
                           key={r.id}
                           onClick={() => setSelectedId(r.id)}
+                          onDoubleClick={() => router.push(`/accounting/invoice?id=${r.id}`)}
                           className={`border-b border-gray-100 cursor-pointer transition-colors ${
                             isSelected ? 'bg-rowan-bgWhite border-l-4 border-l-rowan-navy' : 'hover:bg-rowan-bg/50'
                           }`}
