@@ -84,27 +84,28 @@ Two flagged on import instead of silently "fixed":
 
 `/accounting/lady-j-invoices/upload` is a standalone page (open it in its
 own tab from the **+ Upload New Invoices** button on the Lady J list) for
-adding new scanned invoices straight into Supabase — built for exactly
-this workflow so the next 200 don't need to go through an AI chat session.
+attaching new scans to invoices that are already in the system but don't
+have a photo yet — built for exactly this workflow so the next 200 don't
+need to go through an AI chat session.
 
-Per invoice: attach the photo, type in date / code / customer / item /
-qty / unit price / the total as written on the paper, tick "Cancelled" if
-it was voided. It computes OK/MISMATCH the same way this migration did,
-and assigns the next free invoice number automatically.
-
-It's gated by a shared secret, typed into the page once per browser
-session (stored in `sessionStorage`, never sent anywhere but the API
-route). Set it in Vercel:
-
-```
-LADY_J_UPLOAD_SECRET=<pick something random>
-```
-
-If that env var isn't set, the API route falls back to the same
-`ADMIN_SECRET` hard-coded in `app/api/admin/upload-lady-j-images/route.ts`
-— which is a leftover one-off migration script, gated the same speed-bump
-way, and was already committed to the repo in plain text. **Set
-`LADY_J_UPLOAD_SECRET` and treat the old constant as compromised** — it's
-sitting in git history either way, so rotating means "stop relying on
-it," not "edit the file" (anyone with repo access can still read old
-commits).
+- **Left, larger panel** — every invoice missing a scan (`image_url is
+  null`), pulled live from Supabase.
+- **Right panel** — drop a batch of scanned images (or click to pick
+  several at once). Each one is best-effort OCR'd against just its
+  top-right corner (where the printed invoice # sits) to suggest a match;
+  if it finds one, a one-click **"Attach to #___"** button appears. OCR is
+  purely a speed convenience — it fails silently and often on messy
+  handwriting/scans, which is fine, since every image is also directly
+  draggable from the right panel onto the correct row on the left to
+  attach it manually.
+- Attaching uploads straight to the `lady-j-invoices` Storage bucket and
+  sets `invoices.image_url` from the browser, the same way the existing
+  **Attach/Replace Image** button on the invoice edit page already does
+  (`components/InvoiceImagePanel.tsx`) — no server route, no secret, no
+  extra setup needed. This only *attaches images to existing rows*; it
+  doesn't create new invoice records or extract line-item data — those
+  still need to exist in Supabase first (e.g. via a SQL import batch like
+  031, or the normal invoice form).
+- Once attached, each image gets a **View →** link that opens
+  `/accounting/invoice?id=<uuid>` in a new tab — the existing edit-invoice
+  page, full display, no popups.
