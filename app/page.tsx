@@ -80,6 +80,10 @@ const MODULES: ModuleDef[] = [
       { label: 'Invoices', desc: 'Browse, edit, and print saved invoices.', href: '/accounting/invoices' },
       { label: 'Receive Payment', desc: 'Apply a customer payment against open invoices.', href: '/accounting/receive-payment' },
       { label: 'Record Expense', desc: 'Log a vendor expense — paid now or billed later.', href: '/accounting/record-expense' },
+      { label: 'Write Check', desc: 'Cut a check from a bank account to any payee.', href: '/accounting/write-check' },
+      { label: 'Make Deposit', desc: 'Deposit non-invoice income into a bank account.', href: '/accounting/make-deposit' },
+      { label: 'Pay Bills', desc: 'Settle open vendor bills from a bank account.', href: '/accounting/pay-bills' },
+      { label: 'Reconcile', desc: 'Tick off cleared transactions against a bank statement.', href: '/accounting/reconcile' },
     ],
   },
   {
