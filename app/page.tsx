@@ -3,7 +3,7 @@
 import React from 'react';
 import { RowanMark, BrandRibbon } from '@/components/RowanMark';
 import { PresenceIndicator } from '@/components/PresenceIndicator';
-import { DashCard, DashGrid } from '@/components/DashCard';
+import { RowanWheel } from '@/components/RowanWheel';
 import {
   CrmIcon,
   StylesIcon,
@@ -11,7 +11,7 @@ import {
   AccountingIcon,
   CostingIcon,
   PayrollIcon,
-  ReportsIcon,
+  DashboardIcon,
 } from '@/components/icons/RowanIcons';
 
 const currentUser = { id: 'demo-user', name: 'Dinindu' };
@@ -28,17 +28,23 @@ export default function MainDashboard() {
           <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Dashboard" />
         </div>
 
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Choose a module</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-8 text-center sm:text-left">
+          Choose a module
+        </p>
 
-        <DashGrid>
-          <DashCard href="/crm" label="CRM" desc="Leads, customers, follow-ups" icon={<CrmIcon />} disabled />
-          <DashCard href="/style" label="Styles" desc="Style numbers, BOM, images" icon={<StylesIcon />} />
-          <DashCard href="/stock" label="Warehouse" desc="Inventory, GRN, gate passes, adjustments" icon={<WarehouseIcon />} />
-          <DashCard href="/accounting" label="Accounting" desc="Ledger, bank, vendors, customers" icon={<AccountingIcon />} />
-          <DashCard href="/style/costing" label="Costing" desc="Style costing and margins" icon={<CostingIcon />} disabled />
-          <DashCard href="/payroll/run" label="Payroll" desc="Payslips, EPF/ETF/APIT, GL posting" icon={<PayrollIcon />} />
-          <DashCard href="/accounting/reports" label="Reports" desc="Profit & Loss, Balance Sheet" icon={<ReportsIcon />} />
-        </DashGrid>
+        <div className="py-4">
+          <RowanWheel
+            modules={[
+              { key: 'crm', href: '/crm', label: 'CRM', icon: <CrmIcon />, disabled: true },
+              { key: 'styles', href: '/style', label: 'Styles', icon: <StylesIcon /> },
+              { key: 'warehouse', href: '/stock', label: 'Warehouse', icon: <WarehouseIcon /> },
+              { key: 'accounting', href: '/accounting', label: 'Accounting', icon: <AccountingIcon /> },
+              { key: 'costing', href: '/style/costing', label: 'Costing', icon: <CostingIcon />, disabled: true },
+              { key: 'payroll', href: '/payroll/run', label: 'Payroll', icon: <PayrollIcon /> },
+              { key: 'reports', href: '/accounting/reports', label: 'Reports', icon: <DashboardIcon /> },
+            ]}
+          />
+        </div>
       </div>
       <BrandRibbon />
     </div>

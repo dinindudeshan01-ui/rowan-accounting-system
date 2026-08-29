@@ -16,16 +16,10 @@ export function DashCard({ href, label, desc, icon, disabled }: DashCardProps) {
   const inner = (
     <div
       className={`group flex flex-col items-center text-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-6 transition ${
-        disabled ? 'opacity-45 cursor-not-allowed' : 'hover:border-rowan-navy hover:shadow-lg hover:-translate-y-0.5'
+        disabled ? 'opacity-45 cursor-not-allowed grayscale' : 'hover:border-rowan-navy hover:shadow-lg hover:-translate-y-0.5'
       }`}
     >
-      <div
-        className={`flex items-center justify-center w-16 h-16 rounded-full transition ${
-          disabled ? 'bg-gray-100' : 'bg-rowan-bg group-hover:bg-rowan-navy'
-        }`}
-      >
-        <span className={disabled ? '' : 'group-hover:[&_svg]:stroke-white'}>{icon}</span>
-      </div>
+      <div className={`transition ${disabled ? '' : 'group-hover:scale-105'}`}>{icon}</div>
       <div>
         <div className="text-sm font-bold uppercase tracking-wide text-rowan-navy">{label}</div>
         {desc && <div className="text-[11px] text-gray-500 mt-1 leading-snug">{desc}</div>}
