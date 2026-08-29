@@ -12,21 +12,29 @@ export type WheelModule = {
   disabled?: boolean;
 };
 
-/**
- * Circular module launcher for the main dashboard — starts as just
- * the ROWAN mark; tapping it spins every module icon out from the
- * center into its orbit position (staggered rotate+scale+translate
- * transition, pure CSS, no animation library). In the spirit of
- * Odoo's app wheel but built from our own brand colors.
- * Falls back to a simple tap-to-reveal grid below sm breakpoints.
- */
 const WHEEL_ICON_SIZE = 58;
 
+/**
+ * Circular module launcher for the main dashboard — starts as just
+ * the ROWAN mark; tapping it sends every module icon sweeping around
+ * the ring into its orbit position, then tapping again pulls them
+ * back in along the same arc.
+ *
+ * The motion is a true orbital transition, not a straight-line move:
+ * each icon's `transform` is `rotate(angle) translate(radius) rotate(-angle)`.
+ * The two rotate()s cancel out for the icon's own orientation (so it
+ * never visually spins), but because the translate happens *inside*
+ * that rotated coordinate frame, animating `angle` and `radius`
+ * together sweeps the icon's position around the arc while it grows
+ * outward — a real orbit, not a lerp between two points. Modern
+ * browsers interpolate each transform function independently as long
+ * as the function list matches on both ends, which is exactly what's
+ * listed here (rotate, translate, rotate, translate).
+ */
 export function RowanWheel({ modules }: { modules: WheelModule[] }) {
   const [open, setOpen] = React.useState(false);
   const radius = 200;
   const n = modules.length;
-  const center = radius + 60;
   const canvas = radius * 2 + 120;
 
   return (
@@ -41,8 +49,8 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
           style={{ opacity: open ? 1 : 0 }}
         >
           <circle
-            cx={center}
-            cy={center}
+            cx={canvas / 2}
+            cy={canvas / 2}
             r={radius}
             fill="none"
             stroke="#d7dbe6"
@@ -53,36 +61,38 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
         </svg>
 
         {modules.map((m, i) => {
-          const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-          const cx = center + radius * Math.cos(angle);
-          const cy = center + radius * Math.sin(angle);
+          const finalAngle = (i / n) * 360 - 90; // degrees, 0 = due right, -90 = due up
+          const startAngle = finalAngle - 260; // sweep this many degrees on the way out
+          const angle = open ? finalAngle : startAngle;
+          const r = open ? radius : 0;
+
           const sizedIcon = React.isValidElement(m.icon)
             ? React.cloneElement(m.icon as React.ReactElement<{ size?: number }>, { size: WHEEL_ICON_SIZE })
             : m.icon;
 
-          const targetX = open ? cx : center;
-          const targetY = open ? cy : center;
-          const scale = open ? 1 : 0.15;
-          const rotate = open ? 0 : -260;
-
           const content = (
             <div
-              className={`group absolute flex flex-col items-center gap-2.5 transition-all ease-out ${
-                m.disabled ? 'opacity-45 cursor-not-allowed' : 'cursor-pointer hover:!-translate-y-[calc(50%+4px)]'
+              className={`group absolute flex flex-col items-center gap-2.5 ease-out ${
+                m.disabled ? 'opacity-45 cursor-not-allowed' : 'cursor-pointer'
               }`}
               style={{
-                left: targetX,
-                top: targetY,
+                left: canvas / 2,
+                top: canvas / 2,
                 width: 118,
-                transform: `translate(-50%, -50%) scale(${scale}) rotate(${rotate}deg)`,
                 opacity: open ? 1 : 0,
                 pointerEvents: open ? 'auto' : 'none',
+                transform: `rotate(${angle}deg) translate(${r}px, 0) rotate(${-angle}deg) translate(-50%, -50%)`,
                 transitionProperty: 'transform, opacity',
-                transitionDuration: '650ms',
-                transitionDelay: open ? `${i * 60}ms` : '0ms',
+                transitionDuration: '800ms',
+                transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                transitionDelay: open ? `${i * 60}ms` : `${(n - i) * 30}ms`,
               }}
             >
-              <div className={`rounded-2xl shadow-md transition ${m.disabled ? '' : 'group-hover:shadow-xl'}`}>{sizedIcon}</div>
+              <div
+                className={`rounded-2xl shadow-md transition-shadow ${m.disabled ? '' : 'group-hover:shadow-xl'}`}
+              >
+                {sizedIcon}
+              </div>
               <span className="text-sm font-bold uppercase tracking-wide text-rowan-navy text-center leading-tight">
                 {m.label}
               </span>
@@ -107,7 +117,7 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
           className={`absolute flex flex-col items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 transition-transform duration-300 hover:scale-105 active:scale-95 ${
             open ? '' : 'animate-[pulse_2.5s_ease-in-out_infinite]'
           }`}
-          style={{ width: 168, height: 168, left: center - 84, top: center - 84 }}
+          style={{ width: 168, height: 168, left: canvas / 2 - 84, top: canvas / 2 - 84 }}
         >
           <RowanMark size={50} />
           <span className="font-display text-xl tracking-wide text-rowan-navy mt-1">ROWAN</span>
@@ -117,7 +127,7 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
         </button>
       </div>
 
-      {/* Fallback — below sm: tap-to-reveal grid */}
+      {/* Fallback — below sm: tap-to-reveal grid (no room for an orbit at this width) */}
       <div className="sm:hidden flex flex-col items-center">
         <button
           type="button"
