@@ -10,7 +10,7 @@ const BUCKET = 'lady-j-invoices';
 
 type MissingInvoice = {
   id: string; // uuid
-  legacyId: number;
+  legacyId: number | null; // only set for legacy Lady J imports; null otherwise
   invoiceNumber: string;
   date: string | null;
   customer: string;
@@ -85,7 +85,7 @@ async function quickOcrInvoiceNumber(file: File): Promise<number | null> {
   }
 }
 
-export default function LadyJUploadPage() {
+export default function AttachScansPage() {
   const [missing, setMissing] = useState<MissingInvoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [queue, setQueue] = useState<QueuedImage[]>([]);
@@ -95,12 +95,14 @@ export default function LadyJUploadPage() {
 
   const loadMissing = useCallback(async () => {
     setLoading(true);
+    // Every invoice missing an attachment, regardless of where it came from —
+    // this used to be scoped to source = 'lady_j_scan' only, which is why it
+    // undercounted (~416) and hid non-Lady-J invoices with no file attached.
     const { data: invoices, error } = await supabase
       .from('invoices')
       .select('id, legacy_id, invoice_number, invoice_date, purchaser_name, total_amount')
-      .eq('source', 'lady_j_scan')
       .is('image_url', null)
-      .order('legacy_id', { ascending: true });
+      .order('invoice_date', { ascending: true });
 
     if (error || !invoices) {
       setMissing([]);
@@ -122,7 +124,7 @@ export default function LadyJUploadPage() {
     setMissing(
       invoices.map((inv) => ({
         id: inv.id,
-        legacyId: inv.legacy_id ?? 0,
+        legacyId: inv.legacy_id ?? null,
         invoiceNumber: inv.invoice_number,
         date: inv.invoice_date,
         customer: inv.purchaser_name,
@@ -175,7 +177,8 @@ export default function LadyJUploadPage() {
 
     try {
       const ext = item.file.name.split('.').pop() || 'webp';
-      const path = `${target.legacyId}-${Date.now()}.${ext}`;
+      const idPart = target.legacyId ?? target.invoiceNumber.replace(/[^a-zA-Z0-9-]/g, '');
+      const path = `${idPart}-${Date.now()}.${ext}`;
       const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, item.file, {
         contentType: item.file.type || 'image/webp',
         upsert: true,
@@ -222,15 +225,15 @@ export default function LadyJUploadPage() {
             <div>
               <h1 className="text-xl font-black text-rowan-navy">Attach Invoice Scans</h1>
               <p className="text-sm text-gray-500">
-                {loading ? 'Loading…' : `${missing.length} invoice${missing.length === 1 ? '' : 's'} missing a scan`}
+                {loading ? 'Loading…' : `${missing.length} invoice${missing.length === 1 ? '' : 's'} missing an attachment`}
               </p>
             </div>
           </div>
           <Link
-            href="/accounting/lady-j-invoices"
+            href="/accounting/invoices"
             className="text-sm font-semibold text-rowan-navy hover:text-rowan-red transition-colors"
           >
-            ← Back to Lady J Invoices
+            ← Back to Invoices
           </Link>
         </div>
 
@@ -239,7 +242,7 @@ export default function LadyJUploadPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-200 bg-rowan-bgWhite">
               <h2 className="text-sm font-black text-rowan-navy uppercase tracking-wide">
-                Invoices Without a Scan — drop an image on a row to attach
+                Invoices Without an Attachment — drop an image on a row to attach
               </h2>
             </div>
             {loading ? (
@@ -248,7 +251,7 @@ export default function LadyJUploadPage() {
               </div>
             ) : missing.length === 0 ? (
               <div className="p-10 text-center text-sm text-gray-400">
-                Every invoice has a scan attached. Drop new images on the right to add new invoices.
+                Every invoice has an attachment. Drop new images on the right to add new invoices.
               </div>
             ) : (
               <div className="divide-y divide-gray-100 max-h-[75vh] overflow-y-auto">
@@ -265,7 +268,7 @@ export default function LadyJUploadPage() {
                       dragOverRowId === row.id ? 'bg-rowan-navy/10 ring-2 ring-inset ring-rowan-navy' : ''
                     }`}
                   >
-                    <div className="w-16 text-xs font-bold text-gray-400">#{row.legacyId}</div>
+                    <div className="w-16 text-xs font-bold text-gray-400">#{row.legacyId ?? row.invoiceNumber}</div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-semibold text-rowan-navy truncate">{row.item}</div>
                       <div className="text-xs text-gray-400">
@@ -298,7 +301,7 @@ export default function LadyJUploadPage() {
                 dropZoneActive ? 'border-rowan-navy bg-rowan-navy/5' : 'border-gray-300'
               }`}
             >
-              <div className="text-sm font-bold text-rowan-navy">Drop scanned invoices here</div>
+              <div className="text-sm font-bold text-rowan-navy">Drop invoice files here</div>
               <div className="text-xs text-gray-400 mt-1">or click to select — you can select many at once</div>
               <input
                 ref={fileInputRef}
@@ -314,7 +317,7 @@ export default function LadyJUploadPage() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 divide-y divide-gray-100 max-h-[65vh] overflow-y-auto">
                 {activeQueue.map((item) => {
                   const suggested = item.suggestedLegacyId
-                    ? missing.find((m) => m.legacyId === item.suggestedLegacyId)
+                    ? missing.find((m) => m.legacyId != null && m.legacyId === item.suggestedLegacyId)
                     : null;
                   return (
                     <div
@@ -340,7 +343,7 @@ export default function LadyJUploadPage() {
                             onClick={() => attachImage(item.key, suggested)}
                             className="text-xs font-bold text-white bg-rowan-navy hover:bg-rowan-red transition-colors px-2 py-1 rounded"
                           >
-                            Attach to #{suggested.legacyId} →
+                            Attach to #{suggested.legacyId ?? suggested.invoiceNumber} →
                           </button>
                         ) : (
                           <div className="text-xs text-gray-400">
@@ -366,7 +369,7 @@ export default function LadyJUploadPage() {
                       <img src={item.previewUrl} alt="" className="w-10 h-12 object-cover rounded border border-gray-200" />
                       <div className="flex-1 min-w-0 text-xs">
                         <span className="text-green-700 font-bold">Attached ✓</span>{' '}
-                        <span className="text-gray-500">#{item.attachedTo!.legacyId}</span>
+                        <span className="text-gray-500">#{item.attachedTo!.legacyId ?? item.attachedTo!.invoiceNumber}</span>
                       </div>
                       <Link
                         href={`/accounting/invoice?id=${item.attachedTo!.id}`}
