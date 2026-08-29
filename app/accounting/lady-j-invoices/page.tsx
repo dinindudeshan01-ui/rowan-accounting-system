@@ -59,12 +59,21 @@ export default function LadyJInvoicesPage() {
               </p>
             </div>
           </div>
-          <Link
-            href="/"
-            className="text-sm font-semibold text-rowan-navy hover:text-rowan-red transition-colors"
-          >
-            ← Back to Dashboard
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/accounting/lady-j-invoices/upload"
+              target="_blank"
+              className="text-sm font-bold text-white bg-rowan-navy hover:bg-rowan-red transition-colors px-4 py-2 rounded-lg"
+            >
+              + Upload New Invoices
+            </Link>
+            <Link
+              href="/"
+              className="text-sm font-semibold text-rowan-navy hover:text-rowan-red transition-colors"
+            >
+              ← Back to Dashboard
+            </Link>
+          </div>
         </div>
 
         {loading ? (

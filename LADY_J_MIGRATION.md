@@ -61,3 +61,50 @@ Uploads all 200 files from `public/lady-j-invoices/*.webp` to the
 - If you'd rather the plain `/accounting/invoices` list only show real
   invoices (not the Lady J scans), filter `.eq('source', 'manual')` there —
   ask and I can wire in a toggle.
+
+## Batch 2 — invoices #401-450
+
+Same steps as above, using `sql/031_lady_j_invoices_401_450_import.sql`
+instead of 027 (do the `SUPABASE_PROJECT` find/replace again, then paste
+into the SQL Editor and run). 50 more scans, images already in
+`public/lady-j-invoices/401.webp` … `450.webp`.
+
+Two flagged on import instead of silently "fixed":
+- **#415** (Andre Life Style Clothing, Box Board) — qty 100 × unit price
+  29.50 should total 2,950, but the paper invoice was written up as
+  29,500.00. Imported as `match_status = 'MISMATCH'` with the written
+  total kept as-is — check the scan and correct by hand once you know
+  which number was the typo.
+- **#416** (Rowan Men's Shorts, 1494 @ 690) — crossed out "Cancelled" on
+  the paper invoice. Imported as `status = 'void'`, zero amounts, no
+  scanned image, so the numbering sequence stays intact without it
+  showing up as real revenue anywhere.
+
+## Uploading future batches yourself (no chat needed)
+
+`/accounting/lady-j-invoices/upload` is a standalone page (open it in its
+own tab from the **+ Upload New Invoices** button on the Lady J list) for
+adding new scanned invoices straight into Supabase — built for exactly
+this workflow so the next 200 don't need to go through an AI chat session.
+
+Per invoice: attach the photo, type in date / code / customer / item /
+qty / unit price / the total as written on the paper, tick "Cancelled" if
+it was voided. It computes OK/MISMATCH the same way this migration did,
+and assigns the next free invoice number automatically.
+
+It's gated by a shared secret, typed into the page once per browser
+session (stored in `sessionStorage`, never sent anywhere but the API
+route). Set it in Vercel:
+
+```
+LADY_J_UPLOAD_SECRET=<pick something random>
+```
+
+If that env var isn't set, the API route falls back to the same
+`ADMIN_SECRET` hard-coded in `app/api/admin/upload-lady-j-images/route.ts`
+— which is a leftover one-off migration script, gated the same speed-bump
+way, and was already committed to the repo in plain text. **Set
+`LADY_J_UPLOAD_SECRET` and treat the old constant as compromised** — it's
+sitting in git history either way, so rotating means "stop relying on
+it," not "edit the file" (anyone with repo access can still read old
+commits).
