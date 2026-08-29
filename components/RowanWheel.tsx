@@ -23,16 +23,16 @@ export type WheelModule = {
  * pinned explicitly for the same reason as DashCard's TILE_ICON_SIZE:
  * different glyphs read as different sizes at the same nominal size
  * unless we force it. */
-const WHEEL_ICON_SIZE = 68;
+const WHEEL_ICON_SIZE = 58;
 
 export function RowanWheel({ modules }: { modules: WheelModule[] }) {
-  const radius = 250;
+  const radius = 200;
   const n = modules.length;
 
   return (
     <>
       {/* Wheel — sm and up */}
-      <div className="relative mx-auto hidden sm:block" style={{ width: radius * 2 + 120, height: radius * 2 + 120 }}>
+      <div className="relative mx-auto hidden sm:block shrink-0" style={{ width: radius * 2 + 120, height: radius * 2 + 120 }}>
         <svg
           className="absolute inset-0"
           width={radius * 2 + 120}
@@ -54,10 +54,10 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
         {/* Center mark */}
         <div
           className="absolute flex flex-col items-center justify-center rounded-full bg-white shadow-lg border border-gray-200"
-          style={{ width: 190, height: 190, left: radius + 60 - 95, top: radius + 60 - 95 }}
+          style={{ width: 168, height: 168, left: radius + 60 - 84, top: radius + 60 - 84 }}
         >
-          <RowanMark size={58} />
-          <span className="font-display text-2xl tracking-wide text-rowan-navy mt-1.5">ROWAN</span>
+          <RowanMark size={50} />
+          <span className="font-display text-xl tracking-wide text-rowan-navy mt-1">ROWAN</span>
         </div>
 
         {modules.map((m, i) => {
@@ -72,7 +72,7 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
               className={`group absolute flex flex-col items-center gap-2.5 -translate-x-1/2 -translate-y-1/2 transition ${
                 m.disabled ? 'opacity-45 cursor-not-allowed' : 'cursor-pointer hover:-translate-y-[calc(50%+4px)]'
               }`}
-              style={{ left: cx, top: cy, width: 132 }}
+              style={{ left: cx, top: cy, width: 118 }}
             >
               <div className={`rounded-2xl shadow-md transition ${m.disabled ? '' : 'group-hover:shadow-xl'}`}>{sizedIcon}</div>
               <span className="text-sm font-bold uppercase tracking-wide text-rowan-navy text-center leading-tight">
