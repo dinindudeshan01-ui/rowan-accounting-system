@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { RowanWordmark } from '@/components/RowanMark';
@@ -91,6 +91,9 @@ export default function AttachScansPage() {
   const [queue, setQueue] = useState<QueuedImage[]>([]);
   const [dragOverRowId, setDragOverRowId] = useState<string | null>(null);
   const [dropZoneActive, setDropZoneActive] = useState(false);
+  const [search, setSearch] = useState('');
+  const [customerFilter, setCustomerFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'item_az' | 'item_za' | 'amount_asc' | 'amount_desc' | 'date_asc' | 'date_desc' | 'id_asc'>('id_asc');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadMissing = useCallback(async () => {
@@ -219,6 +222,51 @@ export default function AttachScansPage() {
 
   const activeQueue = queue.filter((q) => !q.attachedTo);
 
+  const customers = useMemo(() => {
+    const set = new Set(missing.map((m) => m.customer).filter(Boolean));
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [missing]);
+
+  const visible = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let list = missing.filter((row) => {
+      const matchesSearch =
+        !q ||
+        row.item.toLowerCase().includes(q) ||
+        row.customer.toLowerCase().includes(q) ||
+        String(row.legacyId ?? '').includes(q) ||
+        row.invoiceNumber.toLowerCase().includes(q);
+      const matchesCustomer = customerFilter === 'all' || row.customer === customerFilter;
+      return matchesSearch && matchesCustomer;
+    });
+    list = [...list];
+    switch (sortBy) {
+      case 'item_az':
+        list.sort((a, b) => a.item.localeCompare(b.item));
+        break;
+      case 'item_za':
+        list.sort((a, b) => b.item.localeCompare(a.item));
+        break;
+      case 'amount_asc':
+        list.sort((a, b) => a.total - b.total);
+        break;
+      case 'amount_desc':
+        list.sort((a, b) => b.total - a.total);
+        break;
+      case 'date_asc':
+        list.sort((a, b) => (a.date ?? '').localeCompare(b.date ?? ''));
+        break;
+      case 'date_desc':
+        list.sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+        break;
+      case 'id_asc':
+      default:
+        list.sort((a, b) => (a.legacyId ?? 0) - (b.legacyId ?? 0));
+        break;
+    }
+    return list;
+  }, [missing, search, customerFilter, sortBy]);
+
   return (
     <div className="min-h-screen bg-rowan-bg p-6">
       <div className="max-w-[1400px] mx-auto">
@@ -228,7 +276,11 @@ export default function AttachScansPage() {
             <div>
               <h1 className="text-xl font-black text-rowan-navy">Attach Invoice Scans</h1>
               <p className="text-sm text-gray-500">
-                {loading ? 'Loading…' : `${missing.length} invoice${missing.length === 1 ? '' : 's'} missing an attachment`}
+                {loading
+                  ? 'Loading…'
+                  : visible.length === missing.length
+                  ? `${missing.length} invoice${missing.length === 1 ? '' : 's'} missing an attachment`
+                  : `${visible.length} of ${missing.length} invoices shown`}
               </p>
             </div>
           </div>
@@ -243,11 +295,42 @@ export default function AttachScansPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
           {/* LEFT: larger panel, invoices missing a scan */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="px-4 py-3 border-b border-gray-200 bg-rowan-bgWhite">
-              <h2 className="text-sm font-black text-rowan-navy uppercase tracking-wide">
-                Invoices Without an Attachment — drop an image on a row to attach
-              </h2>
+            <div className="px-4 py-3 border-b border-gray-200 bg-rowan-bgWhite space-y-3">
+            <h2 className="text-sm font-black text-rowan-navy uppercase tracking-wide">
+              Invoices Without an Attachment — drop an image on a row to attach
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search item, customer, or invoice #…"
+                className="flex-1 min-w-[180px] border border-gray-300 rounded px-3 py-1.5 text-[12px]"
+              />
+              <select
+                value={customerFilter}
+                onChange={(e) => setCustomerFilter(e.target.value)}
+                className="border border-gray-300 rounded px-2 py-1.5 text-[12px] text-gray-700"
+              >
+                <option value="all">All customers</option>
+                {customers.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                className="border border-gray-300 rounded px-2 py-1.5 text-[12px] text-gray-700"
+              >
+                <option value="id_asc">Invoice # (low → high)</option>
+                <option value="item_az">Item (A → Z)</option>
+                <option value="item_za">Item (Z → A)</option>
+                <option value="amount_asc">Amount (low → high)</option>
+                <option value="amount_desc">Amount (high → low)</option>
+                <option value="date_asc">Date (oldest first)</option>
+                <option value="date_desc">Date (newest first)</option>
+              </select>
             </div>
+          </div>
             {loading ? (
               <div className="p-16 flex justify-center">
                 <LoadingSpinner size="lg" />
@@ -256,9 +339,13 @@ export default function AttachScansPage() {
               <div className="p-10 text-center text-sm text-gray-400">
                 Every invoice has an attachment. Drop new images on the right to add new invoices.
               </div>
+            ) : visible.length === 0 ? (
+              <div className="p-10 text-center text-sm text-gray-400">
+                No invoices match your search/filter.
+              </div>
             ) : (
               <div className="divide-y divide-gray-100 max-h-[75vh] overflow-y-auto">
-                {missing.map((row) => (
+                {visible.map((row) => (
                   <div
                     key={row.id}
                     onDragOver={(e) => {
