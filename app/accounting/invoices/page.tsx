@@ -130,9 +130,14 @@ export default function InvoicesListPage() {
             <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
             <h1 className="text-xl font-black text-rowan-navy mt-1">Invoices</h1>
           </div>
-          <Link href="/accounting/invoice" className="bg-rowan-navy text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-rowan-red transition">
-            + New Invoice
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/accounting/invoices/attach-scans" className="text-xs font-bold text-rowan-navy hover:text-rowan-red transition-colors">
+              Attach missing files →
+            </Link>
+            <Link href="/accounting/invoice" className="bg-rowan-navy text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-rowan-red transition">
+              + New Invoice
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6 items-start">
