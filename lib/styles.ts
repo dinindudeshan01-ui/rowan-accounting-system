@@ -137,14 +137,14 @@ export async function updateStyle(id: string, draft: Partial<StyleDraft>): Promi
  * deleted first so the style doesn't leave an orphaned item behind.
  */
 export async function deleteStyle(id: string): Promise<void> {
-  const { data: style, error: styleErr } = await supabase.from('styles').select('style_no, name').eq('id', id).single();
+  // These two lookups don't depend on each other — run them in
+  // parallel instead of one after another, cuts a full network
+  // round trip off the delete.
+  const [{ data: style, error: styleErr }, { data: linkedItem }] = await Promise.all([
+    supabase.from('styles').select('style_no, name').eq('id', id).single(),
+    supabase.from('items').select('id, quantity_on_hand').eq('style_id', id).maybeSingle(),
+  ]);
   if (styleErr) throw styleErr;
-
-  const { data: linkedItem } = await supabase
-    .from('items')
-    .select('id, quantity_on_hand')
-    .eq('style_id', id)
-    .maybeSingle();
 
   if (linkedItem && linkedItem.quantity_on_hand !== 0) {
     throw new Error(

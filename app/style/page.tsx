@@ -45,8 +45,8 @@ export default function StyleListPage() {
     setDeleting(true);
     try {
       await deleteStyle(confirmDelete.id);
+      setRows((prev) => prev.filter((s) => s.id !== confirmDelete.id));
       setConfirmDelete(null);
-      load({ silent: true });
     } catch (e: any) {
       setError(e.message ?? 'Failed to delete style.');
       setConfirmDelete(null);

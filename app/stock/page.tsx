@@ -64,8 +64,11 @@ export default function StockPage() {
     try {
       await deleteItem(confirmDelete.id);
       setNote(`Deleted ${confirmDelete.name}.`);
+      // Remove locally instead of re-fetching the whole table — the
+      // delete already happened server-side, no need for a second
+      // round trip just to confirm it.
+      setItems((prev) => prev.filter((i) => i.id !== confirmDelete.id));
       setConfirmDelete(null);
-      loadItems({ silent: true });
     } catch (e: any) {
       setError(e.message ?? 'Failed to delete item.');
       setConfirmDelete(null);
