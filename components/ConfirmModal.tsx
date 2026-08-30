@@ -40,14 +40,14 @@ export function ConfirmModal({
         <p className="text-[13px] text-gray-600 leading-relaxed mb-5">{message}</p>
 
         <div className="flex justify-end gap-2">
-          <button
+          <button type="button"
             onClick={onCancel}
             disabled={loading}
             className="px-4 py-2 rounded-lg text-[12px] font-bold text-gray-600 hover:bg-gray-100 transition disabled:opacity-40"
           >
             {cancelLabel}
           </button>
-          <button
+          <button type="button"
             onClick={onConfirm}
             disabled={loading}
             className={`px-4 py-2 rounded-lg text-[12px] font-bold text-white transition disabled:opacity-60 ${

@@ -41,7 +41,7 @@ export function LeadModal({
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-auto">
         <div className="bg-rowan-navy text-white px-5 py-3 rounded-t-lg flex justify-between items-center">
           <h3 className="font-bold text-sm">{initial ? 'Edit Lead' : 'New Lead'}</h3>
-          <button onClick={onClose} className="text-white/70 hover:text-white text-lg leading-none">✕</button>
+          <button type="button" onClick={onClose} className="text-white/70 hover:text-white text-lg leading-none">✕</button>
         </div>
 
         <div className="p-5 space-y-3 text-[12px]">
@@ -124,10 +124,10 @@ export function LeadModal({
         </div>
 
         <div className="px-5 py-3 border-t border-gray-100 flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100">
+          <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg text-sm font-bold text-gray-500 hover:bg-gray-100">
             Cancel
           </button>
-          <button
+          <button type="button"
             onClick={handleSave}
             disabled={saving}
             className="px-5 py-2 rounded-lg text-sm font-bold bg-rowan-navy text-white hover:bg-rowan-red transition disabled:opacity-50"

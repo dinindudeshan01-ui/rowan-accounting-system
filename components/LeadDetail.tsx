@@ -101,7 +101,7 @@ export function LeadDetail({
             <p className="text-[10px] uppercase tracking-widest text-white/60">Lead</p>
             <h3 className="font-bold text-lg leading-tight">{lead.company_name}</h3>
           </div>
-          <button onClick={onClose} className="text-white/70 hover:text-white text-xl leading-none">✕</button>
+          <button type="button" onClick={onClose} className="text-white/70 hover:text-white text-xl leading-none">✕</button>
         </div>
 
         <div className="p-5 space-y-5">
@@ -128,7 +128,7 @@ export function LeadDetail({
               ))}
             </select>
             {lead.stage !== 'lost' && !lead.converted_customer_id && (
-              <button
+              <button type="button"
                 onClick={handleConvert}
                 disabled={converting}
                 className="px-4 py-2 rounded-lg text-[12px] font-bold bg-rowan-red text-white hover:bg-rowan-redDark transition disabled:opacity-50 whitespace-nowrap"
@@ -169,7 +169,7 @@ export function LeadDetail({
               placeholder="What happened, or what's next…"
               className="w-full border border-gray-300 rounded px-2 py-1.5 text-[12px] mb-2"
             />
-            <button
+            <button type="button"
               onClick={handleAddActivity}
               disabled={saving || !content.trim()}
               className="px-4 py-2 rounded-lg text-[12px] font-bold bg-rowan-navy text-white hover:bg-rowan-red transition disabled:opacity-40"
@@ -201,7 +201,7 @@ export function LeadDetail({
                           Follow up: {fmtDate(a.follow_up_date)} {a.completed && '(done)'}
                         </span>
                         {!a.completed && (
-                          <button
+                          <button type="button"
                             onClick={async () => {
                               await completeActivity(a.id);
                               setActivities((prev) => prev.map((x) => (x.id === a.id ? { ...x, completed: true } : x)));
@@ -219,7 +219,7 @@ export function LeadDetail({
             )}
           </div>
 
-          <button
+          <button type="button"
             onClick={() => setConfirmDelete(true)}
             className="text-[11px] font-bold text-gray-400 hover:text-rowan-red transition"
           >

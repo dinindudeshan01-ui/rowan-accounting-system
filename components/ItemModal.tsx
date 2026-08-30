@@ -85,7 +85,7 @@ export function ItemModal({
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="bg-rowan-navy text-white px-5 py-3 rounded-t-lg flex justify-between items-center sticky top-0">
           <h3 className="font-bold text-sm">New Item / Service</h3>
-          <button onClick={onClose} className="text-white/70 hover:text-white text-lg leading-none">✕</button>
+          <button type="button" onClick={onClose} className="text-white/70 hover:text-white text-lg leading-none">✕</button>
         </div>
 
         <div className="p-5 space-y-3 text-[12px]">
@@ -185,8 +185,8 @@ export function ItemModal({
         </div>
 
         <div className="px-5 py-3 border-t flex justify-end gap-2 bg-gray-50 rounded-b-lg sticky bottom-0">
-          <button onClick={onClose} className="px-4 py-2 text-[11px] font-bold text-gray-500 hover:text-rowan-navy">Cancel</button>
-          <button
+          <button type="button" onClick={onClose} className="px-4 py-2 text-[11px] font-bold text-gray-500 hover:text-rowan-navy">Cancel</button>
+          <button type="button"
             onClick={handleSave}
             disabled={saving}
             className="bg-rowan-navy text-white px-5 py-2 rounded text-[11px] font-bold hover:bg-rowan-red transition inline-flex items-center gap-2 disabled:opacity-50"

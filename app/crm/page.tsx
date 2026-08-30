@@ -66,7 +66,7 @@ export default function CrmHubPage() {
               Leads, follow-ups, and the pipeline — open deals worth {pipelineValue.toLocaleString()}.
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={() => setShowNew(true)}
             className="bg-rowan-navy text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-rowan-red transition whitespace-nowrap"
           >
@@ -82,7 +82,7 @@ export default function CrmHubPage() {
                 const lead = leads.find((l) => l.id === f.lead.id);
                 const overdue = new Date(f.follow_up_date!) < new Date(new Date().toDateString());
                 return (
-                  <button
+                  <button type="button"
                     key={f.id}
                     onClick={() => lead && setSelected(lead)}
                     className={`text-[11px] font-bold px-3 py-1.5 rounded-full border transition ${
@@ -118,7 +118,7 @@ export default function CrmHubPage() {
                       <p className="text-[11px] text-gray-300 py-4 text-center">—</p>
                     ) : (
                       stageLeads.map((lead) => (
-                        <button
+                        <button type="button"
                           key={lead.id}
                           onClick={() => setSelected(lead)}
                           className="w-full text-left bg-rowan-bg hover:bg-gray-100 rounded-lg p-2.5 transition"

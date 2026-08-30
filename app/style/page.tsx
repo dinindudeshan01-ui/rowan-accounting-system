@@ -142,7 +142,7 @@ export default function StyleListPage() {
                       </span>
                     </td>
                     <td className="p-3 text-right">
-                      <button
+                      <button type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           setConfirmDelete(s);

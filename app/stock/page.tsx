@@ -95,7 +95,7 @@ export default function StockPage() {
               <div className="mt-1"><RowanWordmark markSize={32} /></div>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setShowItemModal(true)} className="px-4 py-2 rounded-lg border border-rowan-navy text-rowan-navy font-bold text-xs hover:bg-gray-50">
+              <button type="button" onClick={() => setShowItemModal(true)} className="px-4 py-2 rounded-lg border border-rowan-navy text-rowan-navy font-bold text-xs hover:bg-gray-50">
                 + New Item
               </button>
             </div>
@@ -238,9 +238,9 @@ function StockTable({
               <td className="p-2 text-right">{fmt(i.unit_cost)}</td>
               <td className="p-2 text-right font-bold">{fmt(i.quantity_on_hand * i.unit_cost)}</td>
               <td className="p-2 text-right space-x-3">
-                <button onClick={() => onReceive(i)} className="text-rowan-navy font-bold hover:text-rowan-red">Receive</button>
-                <button onClick={() => onIssue(i)} className="text-rowan-navy font-bold hover:text-rowan-red">Issue</button>
-                <button
+                <button type="button" onClick={() => onReceive(i)} className="text-rowan-navy font-bold hover:text-rowan-red">Receive</button>
+                <button type="button" onClick={() => onIssue(i)} className="text-rowan-navy font-bold hover:text-rowan-red">Issue</button>
+                <button type="button"
                   onClick={() => i.quantity_on_hand === 0 && onDelete(i)}
                   disabled={i.quantity_on_hand !== 0}
                   title={i.quantity_on_hand !== 0 ? 'Only items at zero balance can be deleted' : 'Delete item'}
@@ -341,10 +341,10 @@ function ReceiveStockModal({
         </div>
         <div className="p-5 space-y-3 text-[12px]">
           <div className="flex gap-2">
-            <button onClick={() => setPaymentType('paid_now')} className={`flex-1 border rounded-lg px-3 py-2 text-left ${paymentType === 'paid_now' ? 'border-rowan-navy bg-rowan-bg' : 'border-gray-200'}`}>
+            <button type="button" onClick={() => setPaymentType('paid_now')} className={`flex-1 border rounded-lg px-3 py-2 text-left ${paymentType === 'paid_now' ? 'border-rowan-navy bg-rowan-bg' : 'border-gray-200'}`}>
               <span className="block font-bold text-rowan-navy text-[11px]">Paid Now</span>
             </button>
-            <button onClick={() => setPaymentType('bill')} className={`flex-1 border rounded-lg px-3 py-2 text-left ${paymentType === 'bill' ? 'border-rowan-navy bg-rowan-bg' : 'border-gray-200'}`}>
+            <button type="button" onClick={() => setPaymentType('bill')} className={`flex-1 border rounded-lg px-3 py-2 text-left ${paymentType === 'bill' ? 'border-rowan-navy bg-rowan-bg' : 'border-gray-200'}`}>
               <span className="block font-bold text-rowan-navy text-[11px]">Bill (Pay Later)</span>
             </button>
           </div>
@@ -413,8 +413,8 @@ function ReceiveStockModal({
         </div>
 
         <div className="px-5 py-3 border-t flex justify-end gap-2 bg-gray-50 rounded-b-lg sticky bottom-0">
-          <button onClick={onClose} className="px-4 py-2 text-[11px] font-bold text-gray-500 hover:text-rowan-navy">Cancel</button>
-          <button
+          <button type="button" onClick={onClose} className="px-4 py-2 text-[11px] font-bold text-gray-500 hover:text-rowan-navy">Cancel</button>
+          <button type="button"
             onClick={handleSubmit}
             disabled={saving}
             className="bg-rowan-navy text-white px-5 py-2 rounded text-[11px] font-bold hover:bg-rowan-red transition inline-flex items-center gap-2 disabled:opacity-50"
@@ -513,8 +513,8 @@ function IssueStockModal({
           </div>
         </div>
         <div className="px-5 py-3 border-t flex justify-end gap-2 bg-gray-50 rounded-b-lg">
-          <button onClick={onClose} className="px-4 py-2 text-[11px] font-bold text-gray-500 hover:text-rowan-navy">Cancel</button>
-          <button
+          <button type="button" onClick={onClose} className="px-4 py-2 text-[11px] font-bold text-gray-500 hover:text-rowan-navy">Cancel</button>
+          <button type="button"
             onClick={handleSubmit}
             disabled={saving}
             className="bg-rowan-navy text-white px-5 py-2 rounded text-[11px] font-bold hover:bg-rowan-red transition inline-flex items-center gap-2 disabled:opacity-50"

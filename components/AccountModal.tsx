@@ -194,10 +194,10 @@ export function AccountModal({
         </div>
 
         <div className="flex justify-end gap-2 mt-5">
-          <button onClick={onClose} disabled={saving} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 font-bold text-xs hover:bg-gray-50">
+          <button type="button" onClick={onClose} disabled={saving} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 font-bold text-xs hover:bg-gray-50">
             Cancel
           </button>
-          <button
+          <button type="button"
             onClick={handleSave}
             disabled={saving || codeTaken}
             className="px-4 py-2 rounded-lg bg-rowan-navy text-white font-bold text-xs hover:bg-rowan-red transition disabled:opacity-50 inline-flex items-center gap-2"
