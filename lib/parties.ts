@@ -130,3 +130,32 @@ export async function updateItem(id: string, draft: Partial<ItemDraft>): Promise
   if (error) throw error;
   return data as InvoiceItem;
 }
+
+/**
+ * Deletes an item only if it currently carries zero balance — never
+ * delete something with stock value sitting on the books. Also
+ * re-checks the live balance (not a stale row the caller may be
+ * holding) right before deleting, so a receipt that landed a second
+ * ago can't slip through.
+ *
+ * If the item has any stock_movements history, the DB's foreign key
+ * (stock_movements.item_id references items, no cascade) rejects the
+ * delete even at a zero balance — that's intentional, it preserves
+ * the audit trail. We surface that as a clear message instead of a
+ * raw Postgres error.
+ */
+export async function deleteItem(id: string): Promise<void> {
+  const { data: fresh, error: fetchErr } = await supabase.from('items').select('quantity_on_hand, name').eq('id', id).single();
+  if (fetchErr) throw fetchErr;
+  if ((fresh?.quantity_on_hand ?? 0) !== 0) {
+    throw new Error(`"${fresh?.name}" still has ${fresh?.quantity_on_hand} units on hand — bring it to zero before deleting.`);
+  }
+
+  const { error } = await supabase.from('items').delete().eq('id', id);
+  if (error) {
+    if (error.code === '23503') {
+      throw new Error(`"${fresh?.name}" has stock movement history (receipts/issues) and can't be deleted — deactivate it instead to keep the audit trail intact.`);
+    }
+    throw error;
+  }
+}

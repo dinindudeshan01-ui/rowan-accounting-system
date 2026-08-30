@@ -10,7 +10,8 @@ import { SearchableSelect } from '@/components/SearchableSelect';
 import { PartyModal } from '@/components/PartyModal';
 import { ItemModal } from '@/components/ItemModal';
 import { AccountModal, Account } from '@/components/AccountModal';
-import { Party, PartyDraft, createParty, InvoiceItem, ItemDraft, createItem } from '@/lib/parties';
+import { Party, PartyDraft, createParty, InvoiceItem, ItemDraft, createItem, deleteItem } from '@/lib/parties';
+import { ConfirmModal } from '@/components/ConfirmModal';
 
 const currentUser = { id: 'demo-user', name: 'Dinindu' };
 
@@ -32,6 +33,8 @@ export default function StockPage() {
   const [showReceive, setShowReceive] = useState<InvoiceItem | null>(null);
   const [showIssue, setShowIssue] = useState<InvoiceItem | null>(null);
   const [showItemModal, setShowItemModal] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<InvoiceItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -52,6 +55,22 @@ export default function StockPage() {
     setShowItemModal(false);
     setNote('Item added.');
     loadItems();
+  }
+
+  async function handleDeleteItem() {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    try {
+      await deleteItem(confirmDelete.id);
+      setNote(`Deleted ${confirmDelete.name}.`);
+      setConfirmDelete(null);
+      loadItems();
+    } catch (e: any) {
+      setError(e.message ?? 'Failed to delete item.');
+      setConfirmDelete(null);
+    } finally {
+      setDeleting(false);
+    }
   }
 
   const filtered = useMemo(
@@ -114,12 +133,12 @@ export default function StockPage() {
           ) : (
             <>
               <h3 className="text-xs font-bold uppercase tracking-widest text-rowan-navy mb-2">Raw Materials &amp; Consumables</h3>
-              <StockTable rows={rawMaterials} onReceive={setShowReceive} onIssue={setShowIssue} showClassification />
+              <StockTable rows={rawMaterials} onReceive={setShowReceive} onIssue={setShowIssue} onDelete={setConfirmDelete} showClassification />
 
               {finishedGoods.length > 0 && (
                 <>
                   <h3 className="text-xs font-bold uppercase tracking-widest text-rowan-navy mb-2 mt-8">Finished Goods (from Style)</h3>
-                  <StockTable rows={finishedGoods} onReceive={setShowReceive} onIssue={setShowIssue} showClassification={false} />
+                  <StockTable rows={finishedGoods} onReceive={setShowReceive} onIssue={setShowIssue} onDelete={setConfirmDelete} showClassification={false} />
                 </>
               )}
             </>
@@ -155,6 +174,20 @@ export default function StockPage() {
           onError={setError}
         />
       )}
+      <ConfirmModal
+        open={!!confirmDelete}
+        title="Delete Item"
+        message={
+          confirmDelete
+            ? `Delete "${confirmDelete.name}"? Only allowed at zero balance — this can't be undone.`
+            : ''
+        }
+        confirmLabel="Delete"
+        danger
+        loading={deleting}
+        onConfirm={handleDeleteItem}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   );
 }
@@ -163,11 +196,13 @@ function StockTable({
   rows,
   onReceive,
   onIssue,
+  onDelete,
   showClassification,
 }: {
   rows: InvoiceItem[];
   onReceive: (i: InvoiceItem) => void;
   onIssue: (i: InvoiceItem) => void;
+  onDelete: (i: InvoiceItem) => void;
   showClassification: boolean;
 }) {
   if (rows.length === 0) {
@@ -205,6 +240,14 @@ function StockTable({
               <td className="p-2 text-right space-x-3">
                 <button onClick={() => onReceive(i)} className="text-rowan-navy font-bold hover:text-rowan-red">Receive</button>
                 <button onClick={() => onIssue(i)} className="text-rowan-navy font-bold hover:text-rowan-red">Issue</button>
+                <button
+                  onClick={() => i.quantity_on_hand === 0 && onDelete(i)}
+                  disabled={i.quantity_on_hand !== 0}
+                  title={i.quantity_on_hand !== 0 ? 'Only items at zero balance can be deleted' : 'Delete item'}
+                  className={i.quantity_on_hand === 0 ? 'text-gray-400 font-bold hover:text-rowan-red' : 'text-gray-200 font-bold cursor-not-allowed'}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           );

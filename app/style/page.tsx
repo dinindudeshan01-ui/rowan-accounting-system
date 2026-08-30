@@ -4,7 +4,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SearchableSelect } from '@/components/SearchableSelect';
-import { listStyles, Style } from '@/lib/styles';
+import { ConfirmModal } from '@/components/ConfirmModal';
+import { listStyles, deleteStyle, Style } from '@/lib/styles';
 
 const STATUS_COLORS: Record<string, string> = {
   active: 'bg-green-100 text-green-700',
@@ -21,12 +22,35 @@ export default function StyleListPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [confirmDelete, setConfirmDelete] = useState<Style | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
     listStyles()
       .then(setRows)
       .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    load();
   }, []);
+
+  async function handleDelete() {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    try {
+      await deleteStyle(confirmDelete.id);
+      setConfirmDelete(null);
+      load();
+    } catch (e: any) {
+      setError(e.message ?? 'Failed to delete style.');
+      setConfirmDelete(null);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -56,6 +80,7 @@ export default function StyleListPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          {error && <div className="bg-red-50 text-rowan-red text-xs font-bold px-4 py-3 border-b border-red-100">{error}</div>}
           <div className="p-4 border-b border-gray-200 flex gap-3">
             <input
               value={search}
@@ -94,6 +119,7 @@ export default function StyleListPage() {
                   <th className="p-3">Season</th>
                   <th className="p-3 text-right">Selling Price</th>
                   <th className="p-3">Status</th>
+                  <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -115,6 +141,17 @@ export default function StyleListPage() {
                         {s.status}
                       </span>
                     </td>
+                    <td className="p-3 text-right">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmDelete(s);
+                        }}
+                        className="text-[11px] font-bold text-gray-400 hover:text-rowan-red transition"
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -122,6 +159,21 @@ export default function StyleListPage() {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        open={!!confirmDelete}
+        title="Delete Style"
+        message={
+          confirmDelete
+            ? `Delete "${confirmDelete.style_no} — ${confirmDelete.name}"? Only allowed if it has no finished stock on hand and no production/costing history. This can't be undone.`
+            : ''
+        }
+        confirmLabel="Delete"
+        danger
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmDelete(null)}
+      />
     </div>
   );
 }

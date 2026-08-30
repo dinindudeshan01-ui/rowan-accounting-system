@@ -125,6 +125,56 @@ export async function updateStyle(id: string, draft: Partial<StyleDraft>): Promi
   return data as Style;
 }
 
+/**
+ * Deletes a style — BOM lines and standard-costing rows cascade
+ * automatically (they belong to the style, not shared data). Blocked
+ * (with a clear message, not a raw Postgres error) if:
+ *  - the style's linked finished-goods item still has stock on hand
+ *  - the style has any stock_movements, absorption-costing, or
+ *    department-output history — that's real production/accounting
+ *    history and deleting it would silently break those records.
+ * The linked catalog item itself, if any and if at zero balance, is
+ * deleted first so the style doesn't leave an orphaned item behind.
+ */
+export async function deleteStyle(id: string): Promise<void> {
+  const { data: style, error: styleErr } = await supabase.from('styles').select('style_no, name').eq('id', id).single();
+  if (styleErr) throw styleErr;
+
+  const { data: linkedItem } = await supabase
+    .from('items')
+    .select('id, quantity_on_hand')
+    .eq('style_id', id)
+    .maybeSingle();
+
+  if (linkedItem && linkedItem.quantity_on_hand !== 0) {
+    throw new Error(
+      `"${style.style_no} — ${style.name}" still has ${linkedItem.quantity_on_hand} finished units on hand — issue or adjust that stock to zero before deleting.`
+    );
+  }
+
+  if (linkedItem) {
+    const { error: itemDelErr } = await supabase.from('items').delete().eq('id', linkedItem.id);
+    if (itemDelErr) {
+      if (itemDelErr.code === '23503') {
+        throw new Error(
+          `"${style.style_no} — ${style.name}" has stock movement history on its finished-goods item and can't be deleted — deactivate the style instead to keep the audit trail intact.`
+        );
+      }
+      throw itemDelErr;
+    }
+  }
+
+  const { error } = await supabase.from('styles').delete().eq('id', id);
+  if (error) {
+    if (error.code === '23503') {
+      throw new Error(
+        `"${style.style_no} — ${style.name}" has production or costing history and can't be deleted — set its status to Discontinued instead to keep the audit trail intact.`
+      );
+    }
+    throw error;
+  }
+}
+
 /** Suggests the next style number as STY-0001, STY-0002, ... — a starting point the user can freely edit. */
 export async function suggestNextStyleNo(): Promise<string> {
   const { count } = await supabase.from('styles').select('*', { count: 'exact', head: true });
