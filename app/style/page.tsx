@@ -27,11 +27,13 @@ export default function StyleListPage() {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function load() {
-    setLoading(true);
+  function load(opts?: { silent?: boolean }) {
+    if (!opts?.silent) setLoading(true);
     listStyles()
       .then(setRows)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!opts?.silent) setLoading(false);
+      });
   }
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function StyleListPage() {
     try {
       await deleteStyle(confirmDelete.id);
       setConfirmDelete(null);
-      load();
+      load({ silent: true });
     } catch (e: any) {
       setError(e.message ?? 'Failed to delete style.');
       setConfirmDelete(null);

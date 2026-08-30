@@ -40,11 +40,11 @@ export default function StockPage() {
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
 
-  async function loadItems() {
-    setLoading(true);
+  async function loadItems(opts?: { silent?: boolean }) {
+    if (!opts?.silent) setLoading(true);
     const { data } = await supabase.from('items').select('*').eq('is_active', true).eq('item_type', 'inventory').order('name');
     setItems((data as InvoiceItem[]) ?? []);
-    setLoading(false);
+    if (!opts?.silent) setLoading(false);
   }
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function StockPage() {
     await createItem({ ...draft, item_type: 'inventory' });
     setShowItemModal(false);
     setNote('Item added.');
-    loadItems();
+    loadItems({ silent: true });
   }
 
   async function handleDeleteItem() {
@@ -65,7 +65,7 @@ export default function StockPage() {
       await deleteItem(confirmDelete.id);
       setNote(`Deleted ${confirmDelete.name}.`);
       setConfirmDelete(null);
-      loadItems();
+      loadItems({ silent: true });
     } catch (e: any) {
       setError(e.message ?? 'Failed to delete item.');
       setConfirmDelete(null);
@@ -155,7 +155,7 @@ export default function StockPage() {
           onDone={(msg) => {
             setShowReceive(null);
             setNote(msg);
-            loadItems();
+            loadItems({ silent: true });
           }}
           onError={setError}
         />
@@ -167,7 +167,7 @@ export default function StockPage() {
           onDone={(msg) => {
             setShowIssue(null);
             setNote(msg);
-            loadItems();
+            loadItems({ silent: true });
           }}
           onError={setError}
         />
