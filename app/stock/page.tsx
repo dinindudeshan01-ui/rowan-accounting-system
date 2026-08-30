@@ -102,7 +102,7 @@ export default function StockPage() {
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
+              <Link href="/warehouse" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Warehouse</Link>
               <div className="mt-1"><RowanWordmark markSize={32} /></div>
             </div>
             <div className="flex gap-3">

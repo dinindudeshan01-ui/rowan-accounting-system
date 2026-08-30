@@ -23,6 +23,12 @@ import {
   FileText,
   Files,
   HandCoins,
+  PackageOpen,
+  ClipboardList,
+  ClipboardEdit,
+  BadgeCheck,
+  Scale,
+  PackageCheck,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -97,3 +103,12 @@ export const CustomerCenterIcon = makeIcon(Users2, PALETTE.red);
 export const InvoiceIcon = makeIcon(FileText, PALETTE.navy);
 export const InvoicesListIcon = makeIcon(Files, PALETTE.navyLight);
 export const ReceivePaymentIcon = makeIcon(HandCoins, PALETTE.red);
+
+// Warehouse sub-dashboard
+export const DispatchIcon = makeIcon(PackageCheck, PALETTE.red);
+export const GatePassIcon = makeIcon(BadgeCheck, PALETTE.navy);
+export const StockCountIcon = makeIcon(ClipboardList, PALETTE.navyLight);
+export const StockValuationIcon = makeIcon(Scale, PALETTE.navy);
+export const StockAdjustmentIcon = makeIcon(ClipboardEdit, PALETTE.redDark);
+export const GrnIcon = makeIcon(PackageOpen, PALETTE.navy);
+export const EnterBillIcon = makeIcon(FileCheck2, PALETTE.red);

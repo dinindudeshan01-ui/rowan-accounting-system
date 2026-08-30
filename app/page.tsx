@@ -34,7 +34,7 @@ export default function MainDashboard() {
           modules={[
             { key: 'crm', href: '/crm', label: 'CRM', icon: <CrmIcon /> },
             { key: 'styles', href: '/style', label: 'Styles', icon: <StylesIcon /> },
-            { key: 'warehouse', href: '/stock', label: 'Warehouse', icon: <WarehouseIcon /> },
+            { key: 'warehouse', href: '/warehouse', label: 'Warehouse', icon: <WarehouseIcon /> },
             { key: 'accounting', href: '/accounting', label: 'Accounting', icon: <AccountingIcon /> },
             { key: 'costing', href: '/style/costing', label: 'Costing', icon: <CostingIcon /> },
             { key: 'payroll', href: '/payroll/run', label: 'Payroll', icon: <PayrollIcon /> },
