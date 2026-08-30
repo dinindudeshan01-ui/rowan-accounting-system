@@ -12,6 +12,7 @@ import { ItemModal } from '@/components/ItemModal';
 import { AccountModal, Account } from '@/components/AccountModal';
 import { Party, PartyDraft, createParty, InvoiceItem, ItemDraft, createItem, deleteItem } from '@/lib/parties';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { Toast } from '@/components/Toast';
 
 const currentUser = { id: 'demo-user', name: 'Dinindu' };
 
@@ -118,9 +119,6 @@ export default function StockPage() {
             </div>
           </div>
 
-          {note && <div className="bg-green-50 text-green-700 text-xs font-bold px-3 py-2 rounded mb-4">{note}</div>}
-          {error && <div className="bg-red-50 text-rowan-red text-xs font-bold px-3 py-2 rounded mb-4">{error}</div>}
-
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -188,6 +186,8 @@ export default function StockPage() {
         onConfirm={handleDeleteItem}
         onCancel={() => setConfirmDelete(null)}
       />
+      {note && <Toast message={note} kind="success" onClose={() => setNote(null)} />}
+      {error && <Toast message={error} kind="error" onClose={() => setError(null)} />}
     </div>
   );
 }

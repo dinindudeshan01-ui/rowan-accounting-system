@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SearchableSelect } from '@/components/SearchableSelect';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { Toast } from '@/components/Toast';
 import { listStyles, deleteStyle, Style } from '@/lib/styles';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -80,7 +81,6 @@ export default function StyleListPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          {error && <div className="bg-red-50 text-rowan-red text-xs font-bold px-4 py-3 border-b border-red-100">{error}</div>}
           <div className="p-4 border-b border-gray-200 flex gap-3">
             <input
               value={search}
@@ -174,6 +174,7 @@ export default function StyleListPage() {
         onConfirm={handleDelete}
         onCancel={() => setConfirmDelete(null)}
       />
+      {error && <Toast message={error} kind="error" onClose={() => setError(null)} />}
     </div>
   );
 }
