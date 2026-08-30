@@ -83,7 +83,14 @@ export default function StockPage() {
   );
 
   const rawMaterials = filtered.filter((i) => !i.style_id);
-  const finishedGoods = filtered.filter((i) => i.style_id);
+  // Split finished goods from mere catalog entries: publishing a
+  // style to the sales catalog creates an items row so it can be
+  // invoiced, but that alone never puts a single physical unit on
+  // the shelf — only Produce Style does. Lumping both together under
+  // "Finished Goods" is what made the stock list look like a mess of
+  // items that were never actually made.
+  const finishedGoods = filtered.filter((i) => i.style_id && i.quantity_on_hand !== 0);
+  const publishedNotProduced = filtered.filter((i) => i.style_id && i.quantity_on_hand === 0);
 
   const stockValue = items.reduce((s, i) => s + i.quantity_on_hand * i.unit_cost, 0);
   const lowStockCount = items.filter((i) => i.reorder_level != null && i.quantity_on_hand <= i.reorder_level).length;
@@ -109,8 +116,8 @@ export default function StockPage() {
 
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-rowan-bg border border-gray-200 rounded-lg p-4">
-              <p className="text-[11px] font-bold text-gray-500 uppercase">Items Tracked</p>
-              <p className="text-2xl font-black text-rowan-navy">{items.length}</p>
+              <p className="text-[11px] font-bold text-gray-500 uppercase">Items In Stock</p>
+              <p className="text-2xl font-black text-rowan-navy">{rawMaterials.length + finishedGoods.length}</p>
             </div>
             <div className="bg-rowan-bg border border-gray-200 rounded-lg p-4">
               <p className="text-[11px] font-bold text-gray-500 uppercase">Stock Value (at cost)</p>
@@ -138,9 +145,36 @@ export default function StockPage() {
 
               {finishedGoods.length > 0 && (
                 <>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-rowan-navy mb-2 mt-8">Finished Goods (from Style)</h3>
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-rowan-navy mb-2 mt-8">Finished Goods — In Stock</h3>
                   <StockTable rows={finishedGoods} onReceive={setShowReceive} onIssue={setShowIssue} onDelete={setConfirmDelete} showClassification={false} />
                 </>
+              )}
+
+              {publishedNotProduced.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+                    Published to Catalog — Not Yet Produced
+                  </h3>
+                  <p className="text-[11px] text-gray-400 mb-2">
+                    These styles can be invoiced but have zero physical units — they were priced/published, never
+                    produced. Not real inventory; run <span className="font-bold">Produce This Style</span> from the
+                    style page to actually put stock on the shelf.
+                  </p>
+                  <div className="border border-dashed border-gray-300 rounded-lg divide-y divide-gray-100">
+                    {publishedNotProduced.map((i) => (
+                      <Link
+                        key={i.id}
+                        href={`/style/${i.style_id}`}
+                        className="flex items-center justify-between px-4 py-2.5 text-[12px] hover:bg-gray-50 transition"
+                      >
+                        <span className="text-gray-500">
+                          <span className="font-bold text-gray-600">{i.code}</span> — {i.name}
+                        </span>
+                        <span className="text-rowan-navy font-bold text-[11px]">Produce →</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               )}
             </>
           )}
