@@ -32,11 +32,11 @@ export default function MainDashboard() {
       <div className="flex-1 min-h-0 flex flex-col items-center justify-center">
         <RowanWheel
           modules={[
-            { key: 'crm', href: '/crm', label: 'CRM', icon: <CrmIcon />, disabled: true },
+            { key: 'crm', href: '/crm', label: 'CRM', icon: <CrmIcon /> },
             { key: 'styles', href: '/style', label: 'Styles', icon: <StylesIcon /> },
             { key: 'warehouse', href: '/stock', label: 'Warehouse', icon: <WarehouseIcon /> },
             { key: 'accounting', href: '/accounting', label: 'Accounting', icon: <AccountingIcon /> },
-            { key: 'costing', href: '/style/costing', label: 'Costing', icon: <CostingIcon />, disabled: true },
+            { key: 'costing', href: '/style/costing', label: 'Costing', icon: <CostingIcon /> },
             { key: 'payroll', href: '/payroll/run', label: 'Payroll', icon: <PayrollIcon /> },
             { key: 'reports', href: '/accounting/reports', label: 'Reports', icon: <DashboardIcon /> },
           ]}
