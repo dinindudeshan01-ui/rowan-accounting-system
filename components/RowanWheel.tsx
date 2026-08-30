@@ -14,28 +14,48 @@ export type WheelModule = {
 
 const WHEEL_ICON_SIZE = 58;
 
+const WHEEL_SESSION_KEY = 'rowan-wheel-opened';
+
 /**
  * Circular module launcher for the main dashboard — starts as just
  * the ROWAN mark; tapping it sends every module icon sweeping around
- * the ring into its orbit position, then tapping again pulls them
- * back in along the same arc.
+ * the ring into its orbit position, once. It doesn't collapse back
+ * on a second tap, and if it's already been opened once this
+ * session (sessionStorage), it renders already-open with no replay
+ * of the animation — the sweep is a one-time reveal, not something
+ * that fires on every click.
  *
- * The motion is a true orbital transition, not a straight-line move:
- * each icon's `transform` is `rotate(angle) translate(radius) rotate(-angle)`.
- * The two rotate()s cancel out for the icon's own orientation (so it
- * never visually spins), but because the translate happens *inside*
- * that rotated coordinate frame, animating `angle` and `radius`
- * together sweeps the icon's position around the arc while it grows
- * outward — a real orbit, not a lerp between two points. Modern
- * browsers interpolate each transform function independently as long
- * as the function list matches on both ends, which is exactly what's
- * listed here (rotate, translate, rotate, translate).
+ * The motion itself is a true orbital transition, not a straight-line
+ * move: each icon's `transform` is
+ * `rotate(angle) translate(radius) rotate(-angle)`. The two rotate()s
+ * cancel out for the icon's own orientation (so it never visually
+ * spins), but because the translate happens *inside* that rotated
+ * coordinate frame, animating `angle` and `radius` together sweeps
+ * the icon's position around the arc while it grows outward — a real
+ * orbit, not a lerp between two points.
  */
 export function RowanWheel({ modules }: { modules: WheelModule[] }) {
   const [open, setOpen] = React.useState(false);
+  const [skipAnim, setSkipAnim] = React.useState(false);
   const radius = 200;
   const n = modules.length;
   const canvas = radius * 2 + 120;
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.sessionStorage.getItem(WHEEL_SESSION_KEY) === '1') {
+      setSkipAnim(true);
+      setOpen(true);
+    }
+  }, []);
+
+  const reveal = () => {
+    if (open) return;
+    setOpen(true);
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(WHEEL_SESSION_KEY, '1');
+    }
+  };
 
   return (
     <>
@@ -82,10 +102,10 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
                 opacity: open ? 1 : 0,
                 pointerEvents: open ? 'auto' : 'none',
                 transform: `rotate(${angle}deg) translate(${r}px, 0) rotate(${-angle}deg) translate(-50%, -50%)`,
-                transitionProperty: 'transform, opacity',
-                transitionDuration: '800ms',
+                transitionProperty: skipAnim ? 'none' : 'transform, opacity',
+                transitionDuration: skipAnim ? '0ms' : '800ms',
                 transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                transitionDelay: open ? `${i * 60}ms` : `${(n - i) * 30}ms`,
+                transitionDelay: skipAnim ? '0ms' : open ? `${i * 60}ms` : `${(n - i) * 30}ms`,
               }}
             >
               <div
@@ -109,13 +129,14 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
           );
         })}
 
-        {/* Center mark — the trigger */}
+        {/* Center mark — the one-time trigger */}
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? 'Hide modules' : 'Show modules'}
-          className={`absolute flex flex-col items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 transition-transform duration-300 hover:scale-105 active:scale-95 ${
-            open ? '' : 'animate-[pulse_2.5s_ease-in-out_infinite]'
+          onClick={reveal}
+          aria-label="Show modules"
+          disabled={open}
+          className={`absolute flex flex-col items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 transition-transform duration-300 ${
+            open ? 'cursor-default' : 'hover:scale-105 active:scale-95 animate-[pulse_2.5s_ease-in-out_infinite]'
           }`}
           style={{ width: 168, height: 168, left: canvas / 2 - 84, top: canvas / 2 - 84 }}
         >
@@ -131,9 +152,10 @@ export function RowanWheel({ modules }: { modules: WheelModule[] }) {
       <div className="sm:hidden flex flex-col items-center">
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
-          className={`flex flex-col items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 mb-6 transition-transform active:scale-95 ${
-            open ? '' : 'animate-[pulse_2.5s_ease-in-out_infinite]'
+          onClick={reveal}
+          disabled={open}
+          className={`flex flex-col items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 mb-6 transition-transform ${
+            open ? 'cursor-default' : 'active:scale-95 animate-[pulse_2.5s_ease-in-out_infinite]'
           }`}
           style={{ width: 140, height: 140 }}
         >
