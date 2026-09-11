@@ -817,9 +817,14 @@ export default function ReportsPage() {
         <div className="p-8">
           <div className="flex justify-between items-center mb-6 print:hidden">
             <RowanWordmark markSize={40} />
-            <Link href="/accounting" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
-              ← Accounting
-            </Link>
+            <div className="flex gap-4 items-center">
+              <Link href="/accounting/reports/center" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
+                Report Center →
+              </Link>
+              <Link href="/accounting" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
+                ← Accounting
+              </Link>
+            </div>
           </div>
 
           <h2 className="text-lg font-bold uppercase tracking-widest text-rowan-navy mb-4 print:hidden">Reports</h2>
