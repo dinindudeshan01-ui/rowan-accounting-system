@@ -39,8 +39,8 @@ export default function AccountingDashboard() {
         </DashGrid>
 
         <div className="mt-10 pt-6 border-t border-gray-200">
-          <Link href="/accounting/reports" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
-            View Reports (Profit & Loss / Balance Sheet) →
+          <Link href="/accounting/reports/center" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
+            View Reports (Report Center) →
           </Link>
         </div>
       </div>
