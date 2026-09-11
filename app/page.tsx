@@ -38,7 +38,7 @@ export default function MainDashboard() {
             { key: 'accounting', href: '/accounting', label: 'Accounting', icon: <AccountingIcon /> },
             { key: 'costing', href: '/style/costing', label: 'Costing', icon: <CostingIcon /> },
             { key: 'payroll', href: '/payroll/run', label: 'Payroll', icon: <PayrollIcon /> },
-            { key: 'reports', href: '/accounting/reports', label: 'Reports', icon: <DashboardIcon /> },
+            { key: 'reports', href: '/accounting/reports/center', label: 'Report Center', icon: <DashboardIcon /> },
           ]}
         />
       </div>
