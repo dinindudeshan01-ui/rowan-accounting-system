@@ -6,15 +6,17 @@ import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { supabase } from '@/lib/supabase';
 
-type GLRow = {
-  account_type: string;
-  account_code: string;
-  account_name: string;
-  opening_balance: number;
+type TJRow = {
   entry_id: string;
   entry_number: string;
   entry_date: string;
   memo: string | null;
+  reference: string | null;
+  source_type: string;
+  created_by_name: string | null;
+  line_no: number;
+  account_code: string;
+  account_name: string;
   line_description: string | null;
   debit: number;
   credit: number;
@@ -43,19 +45,7 @@ function buildMonthOptions(count = 24): Period[] {
   }
   return out;
 }
-function buildFiscalYearOptions(count = 6): Period[] {
-  const out: Period[] = [];
-  const now = new Date();
-  const currentFyStartYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
-  for (let i = 0; i < count; i++) {
-    const startYear = currentFyStartYear - i;
-    const start = new Date(startYear, 3, 1);
-    const end = new Date(startYear + 1, 2, 31);
-    out.push({ key: `fy-${startYear}`, label: `FY ${startYear}/${String(startYear + 1).slice(2)}`, start: isoDate(start), end: isoDate(end) });
-  }
-  return out;
-}
-type PeriodMode = 'month' | 'year' | 'custom';
+type PeriodMode = 'month' | 'custom';
 
 function PrintLetterhead({ title, periodText, preparedBy }: { title: string; periodText: string; preparedBy: string }) {
   return (
@@ -79,39 +69,29 @@ function PrintLetterhead({ title, periodText, preparedBy }: { title: string; per
   );
 }
 
-export default function GeneralLedgerPage() {
+export default function TransactionJournalPage() {
   const monthOptions = useMemo(() => buildMonthOptions(), []);
-  const yearOptions = useMemo(() => buildFiscalYearOptions(), []);
   const [mode, setMode] = useState<PeriodMode>('month');
   const [preparedBy, setPreparedBy] = useState('');
-  const [accountFilter, setAccountFilter] = useState('');
-
-  const options = mode === 'month' ? monthOptions : mode === 'year' ? yearOptions : [];
   const [period, setPeriod] = useState<Period>(monthOptions[0]);
   const [customStart, setCustomStart] = useState(monthOptions[0].start);
   const [customEnd, setCustomEnd] = useState(monthOptions[0].end);
-
-  useEffect(() => {
-    if (mode === 'custom') return;
-    const opts = mode === 'month' ? monthOptions : yearOptions;
-    setPeriod(opts[0]);
-  }, [mode, monthOptions, yearOptions]);
 
   const start = mode === 'custom' ? customStart : period.start;
   const end = mode === 'custom' ? customEnd : period.end;
   const periodLabel = mode === 'custom' ? `${fmtDate(start)} to ${fmtDate(end)}` : period.label;
 
-  const [rows, setRows] = useState<GLRow[]>([]);
+  const [rows, setRows] = useState<TJRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
-    Promise.resolve(supabase.rpc('get_general_ledger', { p_start: start, p_end: end }))
+    Promise.resolve(supabase.rpc('get_transaction_journal', { p_start: start, p_end: end }))
       .then((res) => {
         if (res.error) setError(res.error.message);
-        setRows((res.data ?? []) as GLRow[]);
+        setRows((res.data ?? []) as TJRow[]);
         setLoading(false);
       })
       .catch((err: any) => {
@@ -121,19 +101,17 @@ export default function GeneralLedgerPage() {
       });
   }, [start, end]);
 
-  const filtered = accountFilter
-    ? rows.filter((r) => r.account_name.toLowerCase().includes(accountFilter.toLowerCase()) || r.account_code.includes(accountFilter))
-    : rows;
-
-  const accountGroups = useMemo(() => {
-    const map = new Map<string, GLRow[]>();
-    for (const r of filtered) {
-      const key = r.account_code;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(r);
+  const entries = useMemo(() => {
+    const map = new Map<string, TJRow[]>();
+    for (const r of rows) {
+      if (!map.has(r.entry_id)) map.set(r.entry_id, []);
+      map.get(r.entry_id)!.push(r);
     }
-    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [filtered]);
+    return Array.from(map.values());
+  }, [rows]);
+
+  const grandDebit = rows.reduce((s, r) => s + Number(r.debit), 0);
+  const grandCredit = rows.reduce((s, r) => s + Number(r.credit), 0);
 
   return (
     <div className="min-h-screen bg-rowan-bg p-6">
@@ -147,14 +125,13 @@ export default function GeneralLedgerPage() {
             </Link>
           </div>
 
-          <h2 className="text-lg font-bold uppercase tracking-widest text-rowan-navy mb-4 print:hidden">General Ledger</h2>
+          <h2 className="text-lg font-bold uppercase tracking-widest text-rowan-navy mb-4 print:hidden">Transaction Journal</h2>
 
           <div className="flex flex-wrap gap-4 items-end mb-4 print:hidden text-sm">
             <div>
               <label className="block text-gray-500 text-[10px] font-bold mb-1 uppercase tracking-wide">View by</label>
               <select value={mode} onChange={(e) => setMode(e.target.value as PeriodMode)} className="border border-gray-300 rounded px-2 py-1.5 text-sm">
                 <option value="month">Month</option>
-                <option value="year">Fiscal Year</option>
                 <option value="custom">Custom Range</option>
               </select>
             </div>
@@ -172,16 +149,16 @@ export default function GeneralLedgerPage() {
               </div>
             ) : (
               <div>
-                <label className="block text-gray-500 text-[10px] font-bold mb-1 uppercase tracking-wide">{mode === 'month' ? 'Month' : 'Fiscal Year'}</label>
+                <label className="block text-gray-500 text-[10px] font-bold mb-1 uppercase tracking-wide">Month</label>
                 <select
                   value={period.key}
                   onChange={(e) => {
-                    const p = options.find((o) => o.key === e.target.value);
+                    const p = monthOptions.find((o) => o.key === e.target.value);
                     if (p) setPeriod(p);
                   }}
                   className="border border-gray-300 rounded px-2 py-1.5 text-sm min-w-[160px]"
                 >
-                  {options.map((o) => (
+                  {monthOptions.map((o) => (
                     <option key={o.key} value={o.key}>
                       {o.label}
                     </option>
@@ -189,11 +166,6 @@ export default function GeneralLedgerPage() {
                 </select>
               </div>
             )}
-
-            <div>
-              <label className="block text-gray-500 text-[10px] font-bold mb-1 uppercase tracking-wide">Filter account</label>
-              <input value={accountFilter} onChange={(e) => setAccountFilter(e.target.value)} placeholder="Name or code" className="border border-gray-300 rounded px-2 py-1.5 text-sm w-40" />
-            </div>
 
             <div className="ml-auto flex gap-2 items-end">
               <div>
@@ -206,7 +178,7 @@ export default function GeneralLedgerPage() {
             </div>
           </div>
 
-          <PrintLetterhead title="General Ledger" periodText={periodLabel} preparedBy={preparedBy} />
+          <PrintLetterhead title="Transaction Journal" periodText={periodLabel} preparedBy={preparedBy} />
 
           {error && <div className="bg-red-50 border border-red-300 text-red-800 text-xs px-3 py-2 rounded mb-4">{error}</div>}
 
@@ -217,57 +189,48 @@ export default function GeneralLedgerPage() {
           ) : (
             <div>
               <h3 className="text-center font-bold text-rowan-navy text-sm mb-4 pb-2 border-b-2 border-rowan-navy">{periodLabel}</h3>
-              {accountGroups.length === 0 && <p className="text-center text-xs text-gray-400 italic py-8">No posted activity in this period.</p>}
-              {accountGroups.map(([code, lines]) => {
-                let running = lines[0]?.opening_balance ?? 0;
-                const isDebitNormal = ['asset', 'expense'].includes(lines[0]?.account_type ?? '');
-                return (
-                  <div key={code} className="mb-8">
-                    <h4 className="font-bold text-rowan-navy text-sm mb-1">
-                      {code} — {lines[0].account_name}
-                    </h4>
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr className="bg-gray-100 text-[10px] uppercase text-gray-500">
-                          <th className="p-1.5 text-left">Date</th>
-                          <th className="p-1.5 text-left">Entry #</th>
-                          <th className="p-1.5 text-left">Memo / Description</th>
-                          <th className="p-1.5 text-right w-24">Debit</th>
-                          <th className="p-1.5 text-right w-24">Credit</th>
-                          <th className="p-1.5 text-right w-28">Balance</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="border-b border-gray-100 italic text-gray-500">
-                          <td className="p-1.5" colSpan={5}>
-                            Opening balance
-                          </td>
-                          <td className="p-1.5 text-right">{fmt(lines[0]?.opening_balance ?? 0)}</td>
-                        </tr>
-                        {lines.map((r, i) => {
-                          running += isDebitNormal ? Number(r.debit) - Number(r.credit) : Number(r.credit) - Number(r.debit);
-                          return (
-                            <tr key={r.entry_id + i} className="border-b border-gray-50">
-                              <td className="p-1.5">{fmtDate(r.entry_date)}</td>
-                              <td className="p-1.5">{r.entry_number}</td>
-                              <td className="p-1.5 text-gray-600">{r.line_description || r.memo || '—'}</td>
-                              <td className="p-1.5 text-right">{Number(r.debit) ? fmt(Number(r.debit)) : ''}</td>
-                              <td className="p-1.5 text-right">{Number(r.credit) ? fmt(Number(r.credit)) : ''}</td>
-                              <td className="p-1.5 text-right font-semibold">{fmt(running)}</td>
-                            </tr>
-                          );
-                        })}
-                        <tr className="border-t-2 border-rowan-navy font-bold">
-                          <td className="p-1.5" colSpan={5}>
-                            Closing balance
-                          </td>
-                          <td className="p-1.5 text-right">{fmt(running)}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+              {entries.length === 0 && <p className="text-center text-xs text-gray-400 italic py-8">No posted entries in this period.</p>}
+              {entries.map((lines) => (
+                <div key={lines[0].entry_id} className="mb-5 break-inside-avoid">
+                  <div className="flex justify-between items-baseline text-xs mb-1">
+                    <span className="font-bold text-rowan-navy">
+                      {lines[0].entry_number} · {fmtDate(lines[0].entry_date)}
+                    </span>
+                    <span className="text-gray-400">
+                      {lines[0].source_type}
+                      {lines[0].created_by_name ? ` · ${lines[0].created_by_name}` : ''}
+                    </span>
                   </div>
-                );
-              })}
+                  {lines[0].memo && <p className="text-[11px] text-gray-500 italic mb-1">{lines[0].memo}</p>}
+                  <table className="w-full text-xs">
+                    <tbody>
+                      {lines.map((l, i) => (
+                        <tr key={i} className="border-b border-gray-50">
+                          <td className="p-1 pl-2 text-gray-600">
+                            {l.account_code} — {l.account_name}
+                            {l.line_description && <span className="text-gray-400"> ({l.line_description})</span>}
+                          </td>
+                          <td className="p-1 text-right w-24">{Number(l.debit) ? fmt(Number(l.debit)) : ''}</td>
+                          <td className="p-1 text-right w-24">{Number(l.credit) ? fmt(Number(l.credit)) : ''}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+              {entries.length > 0 && (
+                <div className="mt-4 pt-3 border-t-2 border-rowan-navy flex justify-end">
+                  <table className="text-sm">
+                    <tbody>
+                      <tr className="font-bold">
+                        <td className="p-2 pr-6 text-right text-gray-500">Total</td>
+                        <td className="p-2 text-right w-24">{fmt(grandDebit)}</td>
+                        <td className="p-2 text-right w-24">{fmt(grandCredit)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </div>
