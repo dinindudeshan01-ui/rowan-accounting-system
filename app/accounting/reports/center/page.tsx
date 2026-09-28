@@ -58,29 +58,30 @@ export default function ReportCenterPage() {
             <DashCard href="/accounting/reports" label="Profit &amp; Loss" desc="Income, COGS, expenses, net profit" icon={<CompanyFinancialIcon />} />
             <DashCard href="/accounting/reports" label="Balance Sheet" desc="Assets, liabilities, equity as of a date" icon={<CompanyFinancialIcon />} />
             <DashCard href="/accounting/reports/trial-balance" label="Trial Balance" desc="Every account's debit/credit balance" icon={<TrialBalanceIcon />} />
-            <DashCard href="#" label="General Ledger" desc="Full transaction detail, all accounts" icon={<GeneralLedgerReportIcon />} disabled />
-            <DashCard href="#" label="Transaction Journal" desc="Chronological list of every journal entry" icon={<TransactionJournalIcon />} disabled />
+            <DashCard href="/accounting/reports/general-ledger" label="General Ledger" desc="Full transaction detail, all accounts" icon={<GeneralLedgerReportIcon />} />
+            <DashCard href="/accounting/reports/transaction-journal" label="Transaction Journal" desc="Chronological list of every journal entry" icon={<TransactionJournalIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<CustomersReceivablesIcon />} title="Customers &amp; Receivables" />
           <DashGrid>
-            <DashCard href="#" label="A/R Aging Summary" desc="Needs real customers table" icon={<CustomersReceivablesIcon />} disabled />
-            <DashCard href="#" label="A/R Aging Detail" desc="Needs real customers table" icon={<CustomersReceivablesIcon />} disabled />
-            <DashCard href="#" label="Customer Balance Summary" desc="Needs real customers table" icon={<CustomersReceivablesIcon />} disabled />
+            <DashCard href="/accounting/reports/ar-aging" label="A/R Aging Summary" desc="Open invoices bucketed by overdue days" icon={<CustomersReceivablesIcon />} />
+            <DashCard href="/accounting/reports/ar-aging" label="A/R Aging Detail" desc="Every open invoice, individually" icon={<CustomersReceivablesIcon />} />
+            <DashCard href="/accounting/reports/ar-aging" label="Customer Balance Summary" desc="Same data as Aging Summary, per customer" icon={<CustomersReceivablesIcon />} />
             <DashCard href="#" label="Open Invoices" desc="Unpaid invoices by customer" icon={<CustomersReceivablesIcon />} disabled />
           </DashGrid>
 
           <CategoryHeader icon={<SalesIcon />} title="Sales" />
           <DashGrid>
-            <DashCard href="#" label="Sales by Customer" desc="Summary &amp; detail" icon={<SalesIcon />} disabled />
-            <DashCard href="#" label="Sales by Item" desc="Ties into stock/style module" icon={<SalesIcon />} disabled />
+            <DashCard href="/accounting/reports/sales-by-customer" label="Sales by Customer" desc="Summary & detail, by customer" icon={<SalesIcon />} />
+            <DashCard href="/accounting/reports/sales-by-item" label="Sales by Item" desc="Ties into stock/style module" icon={<SalesIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<VendorsPayablesIcon />} title="Vendors &amp; Payables" />
           <DashGrid>
-            <DashCard href="#" label="A/P Aging Summary" desc="Needs real vendors table" icon={<VendorsPayablesIcon />} disabled />
-            <DashCard href="#" label="A/P Aging Detail" desc="Needs real vendors table" icon={<VendorsPayablesIcon />} disabled />
-            <DashCard href="#" label="Unpaid Bills" desc="Bills due, by vendor" icon={<VendorsPayablesIcon />} disabled />
+            <DashCard href="/accounting/reports/ap-aging" label="A/P Aging Summary" desc="Open bills bucketed by overdue days" icon={<VendorsPayablesIcon />} />
+            <DashCard href="/accounting/reports/ap-aging" label="A/P Aging Detail" desc="Every open bill, individually" icon={<VendorsPayablesIcon />} />
+            <DashCard href="/accounting/reports/ap-aging" label="Unpaid Bills" desc="Same data as Aging Summary, per vendor" icon={<VendorsPayablesIcon />} />
+            <DashCard href="/accounting/reports/expenses-by-vendor" label="Expenses by Vendor" desc="Every posted expense & bill, per vendor" icon={<VendorsPayablesIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<InventoryReportsIcon />} title="Inventory" />
@@ -105,6 +106,7 @@ export default function ReportCenterPage() {
           <DashGrid>
             <DashCard href="#" label="Reconciliation Report" desc="Per bank account, per period" icon={<BankingReportsIcon />} disabled />
             <DashCard href="#" label="Deposit Detail" desc="All deposits in a period" icon={<BankingReportsIcon />} disabled />
+            <DashCard href="/accounting/reports/check-detail" label="Check Detail" desc="Every check written, with its expense lines" icon={<BankingReportsIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<AccountantTaxesIcon />} title="Accountant &amp; Taxes" />
