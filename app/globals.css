@@ -1,11 +1,89 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Playfair+Display:wght@900&family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Playfair+Display:wght@900&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+html,
 body {
-  background-color: #e8eaf0;
+  height: 100%;
+}
+
+body {
+  background-color: #f3f4f8;
   font-family: 'Inter', sans-serif;
   color: #06154b;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ------------------------------------------------------------------
+   Full-screen QuickBooks-style content area.
+   Pages were written as standalone screens (own min-h-screen, centered
+   max-w-* column). Inside the shell they must fill the main pane.
+   ------------------------------------------------------------------ */
+.app-main .min-h-screen,
+.app-main .h-screen {
+  min-height: 100%;
+}
+.app-main .h-screen {
+  height: 100%;
+}
+
+/* Page-level centered columns become full width. Modals use max-w-md/lg/xl
+   and are intentionally left alone. */
+.app-main .max-w-4xl,
+.app-main .max-w-5xl,
+.app-main .max-w-6xl,
+.app-main .max-w-7xl,
+.app-main .max-w-\[1400px\] {
+  max-width: none;
+}
+.app-main [class*='max-w-'][class*='mx-auto'].max-w-3xl {
+  max-width: none;
+}
+
+/* Flatter, denser card look (QuickBooks style). */
+.app-main .shadow-lg,
+.app-main .shadow-md {
+  box-shadow: 0 1px 2px rgba(6, 21, 75, 0.06), 0 0 0 1px rgba(6, 21, 75, 0.05);
+}
+
+/* Default table polish. :where() keeps specificity at zero so any
+   class a page sets still wins. */
+:where(.app-main) table thead th {
+  background-color: #f8f9fc;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+:where(.app-main) table tbody tr:hover {
+  background-color: rgba(6, 21, 75, 0.03);
+}
+
+/* Slim scrollbars */
+.app-main::-webkit-scrollbar,
+nav ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.app-main::-webkit-scrollbar-thumb {
+  background: #c9cde0;
+  border-radius: 8px;
+  border: 2px solid #f3f4f8;
+}
+
+/* ------------------------------------------------------------------
+   Printing: drop the fixed-height app frame so long documents paginate.
+   ------------------------------------------------------------------ */
+@media print {
+  html,
+  body,
+  .app-root,
+  .app-main {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    background: #fff !important;
+  }
 }
