@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
-import { PresenceIndicator } from '@/components/PresenceIndicator';
+import { PageHeader, StatTile, btnPrimary, btnSecondary } from '@/components/PageHeader';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import {
   PayrollPeriod, PayrollEntry, PayrollEntryLine, DeductionType,
@@ -148,151 +147,179 @@ export default function PayrollRunPage() {
   );
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-rowan-bg"><LoadingSpinner size="lg" /></div>;
+    return <div className="min-h-full flex items-center justify-center py-32"><LoadingSpinner size="lg" /></div>;
   }
 
+  const status = activePeriod?.status;
+  const STEPS = [
+    { key: 'draft', label: 'Prepare', hint: 'Run payroll and check each payslip' },
+    { key: 'finalized', label: 'Finalize', hint: 'Lock the payslips' },
+    { key: 'posted', label: 'Post to ledger', hint: 'Record it in the books' },
+  ];
+  const stepIndex = status === 'posted' ? 2 : status === 'finalized' ? 1 : 0;
+  const editable = status === 'draft';
+
   return (
-    <div className="min-h-screen bg-rowan-bg p-6">
-      <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage="Payroll Run" />
-      <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-        <BrandRibbon />
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
-              <div className="flex items-center gap-2 mt-1"><RowanWordmark /></div>
-            </div>
-            <div className="text-right">
-              <h2 className="text-lg font-bold uppercase tracking-widest text-rowan-navy">Payroll Run</h2>
-              <Link href="/payroll/setup" className="text-[10px] font-bold text-gray-400 hover:text-rowan-red">Payroll Setup →</Link>
-            </div>
+    <div className="min-h-full lg:h-full lg:flex lg:flex-col px-6 py-6">
+      <PageHeader
+        title="Payroll Run"
+        subtitle={activePeriod ? `${activePeriod.label} — monthly payslips for every active employee` : 'Create a period to get started'}
+        actions={<Link href="/payroll/setup" className={btnSecondary}>Payroll Setup</Link>}
+      />
+
+      {note && <div className="mb-4 bg-green-50 border border-green-300 text-green-800 text-sm px-4 py-2 rounded-lg shrink-0">{note}</div>}
+      {error && (
+        <div className="mb-4 bg-red-50 border border-red-300 text-rowan-red text-sm px-4 py-2 rounded-lg shrink-0 flex justify-between gap-3">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="font-bold">✕</button>
+        </div>
+      )}
+
+      <div className="flex flex-col lg:flex-row gap-5 lg:flex-1 lg:min-h-0">
+        {/* ---------- periods rail ---------- */}
+        <div className="lg:w-64 shrink-0 bg-white rounded-xl overflow-hidden flex flex-col max-h-[40vh] lg:max-h-none lg:min-h-0">
+          <p className="px-4 pt-4 pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Periods</p>
+          <div className="flex-1 overflow-auto px-2 space-y-1">
+            {periods.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => selectPeriod(p)}
+                className={`w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold flex items-center justify-between transition ${
+                  activePeriod?.id === p.id ? 'bg-rowan-navy text-white' : 'hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                <span>{p.label}</span>
+                <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase ${
+                  p.status === 'posted' ? 'bg-green-100 text-green-800' : p.status === 'finalized' ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-600'
+                }`}>
+                  {p.status}
+                </span>
+              </button>
+            ))}
+            {periods.length === 0 && <p className="text-xs text-gray-400 italic px-2 py-3">No periods yet.</p>}
           </div>
-
-          {note && <div className="mb-4 bg-green-50 border border-green-300 text-green-800 text-sm px-4 py-2 rounded">{note}</div>}
-          {error && <div className="mb-4 bg-red-50 border border-red-300 text-rowan-red text-sm px-4 py-2 rounded">{error}</div>}
-
-          <div className="flex gap-6">
-            {/* ---------- period sidebar ---------- */}
-            <div className="w-48 shrink-0">
-              <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">Periods</p>
-              <div className="space-y-1 mb-4">
-                {periods.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => selectPeriod(p)}
-                    className={`w-full text-left px-2 py-1.5 rounded text-xs font-bold flex items-center justify-between ${
-                      activePeriod?.id === p.id ? 'bg-rowan-navy text-white' : 'hover:bg-gray-100 text-gray-600'
-                    }`}
-                  >
-                    <span>{p.label}</span>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full uppercase ${
-                      p.status === 'posted' ? 'bg-green-100 text-green-800' : p.status === 'finalized' ? 'bg-amber-100 text-amber-800' : 'bg-gray-200 text-gray-600'
-                    } ${activePeriod?.id === p.id ? 'opacity-90' : ''}`}>
-                      {p.status}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <div className="border-t border-gray-200 pt-3">
-                <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">New period</p>
-                <div className="flex gap-1 mb-2">
-                  <select value={newMonth} onChange={(e) => setNewMonth(parseInt(e.target.value))} className="border border-gray-300 rounded px-1 py-1 text-xs flex-1">
-                    {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-                  </select>
-                  <input type="number" value={newYear} onChange={(e) => setNewYear(parseInt(e.target.value))} className="border border-gray-300 rounded px-1 py-1 text-xs w-16" />
-                </div>
-                <button onClick={handleCreatePeriod} disabled={busy} className="w-full px-2 py-1.5 rounded bg-rowan-navy text-white text-xs font-bold hover:bg-rowan-red disabled:opacity-50">
-                  + Create period
-                </button>
-              </div>
+          <div className="border-t border-gray-200 p-3">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">New period</p>
+            <div className="flex gap-1.5 mb-2">
+              <select value={newMonth} onChange={(e) => setNewMonth(parseInt(e.target.value))} className="px-2 py-1.5 text-xs flex-1">
+                {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+              </select>
+              <input type="number" value={newYear} onChange={(e) => setNewYear(parseInt(e.target.value))} className="px-2 py-1.5 text-xs w-20" />
             </div>
+            <button onClick={handleCreatePeriod} disabled={busy} className="w-full px-3 py-2 rounded-full bg-rowan-navy text-white text-xs font-bold hover:bg-rowan-red disabled:opacity-50 transition-colors">
+              + Create period
+            </button>
+          </div>
+        </div>
 
-            {/* ---------- main panel ---------- */}
-            <div className="flex-1 min-w-0">
-              {!activePeriod ? (
-                <p className="text-sm text-gray-400 py-12 text-center">Create a payroll period to get started.</p>
+        {/* ---------- main ---------- */}
+        <div className="flex-1 min-w-0 flex flex-col lg:min-h-0">
+          {!activePeriod ? (
+            <div className="bg-white rounded-xl py-24 text-center text-sm text-gray-400">Create a payroll period to get started.</div>
+          ) : (
+            <>
+              {/* Progress + the one next action */}
+              <div className="bg-white rounded-xl px-5 py-4 mb-4 shrink-0 flex flex-wrap items-center justify-between gap-4">
+                <ol className="flex items-center gap-2 sm:gap-4 flex-wrap">
+                  {STEPS.map((st, i) => {
+                    const done = i < stepIndex || status === 'posted';
+                    const current = i === stepIndex && status !== 'posted';
+                    return (
+                      <li key={st.key} className="flex items-center gap-2">
+                        <span className={`w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center ${
+                          done ? 'bg-green-600 text-white' : current ? 'bg-rowan-red text-white' : 'bg-gray-200 text-gray-500'
+                        }`}>{done ? '✓' : i + 1}</span>
+                        <span>
+                          <span className={`block text-xs font-bold ${current ? 'text-rowan-navy' : 'text-gray-500'}`}>{st.label}</span>
+                          <span className="hidden md:block text-[10px] text-gray-400">{st.hint}</span>
+                        </span>
+                        {i < STEPS.length - 1 && <span className="text-gray-300 mx-1">›</span>}
+                      </li>
+                    );
+                  })}
+                </ol>
+
+                <div className="flex items-center gap-2">
+                  {status === 'draft' && (
+                    <>
+                      <button onClick={handleRun} disabled={busy} className={entries.length === 0 ? btnPrimary : btnSecondary}>
+                        {busy && <LoadingSpinner size="sm" />} Run Payroll
+                      </button>
+                      {entries.length > 0 && (
+                        <button onClick={handleFinalize} disabled={busy} className={btnPrimary}>Finalize</button>
+                      )}
+                    </>
+                  )}
+                  {status === 'finalized' && (
+                    <>
+                      <button onClick={handleReopen} disabled={busy} className={btnSecondary}>Reopen</button>
+                      <button onClick={handlePost} disabled={busy} className={btnPrimary}>Post to Ledger</button>
+                    </>
+                  )}
+                  {status === 'posted' && <span className="text-xs font-bold text-green-700 bg-green-50 border border-green-200 rounded-full px-4 py-2">Posted to the ledger</span>}
+                </div>
+              </div>
+
+              {entries.length === 0 ? (
+                <div className="bg-white rounded-xl py-20 px-6 text-center text-sm text-gray-500">
+                  No payslips yet. Click <strong>Run Payroll</strong> to pull in every active employee&apos;s basic salary, allowances and deductions.
+                </div>
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-base font-bold text-rowan-navy">{activePeriod.label}</h3>
-                      <p className="text-[10px] text-gray-400 uppercase font-bold">{activePeriod.status}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      {activePeriod.status === 'draft' && (
-                        <>
-                          <button onClick={handleRun} disabled={busy} className="px-3 py-1.5 rounded bg-rowan-navy text-white text-xs font-bold hover:bg-rowan-red disabled:opacity-50 inline-flex items-center gap-1">
-                            {busy && <LoadingSpinner size="sm" />} Run Payroll
-                          </button>
-                          {entries.length > 0 && (
-                            <button onClick={handleFinalize} disabled={busy} className="px-3 py-1.5 rounded border border-rowan-navy text-rowan-navy text-xs font-bold hover:bg-rowan-bg disabled:opacity-50">
-                              Finalize
-                            </button>
-                          )}
-                        </>
-                      )}
-                      {activePeriod.status === 'finalized' && (
-                        <>
-                          <button onClick={handleReopen} disabled={busy} className="px-3 py-1.5 rounded border border-gray-300 text-gray-600 text-xs font-bold hover:bg-gray-50 disabled:opacity-50">
-                            Reopen
-                          </button>
-                          <button onClick={handlePost} disabled={busy} className="px-3 py-1.5 rounded bg-rowan-red text-white text-xs font-bold hover:opacity-90 disabled:opacity-50">
-                            Post to Ledger
-                          </button>
-                        </>
-                      )}
-                    </div>
+                  <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-4 shrink-0">
+                    <StatTile label="Employees" value={String(entries.length)} sub="on this payroll" tone="navy" />
+                    <StatTile label="Gross earnings" value={fmt(totals.gross)} tone="gray" />
+                    <StatTile label="Net pay" value={fmt(totals.net)} sub="paid to employees" tone="green" />
+                    <StatTile label="Total cost (CTC)" value={fmt(totals.ctc)} sub="incl. employer EPF & ETF" tone="red" />
                   </div>
 
-                  {entries.length === 0 ? (
-                    <p className="text-sm text-gray-400 py-12 text-center">
-                      No payslips yet. Click <strong>Run Payroll</strong> to pull in every active employee&apos;s basic
-                      salary, allowances, and deductions.
-                    </p>
-                  ) : (
-                    <>
-                      <table className="w-full text-xs mb-4">
+                  <div className="bg-white rounded-xl overflow-hidden flex flex-col lg:flex-1 lg:min-h-0">
+                    <div className="overflow-auto flex-1" style={{ minHeight: 280 }}>
+                      <table className="w-full text-xs whitespace-nowrap">
                         <thead>
-                          <tr className="bg-rowan-navy text-white text-left">
-                            <th className="p-2">Employee</th><th className="p-2">Dept</th>
-                            <th className="p-2 text-right">Basic</th>
-                            <th className="p-2 text-right w-20">No-pay days</th>
-                            <th className="p-2 text-right w-20">OT hrs</th>
-                            <th className="p-2 text-right">Gross</th>
-                            <th className="p-2 text-right">EPF (ee)</th>
-                            <th className="p-2 text-right">APIT</th>
-                            <th className="p-2 text-right">Net Pay</th>
-                            <th className="p-2 text-right">CTC</th>
-                            <th className="p-2"></th>
+                          <tr className="text-left">
+                            <th className="px-3 py-2.5">Employee</th>
+                            <th className="px-3 py-2.5">Dept</th>
+                            <th className="px-3 py-2.5 text-right">Basic</th>
+                            <th className="px-3 py-2.5 text-right">No-pay days</th>
+                            <th className="px-3 py-2.5 text-right">OT hours</th>
+                            <th className="px-3 py-2.5 text-right">Gross</th>
+                            <th className="px-3 py-2.5 text-right">EPF (employee)</th>
+                            <th className="px-3 py-2.5 text-right">APIT</th>
+                            <th className="px-3 py-2.5 text-right">Net pay</th>
+                            <th className="px-3 py-2.5 text-right">CTC</th>
+                            <th className="px-3 py-2.5"></th>
                           </tr>
                         </thead>
                         <tbody>
                           {entries.map((e) => (
                             <React.Fragment key={e.id}>
-                              <tr className="border-b border-gray-100 hover:bg-gray-50">
-                                <td className="p-2 font-bold text-rowan-navy">{e.employees?.name}<div className="text-[9px] text-gray-400 font-mono">{e.employees?.employee_no}</div></td>
-                                <td className="p-2">{e.departments?.name ?? <span className="text-rowan-red">unassigned</span>}</td>
-                                <td className="p-2 text-right">{fmt(e.basic_salary)}</td>
-                                <td className="p-2 text-right">
+                              <tr className="border-b border-gray-100">
+                                <td className="px-3 py-2.5 font-bold text-rowan-navy">{e.employees?.name}<div className="text-[10px] text-gray-400 font-mono font-normal">{e.employees?.employee_no}</div></td>
+                                <td className="px-3 py-2.5">{e.departments?.name ?? <span className="text-rowan-red">unassigned</span>}</td>
+                                <td className="px-3 py-2.5 text-right">{fmt(e.basic_salary)}</td>
+                                <td className="px-3 py-2.5 text-right">
                                   <input
-                                    type="number" defaultValue={e.no_pay_days} disabled={activePeriod.status !== 'draft'}
+                                    key={`np-${e.id}-${e.no_pay_days}`}
+                                    type="number" defaultValue={e.no_pay_days} disabled={!editable}
                                     onBlur={(ev) => { const v = parseFloat(ev.target.value) || 0; if (v !== e.no_pay_days) handleFieldChange(e.id, { no_pay_days: v }); }}
-                                    className="w-16 border border-gray-200 rounded px-1 py-0.5 text-right disabled:bg-gray-50"
+                                    className="w-16 px-1.5 py-1 text-right disabled:bg-gray-50 disabled:text-gray-500"
                                   />
                                 </td>
-                                <td className="p-2 text-right">
+                                <td className="px-3 py-2.5 text-right">
                                   <input
-                                    type="number" defaultValue={e.ot_hours} disabled={activePeriod.status !== 'draft'}
+                                    key={`ot-${e.id}-${e.ot_hours}`}
+                                    type="number" defaultValue={e.ot_hours} disabled={!editable}
                                     onBlur={(ev) => { const v = parseFloat(ev.target.value) || 0; if (v !== e.ot_hours) handleFieldChange(e.id, { ot_hours: v }); }}
-                                    className="w-16 border border-gray-200 rounded px-1 py-0.5 text-right disabled:bg-gray-50"
+                                    className="w-16 px-1.5 py-1 text-right disabled:bg-gray-50 disabled:text-gray-500"
                                   />
                                 </td>
-                                <td className="p-2 text-right font-bold">{fmt(e.gross_earnings)}</td>
-                                <td className="p-2 text-right">{fmt(e.epf_employee)}</td>
-                                <td className="p-2 text-right">{fmt(e.apit_amount)}</td>
-                                <td className="p-2 text-right font-bold text-rowan-navy">{fmt(e.net_pay)}</td>
-                                <td className="p-2 text-right font-bold text-rowan-red">{fmt(e.ctc)}</td>
-                                <td className="p-2 text-right">
+                                <td className="px-3 py-2.5 text-right font-bold">{fmt(e.gross_earnings)}</td>
+                                <td className="px-3 py-2.5 text-right">{fmt(e.epf_employee)}</td>
+                                <td className="px-3 py-2.5 text-right">{fmt(e.apit_amount)}</td>
+                                <td className="px-3 py-2.5 text-right font-bold text-rowan-navy">{fmt(e.net_pay)}</td>
+                                <td className="px-3 py-2.5 text-right font-bold text-rowan-red">{fmt(e.ctc)}</td>
+                                <td className="px-3 py-2.5 text-right">
                                   <button onClick={() => setExpanded(expanded === e.id ? null : e.id)} className="text-rowan-navy font-bold hover:text-rowan-red">
                                     {expanded === e.id ? 'Close' : 'Details'}
                                   </button>
@@ -300,11 +327,11 @@ export default function PayrollRunPage() {
                               </tr>
                               {expanded === e.id && (
                                 <tr>
-                                  <td colSpan={11} className="p-3 bg-rowan-bg">
+                                  <td colSpan={11} className="p-4 bg-rowan-bg whitespace-normal">
                                     <EntryLinesEditor
                                       entry={e}
                                       deductionTypes={deductionTypes}
-                                      locked={activePeriod.status !== 'draft'}
+                                      locked={!editable}
                                       onChanged={() => loadEntries(activePeriod.id)}
                                       onError={setError}
                                     />
@@ -316,28 +343,26 @@ export default function PayrollRunPage() {
                         </tbody>
                         <tfoot>
                           <tr className="bg-rowan-bg font-bold">
-                            <td className="p-2" colSpan={5}>Totals</td>
-                            <td className="p-2 text-right">{fmt(totals.gross)}</td>
-                            <td className="p-2 text-right">{fmt(totals.epf_ee)}</td>
-                            <td className="p-2 text-right">{fmt(totals.apit)}</td>
-                            <td className="p-2 text-right text-rowan-navy">{fmt(totals.net)}</td>
-                            <td className="p-2 text-right text-rowan-red">{fmt(totals.ctc)}</td>
+                            <td className="px-3 py-2.5" colSpan={5}>Totals</td>
+                            <td className="px-3 py-2.5 text-right">{fmt(totals.gross)}</td>
+                            <td className="px-3 py-2.5 text-right">{fmt(totals.epf_ee)}</td>
+                            <td className="px-3 py-2.5 text-right">{fmt(totals.apit)}</td>
+                            <td className="px-3 py-2.5 text-right text-rowan-navy">{fmt(totals.net)}</td>
+                            <td className="px-3 py-2.5 text-right text-rowan-red">{fmt(totals.ctc)}</td>
                             <td></td>
                           </tr>
                         </tfoot>
                       </table>
-                      <p className="text-[10px] text-gray-400">
-                        <strong>CTC</strong> (gross + employer EPF + employer ETF) is the true cost to the business —
-                        that&apos;s the figure the labour costing engine will use, not Net Pay.
-                      </p>
-                    </>
-                  )}
+                    </div>
+                    <p className="text-[11px] text-gray-500 px-4 py-2.5 border-t border-gray-200">
+                      <strong>CTC</strong> (gross + employer EPF + employer ETF) is the true cost to the business — the figure the labour costing engine uses, not Net Pay.
+                    </p>
+                  </div>
                 </>
               )}
-            </div>
-          </div>
+            </>
+          )}
         </div>
-        <BrandRibbon />
       </div>
     </div>
   );
