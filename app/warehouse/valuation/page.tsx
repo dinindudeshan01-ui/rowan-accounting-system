@@ -17,6 +17,7 @@ type Row = {
 };
 
 function fmt(n: number) {
+  if (Math.abs(n) < 0.005) n = 0; // avoid showing "-0.00"
   return n.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 

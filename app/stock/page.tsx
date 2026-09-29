@@ -23,6 +23,7 @@ const CLASSIFICATION_LABELS: Record<string, string> = {
 };
 
 function fmt(n: number) {
+  if (Math.abs(n) < 0.005) n = 0; // avoid showing "-0.00"
   return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
