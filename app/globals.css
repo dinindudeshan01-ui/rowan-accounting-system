@@ -74,6 +74,61 @@ nav ::-webkit-scrollbar {
 }
 
 /* ------------------------------------------------------------------
+   Rowan brand system — defaults for every form control and button so
+   un-styled parts of older pages match. :where() = zero specificity,
+   so any Tailwind class on the element still wins.
+   ------------------------------------------------------------------ */
+::selection {
+  background: rgba(230, 0, 38, 0.18);
+}
+:where(.app-main) input:not([type='checkbox']):not([type='radio']):not([type='range']),
+:where(.app-main) select,
+:where(.app-main) textarea {
+  border: 1px solid #d5d9e6;
+  border-radius: 8px;
+  background: #fff;
+  color: #06154b;
+}
+:where(.app-main) input:focus,
+:where(.app-main) select:focus,
+:where(.app-main) textarea:focus {
+  outline: none;
+  border-color: #06154b;
+  box-shadow: 0 0 0 3px rgba(6, 21, 75, 0.12);
+}
+:where(.app-main) input[type='checkbox'],
+:where(.app-main) input[type='radio'] {
+  accent-color: #06154b;
+}
+:where(.app-main) a:focus-visible,
+:where(.app-main) button:focus-visible {
+  outline: 2px solid #e60026;
+  outline-offset: 2px;
+}
+/* Page headings inherit the brand navy + tighter weight */
+:where(.app-main) h1 {
+  color: #06154b;
+  letter-spacing: -0.01em;
+}
+/* Primary (navy) buttons turn Rowan red on hover everywhere */
+.app-main button.bg-rowan-navy:not(:disabled):hover,
+.app-main a.bg-rowan-navy:hover {
+  background-color: #e60026;
+}
+/* Cards: consistent radius + hairline border */
+.app-main .rounded-lg.bg-white,
+.app-main .rounded-xl.bg-white {
+  border: 1px solid #e3e6f0;
+}
+/* Sticky table headers inside scrolling cards */
+:where(.app-main) table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 2px solid #06154b;
+}
+
+/* ------------------------------------------------------------------
    Printing: drop the fixed-height app frame so long documents paginate.
    ------------------------------------------------------------------ */
 @media print {

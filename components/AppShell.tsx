@@ -23,10 +23,10 @@ import {
   Warehouse,
   X,
 } from 'lucide-react';
-import { RowanMark } from '@/components/RowanMark';
+import { RowanMark, BrandRibbon } from '@/components/RowanMark';
 import { OpenWindowsPanel } from '@/components/OpenWindowsPanel';
 import { PresenceIndicator } from '@/components/PresenceIndicator';
-import { recordVisit } from '@/lib/navHistory';
+import { recordVisit, PAGE_LABELS } from '@/lib/navHistory';
 
 // ------------------------------------------------------------------
 // QuickBooks-style application shell: fixed left navigation, slim top
@@ -174,6 +174,20 @@ function isActive(pathname: string, g: NavGroup) {
   return g.match.some((m) => pathname === m || pathname.startsWith(m + '/'));
 }
 
+function crumbsFor(pathname: string): { label: string; href: string }[] {
+  const parts = pathname.split('/').filter(Boolean);
+  const out: { label: string; href: string }[] = [{ label: 'Home', href: '/' }];
+  let acc = '';
+  for (const part of parts) {
+    acc += '/' + part;
+    const label =
+      PAGE_LABELS[acc] ??
+      (/^[0-9a-f-]{8,}$/i.test(part) ? 'Detail' : part.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()));
+    out.push({ label, href: acc });
+  }
+  return out;
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -240,19 +254,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <nav className="h-full flex flex-col bg-rowan-navy text-white">
       <Link
         href="/"
-        className={`flex items-center gap-3 h-14 shrink-0 border-b border-white/10 ${collapsed ? 'justify-center' : 'px-4'}`}
-        title="Home"
+        className={`flex items-center gap-3 h-16 shrink-0 bg-white ${collapsed ? 'justify-center' : 'px-4'}`}
+        title="Rowan — Home"
       >
-        <span className="bg-white rounded-md p-1 flex">
-          <RowanMark size={22} />
-        </span>
+        <RowanMark size={collapsed ? 28 : 34} />
         {!collapsed && (
           <span className="leading-none">
-            <span className="block font-display text-lg tracking-wide">ROWAN</span>
-            <span className="block text-[8px] tracking-[0.2em] uppercase text-white/60 mt-0.5">Casual Wear</span>
+            <span className="block font-display text-xl tracking-wide text-rowan-navy">ROWAN</span>
+            <span className="block text-[8px] tracking-[0.2em] font-bold uppercase text-rowan-navy mt-1">Casual Wear Pvt Ltd</span>
           </span>
         )}
       </Link>
+      <BrandRibbon className="h-1 shrink-0" />
 
       <div className="flex-1 overflow-y-auto py-2">
         {TOP_NAV.map((g) => {
@@ -301,10 +314,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         })}
       </div>
 
-      <div className="h-1.5 flex shrink-0">
-        <div className="w-2/3 bg-white/20" />
-        <div className="w-1/3 bg-rowan-red" />
-      </div>
     </nav>
   );
 
@@ -422,6 +431,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {currentUser.name.slice(0, 1).toUpperCase()}
           </div>
         </header>
+        <BrandRibbon className="h-[3px] shrink-0 print:hidden" />
+
+        {!isHome && (
+          <div className="print:hidden shrink-0 bg-white border-b border-gray-200 px-5 py-2 flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 overflow-x-auto whitespace-nowrap">
+            {crumbsFor(pathname).map((c, i, arr) => (
+              <React.Fragment key={c.href}>
+                {i > 0 && <span className="text-gray-300">›</span>}
+                {i === arr.length - 1 ? (
+                  <span className="text-rowan-navy font-bold">{c.label}</span>
+                ) : (
+                  <Link href={c.href} className="hover:text-rowan-red">{c.label}</Link>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
 
         {/* Content: full width, scrolls independently of the sidebar */}
         <main ref={mainRef} className="app-main flex-1 min-h-0 overflow-y-auto">
