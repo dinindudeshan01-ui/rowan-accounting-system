@@ -86,7 +86,14 @@ export default function InvoicesListPage() {
     if (!pendingDelete) return;
     const { id } = pendingDelete;
     setDeletingId(id);
-    const { error } = await supabase.rpc('delete_invoice', { p_invoice_id: id });
+    let { error } = await supabase.rpc('delete_invoice', { p_invoice_id: id });
+    // If the delete_invoice function isn't in the database (or the API cache),
+    // a draft has no ledger posting, so it can be removed directly.
+    const rpcMissing = !!error && (error.code === 'PGRST202' || /schema cache|does not exist|could not find/i.test(error.message));
+    if (rpcMissing && rows.find((r) => r.id === id)?.status === 'draft') {
+      const res = await supabase.from('invoices').delete().eq('id', id);
+      error = res.error;
+    }
     setDeletingId(null);
     if (error) {
       setDeleteError(error.message);
@@ -229,8 +236,8 @@ export default function InvoicesListPage() {
             ) : filtered.length === 0 ? (
               <p className="p-8 text-center text-[12px] text-gray-400 italic">No invoices found.</p>
             ) : (
-              <div className="max-h-[calc(100vh-390px)] min-h-[320px] overflow-y-auto">
-                <table className="w-full text-[12px]">
+              <div className="max-h-[calc(100vh-390px)] min-h-[320px] overflow-auto">
+                <table className="w-full text-[12px] whitespace-nowrap">
                   <thead>
                     <tr className="text-left">
                       <th className="px-4 py-2">Invoice #</th>
