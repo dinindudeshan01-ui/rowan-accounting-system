@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
-import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
+import { PageHeader } from '@/components/PageHeader';
 import { DashCard, DashGrid } from '@/components/DashCard';
 import {
   TrialBalanceIcon,
@@ -40,19 +39,9 @@ function CategoryHeader({ icon, title }: { icon: React.ReactNode; title: string 
 
 export default function ReportCenterPage() {
   return (
-    <div className="min-h-screen bg-rowan-bg p-6">
-      <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
-        <BrandRibbon />
-        <div className="p-8">
-          <div className="flex justify-between items-center mb-2">
-            <RowanWordmark markSize={40} />
-            <Link href="/accounting" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
-              ← Accounting
-            </Link>
-          </div>
-          <h2 className="text-lg font-bold uppercase tracking-widest text-rowan-navy mb-1">Report Center</h2>
-          <p className="text-xs text-gray-400 mb-6">Every report, grouped the way you'd find it in QuickBooks.</p>
-
+    <div className="min-h-full px-6 py-6">
+      <PageHeader title="Report Center" subtitle="Every report, grouped the way you'd find it in QuickBooks." />
+      <div>
           <CategoryHeader icon={<CompanyFinancialIcon />} title="Company &amp; Financial" />
           <DashGrid>
             <DashCard href="/accounting/reports" label="Profit &amp; Loss" desc="Income, COGS, expenses, net profit" icon={<CompanyFinancialIcon />} />
@@ -115,8 +104,6 @@ export default function ReportCenterPage() {
             <DashCard href="/accounting/audit-log" label="Audit Trail" desc="Every change made in the system" icon={<AccountantTaxesIcon />} />
             <DashCard href="#" label="VAT / SSCL Return" desc="Sri Lanka tax reports" icon={<AccountantTaxesIcon />} disabled />
           </DashGrid>
-        </div>
-        <BrandRibbon />
       </div>
     </div>
   );

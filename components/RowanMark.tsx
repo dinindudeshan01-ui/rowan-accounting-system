@@ -26,7 +26,7 @@ export function RowanWatermark({ size = 600, opacity = 0.03 }: { size?: number; 
 /** Full wordmark lockup: mark + "ROWAN" + "CASUAL WEAR PVT LTD". */
 export function RowanWordmark({ markSize = 40 }: { markSize?: number }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="rowan-page-brand flex items-center gap-3">
       <RowanMark size={markSize} />
       <div>
         <h1 className="font-black text-2xl leading-none text-rowan-navy font-display">ROWAN</h1>
@@ -41,7 +41,7 @@ export function RowanWordmark({ markSize = 40 }: { markSize?: number }) {
 /** The navy/red ribbon bar used top and bottom of every printable document. */
 export function BrandRibbon({ className = 'h-2' }: { className?: string }) {
   return (
-    <div className={`w-full flex ${className}`}>
+    <div className={`rowan-page-ribbon w-full flex ${className}`}>
       <div className="w-2/3 bg-rowan-navy" />
       <div className="w-1/3 bg-rowan-red" />
     </div>
