@@ -423,7 +423,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <OpenWindowsPanel />
-          <PresenceIndicator roomName="accounting-app" currentUser={currentUser} currentPage={pathname} />
+          <PresenceIndicator inline roomName="accounting-app" currentUser={currentUser} currentPage={PAGE_LABELS[pathname] ?? pathname} />
           <div
             className="w-8 h-8 rounded-full bg-rowan-navy text-white text-xs font-bold flex items-center justify-center"
             title={currentUser.name}

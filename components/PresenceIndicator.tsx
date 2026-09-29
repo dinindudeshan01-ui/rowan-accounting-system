@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
 type PresentUser = {
@@ -28,22 +29,48 @@ function initials(name: string) {
  * stack. Joins a Supabase Realtime Presence channel scoped to `roomName`.
  * Use one shared room (e.g. "accounting-app") for one global indicator
  * across the whole app, or a per-page room to show who's on that exact page.
+ *
+ * The app shell (top bar) renders the one live indicator with `inline`.
+ * Instances rendered by individual pages (no `inline`) are inert: joining
+ * the same room twice makes supabase-js throw "cannot add presence
+ * callbacks ... after subscribe()" and crashes the page.
  */
 export function PresenceIndicator({
   roomName,
   currentUser,
   currentPage,
+  inline = false,
 }: {
   roomName: string;
   currentUser: { id: string; name: string };
   currentPage: string;
+  /** True only for the single instance in the app shell's top bar. */
+  inline?: boolean;
 }) {
   const [users, setUsers] = useState<PresentUser[]>([]);
 
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const readyRef = useRef(false);
+  const pageRef = useRef(currentPage);
+  pageRef.current = currentPage;
+
+  const payload = () =>
+    ({
+      user_id: currentUser.id,
+      name: currentUser.name,
+      color: colorForUser(currentUser.id),
+      page: pageRef.current,
+      online_at: new Date().toISOString(),
+    }) as PresentUser;
+
+  // Join the room once. Page changes only re-track (below) — rebuilding
+  // a same-named channel on every navigation is what caused the crash.
   useEffect(() => {
+    if (!inline) return;
     const channel = supabase.channel(roomName, {
       config: { presence: { key: currentUser.id } },
     });
+    channelRef.current = channel;
 
     channel
       .on('presence', { event: 'sync' }, () => {
@@ -53,28 +80,34 @@ export function PresenceIndicator({
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          await channel.track({
-            user_id: currentUser.id,
-            name: currentUser.name,
-            color: colorForUser(currentUser.id),
-            page: currentPage,
-            online_at: new Date().toISOString(),
-          } as PresentUser);
+          readyRef.current = true;
+          await channel.track(payload());
         }
       });
 
     return () => {
+      readyRef.current = false;
+      channelRef.current = null;
       supabase.removeChannel(channel);
     };
-  }, [roomName, currentUser.id, currentUser.name, currentPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inline, roomName, currentUser.id, currentUser.name]);
 
-  if (users.length === 0) return null;
+  // Tell others which page we're on without touching the channel.
+  useEffect(() => {
+    if (inline && readyRef.current && channelRef.current) {
+      channelRef.current.track(payload());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
+
+  if (!inline || users.length === 0) return null;
 
   const visible = users.slice(0, 4);
   const overflow = users.length - visible.length;
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex items-center gap-1 bg-white/90 backdrop-blur border border-gray-200 rounded-full pl-1 pr-3 py-1 shadow-sm">
+    <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-full pl-1 pr-3 py-1">
       <div className="flex -space-x-2">
         {visible.map((u) => (
           <div key={u.user_id} className="relative group">
@@ -85,7 +118,7 @@ export function PresenceIndicator({
               {initials(u.name)}
             </div>
             <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full border border-white" />
-            <div className="absolute top-9 right-0 hidden group-hover:block whitespace-nowrap bg-rowan-navy text-white text-[10px] px-2 py-1 rounded shadow-lg">
+            <div className="absolute top-9 right-0 z-50 hidden group-hover:block whitespace-nowrap bg-rowan-navy text-white text-[10px] px-2 py-1 rounded shadow-lg">
               {u.name} · {u.page}
             </div>
           </div>
