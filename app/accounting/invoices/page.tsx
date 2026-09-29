@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SearchableSelect } from '@/components/SearchableSelect';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { PageHeader, StatTile, btnPrimary, btnSecondary } from '@/components/PageHeader';
+import { Plus, Search } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 type InvoiceRow = {
@@ -43,6 +45,18 @@ function compareInvoiceNumbers(a: string, b: string) {
 function fmtMoney(currency: string, n: number) {
   return `${currency} ${n.toFixed(2)}`;
 }
+
+function fmtNum(n: number) {
+  return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+const TABS = [
+  { value: 'all', label: 'All' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'issued', label: 'Unpaid' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'void', label: 'Void' },
+];
 
 const STATUS_COLORS: Record<string, string> = {
   draft: 'bg-gray-200 text-gray-500',
@@ -122,70 +136,103 @@ export default function InvoicesListPage() {
     return sorted;
   }, [rows, search, statusFilter, sortBy]);
 
+  const stats = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const cur = rows[0]?.currency ?? 'LKR';
+    let unpaid = 0, unpaidN = 0, overdue = 0, overdueN = 0, paid = 0, paidN = 0, drafts = 0;
+    const counts: Record<string, number> = { all: rows.length, draft: 0, issued: 0, paid: 0, void: 0 };
+    for (const r of rows) {
+      counts[r.status] = (counts[r.status] ?? 0) + 1;
+      const bal = r.total_amount - r.amount_paid;
+      if (r.status === 'draft') drafts++;
+      if (r.status === 'paid') { paid += r.total_amount; paidN++; }
+      if (r.status === 'issued' && bal > 0.01) {
+        unpaid += bal; unpaidN++;
+        if (r.due_date && r.due_date < today) { overdue += bal; overdueN++; }
+      }
+    }
+    return { cur, unpaid, unpaidN, overdue, overdueN, paid, paidN, drafts, counts };
+  }, [rows]);
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+
   const selected = rows.find((r) => r.id === selectedId) ?? null;
 
   return (
-    <div className="min-h-screen bg-rowan-bg p-6">
-      <div className="max-w-[1400px] mx-auto">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <Link href="/accounting/customers" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Back</Link>
-            <h1 className="text-xl font-black text-rowan-navy mt-1">Invoices</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/accounting/invoices/attach-scans" className="text-xs font-bold text-rowan-navy hover:text-rowan-red transition-colors">
-              Attach missing files →
-            </Link>
-            <Link href="/accounting/invoice" className="bg-rowan-navy text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-rowan-red transition">
-              + New Invoice
-            </Link>
-          </div>
-        </div>
+    <div className="min-h-full px-6 py-6">
+      <PageHeader
+        title="Invoices"
+        subtitle="Create, send and track customer invoices"
+        actions={
+          <>
+            <Link href="/accounting/invoices/attach-scans" className={btnSecondary}>Attach missing files</Link>
+            <Link href="/accounting/invoice" className={btnPrimary}><Plus size={15} /> New Invoice</Link>
+          </>
+        }
+      />
 
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6 items-start">
-          {/* Left: list */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="p-4 border-b border-gray-200 flex gap-3">
+      {/* Summary strip */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+        <StatTile label="Unpaid" value={`${stats.cur} ${fmtNum(stats.unpaid)}`} sub={`${stats.unpaidN} invoice${stats.unpaidN === 1 ? '' : 's'}`} tone="navy" />
+        <StatTile label="Overdue" value={`${stats.cur} ${fmtNum(stats.overdue)}`} sub={`${stats.overdueN} past due date`} tone="red" />
+        <StatTile label="Paid" value={`${stats.cur} ${fmtNum(stats.paid)}`} sub={`${stats.paidN} invoice${stats.paidN === 1 ? '' : 's'}`} tone="green" />
+        <StatTile label="Drafts" value={String(stats.drafts)} sub="not yet issued" tone="gray" />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-5 items-start">
+        {/* Left: list */}
+        <div className="bg-white rounded-xl overflow-hidden">
+          {/* Status tabs */}
+          <div className="flex gap-1 px-3 pt-2 border-b border-gray-200 overflow-x-auto">
+            {TABS.map((t) => (
+              <button
+                key={t.value}
+                onClick={() => setStatusFilter(t.value)}
+                className={`px-4 py-2.5 text-xs font-bold whitespace-nowrap border-b-2 -mb-px transition-colors ${
+                  statusFilter === t.value
+                    ? 'border-rowan-red text-rowan-navy'
+                    : 'border-transparent text-gray-400 hover:text-rowan-navy'
+                }`}
+              >
+                {t.label}
+                <span className="ml-1.5 text-[10px] bg-gray-100 text-gray-500 rounded-full px-1.5 py-0.5">{stats.counts[t.value] ?? 0}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Search + sort */}
+          <div className="p-3 border-b border-gray-200 flex gap-3">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by invoice # or customer…"
-                className="flex-1 border border-gray-300 rounded px-3 py-2 text-[12px]"
-              />
-              <SearchableSelect
-                value={statusFilter}
-                onChange={setStatusFilter}
-                className="w-48"
-                options={[
-                  { value: 'all', label: 'All statuses' },
-                  { value: 'draft', label: 'Draft' },
-                  { value: 'issued', label: 'Issued' },
-                  { value: 'paid', label: 'Paid' },
-                  { value: 'void', label: 'Void' },
-                ]}
-              />
-              <SearchableSelect
-                value={sortBy}
-                onChange={(v) => setSortBy(v as typeof sortBy)}
-                className="w-56"
-                options={[
-                  { value: 'number_asc', label: 'Invoice # (1, 2, 3…)' },
-                  { value: 'number_desc', label: 'Invoice # (…3, 2, 1)' },
-                  { value: 'date_desc', label: 'Date (Newest first)' },
-                  { value: 'date_asc', label: 'Date (Oldest first)' },
-                ]}
+                className="w-full pl-9 pr-3 py-2 text-[12px]"
               />
             </div>
+            <SearchableSelect
+              value={sortBy}
+              onChange={(v) => setSortBy(v as typeof sortBy)}
+              className="w-56"
+              options={[
+                { value: 'number_asc', label: 'Invoice # (1, 2, 3…)' },
+                { value: 'number_desc', label: 'Invoice # (…3, 2, 1)' },
+                { value: 'date_desc', label: 'Date (Newest first)' },
+                { value: 'date_asc', label: 'Date (Oldest first)' },
+              ]}
+            />
+          </div>
 
             {loading ? (
               <div className="p-10 flex justify-center"><LoadingSpinner size="lg" /></div>
             ) : filtered.length === 0 ? (
               <p className="p-8 text-center text-[12px] text-gray-400 italic">No invoices found.</p>
             ) : (
-              <div className="max-h-[78vh] overflow-y-auto">
+              <div className="max-h-[calc(100vh-390px)] min-h-[320px] overflow-y-auto">
                 <table className="w-full text-[12px]">
-                  <thead className="sticky top-0 bg-white z-10">
-                    <tr className="text-left text-gray-400 uppercase text-[9px] border-b border-gray-200">
+                  <thead>
+                    <tr className="text-left">
                       <th className="px-4 py-2">Invoice #</th>
                       <th className="px-4 py-2">Customer</th>
                       <th className="px-4 py-2">Date</th>
@@ -212,14 +259,14 @@ export default function InvoicesListPage() {
                           <td className="px-4 py-2.5 font-bold text-rowan-navy">{r.invoice_number}</td>
                           <td className="px-4 py-2.5">{r.purchaser_name}</td>
                           <td className="px-4 py-2.5 text-gray-500">{fmtDate(r.invoice_date)}</td>
-                          <td className="px-4 py-2.5 text-gray-500">{fmtDate(r.due_date)}</td>
+                          <td className={`px-4 py-2.5 ${r.status === 'issued' && balance > 0.01 && r.due_date && r.due_date < todayStr ? 'text-rowan-red font-bold' : 'text-gray-500'}`}>{fmtDate(r.due_date)}</td>
                           <td className="px-4 py-2.5">
                             <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded ${isPartial ? 'bg-amber-100 text-amber-800' : STATUS_COLORS[r.status] ?? 'bg-gray-100 text-gray-500'}`}>
                               {isPartial ? 'Partial' : r.status}
                             </span>
                           </td>
                           <td className="px-4 py-2.5 text-right font-bold text-gray-600">
-                            {r.status === 'draft' ? '—' : `${r.currency} ${balance.toFixed(2)}`}
+                            {r.status === 'draft' ? '—' : `${r.currency} ${fmtNum(balance)}`}
                           </td>
                           <td className="px-4 py-2.5 text-right space-x-3" onClick={(e) => e.stopPropagation()}>
                             <Link href={`/accounting/invoice?id=${r.id}`} className="font-bold text-rowan-navy hover:text-rowan-red">Edit</Link>
@@ -242,7 +289,7 @@ export default function InvoicesListPage() {
           </div>
 
           {/* Right: sticky detail panel */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden sticky top-6 max-h-[78vh] flex flex-col">
+          <div className="bg-white rounded-xl overflow-hidden sticky top-4 max-h-[calc(100vh-200px)] flex flex-col">
             {!selected ? (
               <div className="p-8 text-center text-sm text-gray-400">Select an invoice to preview it here.</div>
             ) : (
@@ -310,7 +357,6 @@ export default function InvoicesListPage() {
             )}
           </div>
         </div>
-      </div>
 
       <ConfirmModal
         open={!!pendingDelete}
