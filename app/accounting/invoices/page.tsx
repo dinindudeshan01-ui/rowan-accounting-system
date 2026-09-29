@@ -7,7 +7,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SearchableSelect } from '@/components/SearchableSelect';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { PageHeader, StatTile, btnPrimary, btnSecondary } from '@/components/PageHeader';
-import { Plus, Search } from 'lucide-react';
+import { Pencil, Plus, Printer, Search, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 type InvoiceRow = {
@@ -166,7 +166,7 @@ export default function InvoicesListPage() {
   const selected = rows.find((r) => r.id === selectedId) ?? null;
 
   return (
-    <div className="min-h-full px-6 py-6">
+    <div className="min-h-full xl:h-full xl:flex xl:flex-col px-6 py-6">
       <PageHeader
         title="Invoices"
         subtitle="Create, send and track customer invoices"
@@ -186,16 +186,16 @@ export default function InvoicesListPage() {
         <StatTile label="Drafts" value={String(stats.drafts)} sub="not yet issued" tone="gray" />
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-5 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_400px] xl:grid-rows-[minmax(0,1fr)] xl:flex-1 xl:min-h-0 gap-5 items-stretch">
         {/* Left: list */}
-        <div className="bg-white rounded-xl overflow-hidden">
+        <div className="bg-white rounded-xl overflow-hidden flex flex-col xl:h-full xl:min-h-0">
           {/* Status tabs */}
           <div className="flex gap-1 px-3 pt-2 border-b border-gray-200 overflow-x-auto">
             {TABS.map((t) => (
               <button
                 key={t.value}
                 onClick={() => setStatusFilter(t.value)}
-                className={`px-4 py-2.5 text-xs font-bold whitespace-nowrap border-b-2 -mb-px transition-colors ${
+                className={`px-3 py-2.5 text-xs font-bold whitespace-nowrap border-b-2 -mb-px transition-colors ${
                   statusFilter === t.value
                     ? 'border-rowan-red text-rowan-navy'
                     : 'border-transparent text-gray-400 hover:text-rowan-navy'
@@ -236,17 +236,17 @@ export default function InvoicesListPage() {
             ) : filtered.length === 0 ? (
               <p className="p-8 text-center text-[12px] text-gray-400 italic">No invoices found.</p>
             ) : (
-              <div className="max-h-[calc(100vh-390px)] min-h-[320px] overflow-auto">
+              <div className="max-h-[70vh] min-h-[320px] overflow-auto xl:max-h-none xl:flex-1 xl:min-h-0">
                 <table className="w-full text-[12px] whitespace-nowrap">
                   <thead>
                     <tr className="text-left">
-                      <th className="px-4 py-2">Invoice #</th>
-                      <th className="px-4 py-2">Customer</th>
-                      <th className="px-4 py-2">Date</th>
-                      <th className="px-4 py-2">Due</th>
-                      <th className="px-4 py-2">Status</th>
-                      <th className="px-4 py-2 text-right">Balance Due</th>
-                      <th className="px-4 py-2 text-right">Actions</th>
+                      <th className="px-3 py-2">Invoice #</th>
+                      <th className="px-3 py-2">Customer</th>
+                      <th className="px-3 py-2">Date</th>
+                      <th className="px-3 py-2">Due</th>
+                      <th className="px-3 py-2">Status</th>
+                      <th className="px-3 py-2 text-right">Balance Due</th>
+                      <th className="px-3 py-2 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -263,28 +263,35 @@ export default function InvoicesListPage() {
                             isSelected ? 'bg-rowan-bgWhite border-l-4 border-l-rowan-navy' : 'hover:bg-rowan-bg/50'
                           }`}
                         >
-                          <td className="px-4 py-2.5 font-bold text-rowan-navy">{r.invoice_number}</td>
-                          <td className="px-4 py-2.5">{r.purchaser_name}</td>
-                          <td className="px-4 py-2.5 text-gray-500">{fmtDate(r.invoice_date)}</td>
-                          <td className={`px-4 py-2.5 ${r.status === 'issued' && balance > 0.01 && r.due_date && r.due_date < todayStr ? 'text-rowan-red font-bold' : 'text-gray-500'}`}>{fmtDate(r.due_date)}</td>
-                          <td className="px-4 py-2.5">
+                          <td className="px-3 py-2.5 font-bold text-rowan-navy">{r.invoice_number}</td>
+                          <td className="px-3 py-2.5 max-w-[240px] truncate" title={r.purchaser_name}>{r.purchaser_name}</td>
+                          <td className="px-3 py-2.5 text-gray-500">{fmtDate(r.invoice_date)}</td>
+                          <td className={`px-3 py-2.5 ${r.status === 'issued' && balance > 0.01 && r.due_date && r.due_date < todayStr ? 'text-rowan-red font-bold' : 'text-gray-500'}`}>{fmtDate(r.due_date)}</td>
+                          <td className="px-3 py-2.5">
                             <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded ${isPartial ? 'bg-amber-100 text-amber-800' : STATUS_COLORS[r.status] ?? 'bg-gray-100 text-gray-500'}`}>
                               {isPartial ? 'Partial' : r.status}
                             </span>
                           </td>
-                          <td className="px-4 py-2.5 text-right font-bold text-gray-600">
+                          <td className="px-3 py-2.5 text-right font-bold text-gray-600">
                             {r.status === 'draft' ? '—' : `${r.currency} ${fmtNum(balance)}`}
                           </td>
-                          <td className="px-4 py-2.5 text-right space-x-3" onClick={(e) => e.stopPropagation()}>
-                            <Link href={`/accounting/invoice?id=${r.id}`} className="font-bold text-rowan-navy hover:text-rowan-red">Edit</Link>
-                            <Link href={`/accounting/invoice/${r.id}/print`} className="font-bold text-rowan-navy hover:text-rowan-red">Print</Link>
-                            <button
-                              onClick={() => requestDelete(r.id, r.invoice_number)}
-                              disabled={deletingId === r.id}
-                              className="font-bold text-red-500 hover:text-red-700 disabled:opacity-40"
-                            >
-                              {deletingId === r.id ? 'Deleting…' : 'Delete'}
-                            </button>
+                          <td className="px-3 py-2.5 text-right" onClick={(e) => e.stopPropagation()}>
+                            <div className="inline-flex items-center gap-1">
+                              <Link href={`/accounting/invoice?id=${r.id}`} title="Edit" className="p-1.5 rounded-md text-rowan-navy hover:bg-gray-100 hover:text-rowan-red">
+                                <Pencil size={14} />
+                              </Link>
+                              <Link href={`/accounting/invoice/${r.id}/print`} title="Print" className="p-1.5 rounded-md text-rowan-navy hover:bg-gray-100 hover:text-rowan-red">
+                                <Printer size={14} />
+                              </Link>
+                              <button
+                                onClick={() => requestDelete(r.id, r.invoice_number)}
+                                disabled={deletingId === r.id}
+                                title="Delete"
+                                className="p-1.5 rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 disabled:opacity-40"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -296,7 +303,7 @@ export default function InvoicesListPage() {
           </div>
 
           {/* Right: sticky detail panel */}
-          <div className="bg-white rounded-xl overflow-hidden sticky top-4 max-h-[calc(100vh-200px)] flex flex-col">
+          <div className="bg-white rounded-xl overflow-hidden max-h-[80vh] xl:max-h-none xl:h-full flex flex-col">
             {!selected ? (
               <div className="p-8 text-center text-sm text-gray-400">Select an invoice to preview it here.</div>
             ) : (
