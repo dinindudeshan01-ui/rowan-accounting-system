@@ -10,7 +10,7 @@ import { SearchableSelect } from '@/components/SearchableSelect';
 import { PartyModal } from '@/components/PartyModal';
 import { ItemModal } from '@/components/ItemModal';
 import { AccountModal, Account } from '@/components/AccountModal';
-import { Party, PartyDraft, createParty, InvoiceItem, ItemDraft, createItem, deleteItem } from '@/lib/parties';
+import { Party, PartyDraft, createParty, InvoiceItem, ItemDraft, createItem, deleteItem, isFinishedGood } from '@/lib/parties';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { Toast } from '@/components/Toast';
 
@@ -82,15 +82,16 @@ export default function StockPage() {
     [items, search]
   );
 
-  const rawMaterials = filtered.filter((i) => !i.style_id);
+  const rawMaterials = filtered.filter((i) => !isFinishedGood(i));
   // Split finished goods from mere catalog entries: publishing a
   // style to the sales catalog creates an items row so it can be
   // invoiced, but that alone never puts a single physical unit on
   // the shelf — only Produce Style does. Lumping both together under
   // "Finished Goods" is what made the stock list look like a mess of
   // items that were never actually made.
-  const finishedGoods = filtered.filter((i) => i.style_id && i.quantity_on_hand !== 0);
+  const finishedGoods = filtered.filter((i) => isFinishedGood(i) && i.quantity_on_hand !== 0);
   const publishedNotProduced = filtered.filter((i) => i.style_id && i.quantity_on_hand === 0);
+  const negativeCount = finishedGoods.filter((i) => i.quantity_on_hand < 0).length;
 
   const stockValue = items.reduce((s, i) => s + i.quantity_on_hand * i.unit_cost, 0);
   const lowStockCount = items.filter((i) => i.reorder_level != null && i.quantity_on_hand <= i.reorder_level).length;
@@ -146,6 +147,12 @@ export default function StockPage() {
               {finishedGoods.length > 0 && (
                 <>
                   <h3 className="text-xs font-bold uppercase tracking-widest text-rowan-navy mb-2 mt-8">Finished Goods — In Stock</h3>
+                  {negativeCount > 0 && (
+                    <p className="text-[11px] text-rowan-red mb-2">
+                      {negativeCount} item{negativeCount === 1 ? '' : 's'} show negative stock: more was sold than has been
+                      recorded as produced. Record the missing production or opening stock (Warehouse → Stock Adjustment) to correct it.
+                    </p>
+                  )}
                   <StockTable rows={finishedGoods} onReceive={setShowReceive} onIssue={setShowIssue} onDelete={setConfirmDelete} showClassification={false} />
                 </>
               )}
@@ -271,7 +278,7 @@ function StockTable({
               {showClassification && (
                 <td className="p-2 text-gray-500">{i.material_classification ? CLASSIFICATION_LABELS[i.material_classification] : '—'}</td>
               )}
-              <td className="p-2 text-right font-bold">{fmt(i.quantity_on_hand)}</td>
+              <td className={`p-2 text-right font-bold ${i.quantity_on_hand < 0 ? 'text-rowan-red' : ''}`}>{fmt(i.quantity_on_hand)}</td>
               <td className="p-2 text-right">{fmt(i.unit_cost)}</td>
               <td className="p-2 text-right font-bold">{fmt(i.quantity_on_hand * i.unit_cost)}</td>
               <td className="p-2 text-right space-x-3">

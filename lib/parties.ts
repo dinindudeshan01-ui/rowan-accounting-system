@@ -96,7 +96,14 @@ export type InvoiceItem = {
   material_classification: MaterialClassification | null;
   expense_account_id: string | null;
   style_id: string | null;
+  /** Explicit stock class; null = decide from style_id. */
+  stock_class?: 'material' | 'finished_good' | null;
 };
+
+/** A finished good is style-produced OR explicitly flagged as one. */
+export function isFinishedGood(i: { style_id: string | null; stock_class?: string | null }): boolean {
+  return !!i.style_id || i.stock_class === 'finished_good';
+}
 
 export type ItemDraft = Omit<InvoiceItem, 'id' | 'quantity_on_hand' | 'style_id'>;
 

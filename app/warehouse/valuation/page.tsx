@@ -13,6 +13,7 @@ type Row = {
   quantity_on_hand: number;
   unit_cost: number;
   style_id: string | null;
+  stock_class: string | null;
 };
 
 function fmt(n: number) {
@@ -27,7 +28,7 @@ export default function StockValuationPage() {
   useEffect(() => {
     supabase
       .from('items')
-      .select('id, code, name, quantity_on_hand, unit_cost, style_id')
+      .select('id, code, name, quantity_on_hand, unit_cost, style_id, stock_class')
       .eq('is_active', true)
       .eq('item_type', 'inventory')
       .order('name')
@@ -37,8 +38,9 @@ export default function StockValuationPage() {
       });
   }, []);
 
-  const materials = rows.filter((r) => !r.style_id && r.quantity_on_hand !== 0);
-  const finishedGoods = rows.filter((r) => r.style_id && r.quantity_on_hand !== 0);
+  const isFG = (r: Row) => !!r.style_id || r.stock_class === 'finished_good';
+  const materials = rows.filter((r) => !isFG(r) && r.quantity_on_hand !== 0);
+  const finishedGoods = rows.filter((r) => isFG(r) && r.quantity_on_hand !== 0);
   const materialsValue = materials.reduce((s, r) => s + r.quantity_on_hand * r.unit_cost, 0);
   const finishedGoodsValue = finishedGoods.reduce((s, r) => s + r.quantity_on_hand * r.unit_cost, 0);
   const totalValue = materialsValue + finishedGoodsValue;
