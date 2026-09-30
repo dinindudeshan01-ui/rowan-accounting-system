@@ -277,7 +277,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <nav className="h-full flex flex-col bg-white text-rowan-navy border-r border-red-100">
       <Link
         href="/home"
-        className={`flex items-center gap-3 h-16 shrink-0 bg-white ${collapsed ? 'justify-center' : 'px-4'}`}
+        className={`flex items-center gap-3 h-14 shrink-0 bg-white border-b border-gray-200 ${collapsed ? 'justify-center' : 'px-4'}`}
         title="Rowan — Home"
       >
         <RowanMark size={collapsed ? 28 : 34} />
@@ -288,7 +288,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </span>
         )}
       </Link>
-      <BrandRibbon className="h-1 shrink-0" />
+      <BrandRibbon className="h-[3px] shrink-0" />
 
       <div className="flex-1 overflow-y-auto py-2">
         {TOP_NAV.map((g) => {
