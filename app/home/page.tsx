@@ -90,9 +90,14 @@ export default function MainDashboard() {
             <p className="text-sm text-gray-500">{today}</p>
           </div>
         </div>
-        <Link href="/accounting/reports/center" className="relative z-10 hidden sm:flex items-center gap-1 text-xs font-bold text-rowan-navy hover:text-rowan-red">
-          Report Center <ArrowRight size={13} />
-        </Link>
+        <div className="relative z-10 hidden sm:flex items-center gap-5">
+          <Link href="/dashboard" className="flex items-center gap-1 text-xs font-bold text-rowan-red hover:text-rowan-navy">
+            Business Dashboard <ArrowRight size={13} />
+          </Link>
+          <Link href="/accounting/reports/center" className="flex items-center gap-1 text-xs font-bold text-rowan-navy hover:text-rowan-red">
+            Report Center <ArrowRight size={13} />
+          </Link>
+        </div>
       </div>
 
       <div className="px-6 py-6">

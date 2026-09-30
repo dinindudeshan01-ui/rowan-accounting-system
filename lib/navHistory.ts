@@ -18,6 +18,7 @@ const MAX_RECENT = 12;
 export const PAGE_LABELS: Record<string, string> = {
   '/': 'Main Dashboard',
   '/home': 'Main Dashboard',
+  '/dashboard': 'Dashboard',
   '/crm': 'CRM',
   '/style': 'Styles',
   '/style/costing': 'Costing',

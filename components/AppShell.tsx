@@ -11,6 +11,7 @@ import {
   Calculator,
   ChevronDown,
   Home,
+  LayoutDashboard,
   FileText,
   Landmark,
   LogOut,
@@ -50,6 +51,7 @@ type NavGroup = {
 
 const NAV: NavGroup[] = [
   { key: 'home', label: 'Home', href: '/home', icon: Home, match: [] },
+  { key: 'dashboard', label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, match: ['/dashboard'] },
   {
     key: 'customers',
     label: 'Customers',
