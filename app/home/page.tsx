@@ -35,7 +35,7 @@ function Step({ href, label, icon }: { href: string; label: string; icon: React.
   return (
     <Link
       href={href}
-      className="group relative overflow-hidden w-32 flex flex-col items-center gap-2 rounded-2xl bg-white border border-rowan-red/30 pt-4 pb-5 px-2 hover:border-rowan-red hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-20px_rgba(230,0,38,0.6)] transition"
+      className="group relative overflow-hidden w-full sm:w-32 flex flex-col items-center gap-2 rounded-2xl bg-white border border-rowan-red/30 pt-3 pb-4 sm:pt-4 sm:pb-5 px-1 sm:px-2 hover:border-rowan-red hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-20px_rgba(230,0,38,0.6)] transition"
     >
       <div className="group-hover:scale-105 transition">{icon}</div>
       <span className="text-[11px] font-bold text-rowan-navy text-center leading-tight">{label}</span>
@@ -46,7 +46,7 @@ function Step({ href, label, icon }: { href: string; label: string; icon: React.
 
 function Arrow({ down }: { down?: boolean }) {
   const Icon = down ? ArrowDown : ArrowRight;
-  return <Icon size={18} className="text-rowan-red shrink-0" />;
+  return <Icon size={18} className="hidden sm:block text-rowan-red shrink-0" />;
 }
 
 /** A lane card: coloured title strip + steps. */
@@ -56,7 +56,7 @@ function Lane({ title, accent, children }: { title: string; accent: 'navy' | 're
       <div className={`px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white ${accent === 'navy' ? 'bg-gradient-to-r from-[#8f0015] to-[#c00a17]' : 'bg-gradient-to-r from-[#e60026] to-[#f01323]'}`}>
         {title}
       </div>
-      <div className="p-5 flex-1 flex items-center justify-center flex-wrap gap-3">{children}</div>
+      <div className="p-3 sm:p-5 flex-1 grid grid-cols-[repeat(3,minmax(0,1fr))] gap-2 sm:flex sm:items-center sm:justify-center sm:flex-wrap sm:gap-3">{children}</div>
     </div>
   );
 }
@@ -83,14 +83,14 @@ export default function MainDashboard() {
       <div className="relative overflow-hidden bg-white border-b border-red-100 px-6 py-5 flex items-center justify-between">
         <div aria-hidden className="pointer-events-none absolute -top-24 -right-16 w-64 h-64 rounded-full border-[30px] border-red-50" />
         <div aria-hidden className="pointer-events-none absolute -top-10 right-8 w-32 h-32 rounded-full border-[16px] border-red-50/70" />
-        <div className="flex items-center gap-4">
+        <div className="relative z-10 flex items-center gap-3 sm:gap-4 min-w-0">
           <RowanMark size={44} />
           <div>
-            <h1 className="text-2xl font-black text-rowan-navy leading-tight">{greeting()}{displayName ? `, ${displayName}` : ''}</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-rowan-navy leading-tight">{greeting()}{displayName ? `, ${displayName}` : ''}</h1>
             <p className="text-sm text-gray-500">{today}</p>
           </div>
         </div>
-        <Link href="/accounting/reports/center" className="hidden sm:flex items-center gap-1 text-xs font-bold text-rowan-navy hover:text-rowan-red">
+        <Link href="/accounting/reports/center" className="relative z-10 hidden sm:flex items-center gap-1 text-xs font-bold text-rowan-navy hover:text-rowan-red">
           Report Center <ArrowRight size={13} />
         </Link>
       </div>

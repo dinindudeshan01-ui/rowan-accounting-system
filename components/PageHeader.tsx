@@ -48,7 +48,7 @@ export function StatTile({
       <div className={`w-1.5 ${bar}`} />
       <div className="px-4 py-3 min-w-0">
         <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{label}</div>
-        <div className="text-xl font-black text-rowan-navy truncate">{value}</div>
+        <div className="text-[15px] sm:text-xl font-black text-rowan-navy leading-tight break-words">{value}</div>
         {sub && <div className="text-[11px] text-gray-500">{sub}</div>}
       </div>
     </div>

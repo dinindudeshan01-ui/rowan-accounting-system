@@ -481,7 +481,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2 pl-1">
             <div className="hidden sm:block text-right leading-tight">
               <div className="text-xs font-bold text-rowan-navy">{displayName}</div>
-              <div className="text-[10px] text-gray-400">{role ? ROLE_LABEL[role] : ''}</div>
+              <div className="text-[10px] text-gray-400">{role && ROLE_LABEL[role] !== displayName ? ROLE_LABEL[role] : ''}</div>
             </div>
             <div
               className="w-8 h-8 rounded-full bg-rowan-navy text-white text-xs font-bold flex items-center justify-center"

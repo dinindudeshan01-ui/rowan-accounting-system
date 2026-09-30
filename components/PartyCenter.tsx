@@ -191,7 +191,7 @@ export function PartyCenter({ kind }: { kind: PartyKind }) {
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5 shrink-0">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-5 shrink-0">
         <StatTile label={`${label}s`} value={String(activeCount)} sub="active" tone="navy" />
         <StatTile
           label={isCustomer ? 'Total owed to you' : 'Total you owe'}
@@ -199,7 +199,7 @@ export function PartyCenter({ kind }: { kind: PartyKind }) {
           sub={`${withBalance} with a balance`}
           tone="red"
         />
-        <StatTile label="Selected" value={selected ? selected.display_name : '—'} sub={selected ? `LKR ${fmt(balances[selected.id] ?? 0)}` : `Pick a ${label.toLowerCase()}`} tone="gray" />
+        <div className="hidden sm:block"><StatTile label="Selected" value={selected ? selected.display_name : '—'} sub={selected ? `LKR ${fmt(balances[selected.id] ?? 0)}` : `Pick a ${label.toLowerCase()}`} tone="gray" /></div>
       </div>
 
       <div className="bg-white rounded-xl overflow-hidden flex flex-col lg:flex-row lg:flex-1 lg:min-h-0" style={{ minHeight: 420 }}>

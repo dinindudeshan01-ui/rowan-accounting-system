@@ -252,10 +252,10 @@ export default function InvoicesListPage() {
                       <th className="px-3 py-2">Invoice #</th>
                       <th className="px-3 py-2">Customer</th>
                       <th className="px-3 py-2 hidden sm:table-cell">Date</th>
-                      <th className="px-3 py-2">Due</th>
+                      <th className="px-3 py-2 hidden md:table-cell">Due</th>
                       <th className="px-3 py-2">Status</th>
                       <th className="px-3 py-2 text-right">Balance Due</th>
-                      <th className="px-3 py-2 text-right">Actions</th>
+                      <th className="px-3 py-2 text-right hidden sm:table-cell">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -273,9 +273,9 @@ export default function InvoicesListPage() {
                           }`}
                         >
                           <td className="px-3 py-2.5 font-bold text-rowan-navy">{r.invoice_number}</td>
-                          <td className="px-3 py-2.5 max-w-[240px] truncate" title={r.purchaser_name}>{r.purchaser_name}</td>
+                          <td className="px-3 py-2.5 max-w-[92px] sm:max-w-[240px] truncate" title={r.purchaser_name}>{r.purchaser_name}</td>
                           <td className="px-3 py-2.5 text-gray-500 hidden sm:table-cell">{fmtDate(r.invoice_date)}</td>
-                          <td className={`px-3 py-2.5 ${r.status === 'issued' && balance > 0.01 && r.due_date && r.due_date < todayStr ? 'text-rowan-red font-bold' : 'text-gray-500'}`}>{fmtDate(r.due_date)}</td>
+                          <td className={`px-3 py-2.5 hidden md:table-cell ${r.status === 'issued' && balance > 0.01 && r.due_date && r.due_date < todayStr ? 'text-rowan-red font-bold' : 'text-gray-500'}`}>{fmtDate(r.due_date)}</td>
                           <td className="px-3 py-2.5">
                             <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded ${isPartial ? 'bg-amber-100 text-amber-800' : STATUS_COLORS[r.status] ?? 'bg-gray-100 text-gray-500'}`}>
                               {isPartial ? 'Partial' : r.status}
@@ -284,7 +284,7 @@ export default function InvoicesListPage() {
                           <td className="px-3 py-2.5 text-right font-bold text-gray-600">
                             {r.status === 'draft' ? '—' : `${r.currency} ${fmtNum(balance)}`}
                           </td>
-                          <td className="px-3 py-2.5 text-right" onClick={(e) => e.stopPropagation()}>
+                          <td className="px-3 py-2.5 text-right hidden sm:table-cell" onClick={(e) => e.stopPropagation()}>
                             <div className="inline-flex items-center gap-1">
                               <Link href={`/accounting/invoice?id=${r.id}`} title="Edit" className="p-1.5 rounded-md text-rowan-navy hover:bg-gray-100 hover:text-rowan-red">
                                 <Pencil size={14} />

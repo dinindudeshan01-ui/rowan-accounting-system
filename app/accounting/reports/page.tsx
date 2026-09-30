@@ -821,9 +821,6 @@ export default function ReportsPage() {
               <Link href="/accounting/reports/center" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
                 Report Center →
               </Link>
-              <Link href="/accounting" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">
-                ← Accounting
-              </Link>
             </div>
           </div>
 

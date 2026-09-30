@@ -225,6 +225,7 @@ nav ::-webkit-scrollbar {
     -webkit-overflow-scrolling: touch;
   }
 
+  .app-main table :is(td, th) { padding-left: 0.5rem; padding-right: 0.5rem; }
   .app-main h1 { font-size: 1.375rem; }
 }
 
