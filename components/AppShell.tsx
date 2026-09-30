@@ -274,7 +274,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isHome = pathname === '/home';
 
   const renderSidebar = (collapsed: boolean) => (
-    <nav className="h-full flex flex-col bg-rowan-navy text-white">
+    <nav className="h-full flex flex-col bg-white text-rowan-navy border-r border-red-100">
       <Link
         href="/home"
         className={`flex items-center gap-3 h-16 shrink-0 bg-white ${collapsed ? 'justify-center' : 'px-4'}`}
@@ -303,8 +303,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   collapsed ? 'justify-center py-3' : 'px-4 py-2.5'
                 } ${
                   active
-                    ? 'border-rowan-red bg-white/10 text-white'
-                    : 'border-transparent text-white/75 hover:bg-white/5 hover:text-white'
+                    ? 'border-rowan-red bg-red-50 text-rowan-red'
+                    : 'border-transparent text-gray-600 hover:bg-red-50/60 hover:text-rowan-navy'
                 }`}
               >
                 <Icon size={17} className="shrink-0" />
@@ -315,7 +315,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
 
               {!collapsed && active && g.children && (
-                <div className="bg-black/20 py-1">
+                <div className="bg-red-50/50 py-1">
                   {g.children.filter((c) => !(isAuditor && ENTRY_ONLY.has(c.label))).map((c) => {
                     const on = pathname === c.href;
                     return (
@@ -323,7 +323,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                         key={c.href}
                         href={c.href}
                         className={`block pl-11 pr-4 py-1.5 text-[12px] transition-colors ${
-                          on ? 'text-white font-bold' : 'text-white/60 hover:text-white'
+                          on ? 'text-rowan-red font-bold' : 'text-gray-500 hover:text-rowan-navy'
                         }`}
                       >
                         {c.label}
@@ -337,6 +337,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         })}
       </div>
 
+      {/* login-style corner swoosh */}
+      {!collapsed && (
+        <div className="sidebar-deco relative h-28 shrink-0 overflow-hidden pointer-events-none" aria-hidden>
+          <svg viewBox="0 0 240 120" className="absolute bottom-0 left-0 w-full h-full" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="sbSwoosh" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0" stopColor="#b3001a" />
+                <stop offset="1" stopColor="#e60026" />
+              </linearGradient>
+            </defs>
+            <path d="M0 120V30C50 45 120 85 175 120Z" fill="url(#sbSwoosh)" />
+            <path d="M0 8C62 26 150 72 205 120" stroke="#e60026" strokeWidth="1.2" fill="none" />
+          </svg>
+        </div>
+      )}
     </nav>
   );
 
@@ -437,7 +452,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="relative hidden lg:block" ref={newRef}>
             <button
               onClick={() => setNewOpen((o) => !o)}
-              className="flex items-center gap-1.5 bg-rowan-red text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-rowan-redDark transition-colors"
+              className="flex items-center gap-1.5 bg-gradient-to-br from-[#f01323] to-[#c00a17] text-white text-xs font-bold px-4 py-2 rounded-full shadow-[0_10px_22px_-10px_rgba(230,0,38,0.7)] hover:brightness-95 transition"
             >
               <Plus size={14} />
               New

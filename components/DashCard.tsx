@@ -25,8 +25,8 @@ export function DashCard({ href, label, desc, icon, disabled }: DashCardProps) {
 
   const inner = (
     <div
-      className={`group h-full flex items-center gap-4 rounded-xl border border-gray-200 bg-white px-5 py-4 transition ${
-        disabled ? 'opacity-45 cursor-not-allowed grayscale' : 'hover:border-rowan-navy hover:shadow-md'
+      className={`group relative overflow-hidden h-full flex items-center gap-4 rounded-2xl border border-rowan-red/30 bg-white px-5 pt-4 pb-5 transition ${
+        disabled ? 'opacity-45 cursor-not-allowed grayscale' : 'hover:border-rowan-red hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-22px_rgba(230,0,38,0.6)]'
       }`}
     >
       <div className={`shrink-0 transition ${disabled ? '' : 'group-hover:scale-105'}`}>{sizedIcon}</div>
@@ -35,6 +35,7 @@ export function DashCard({ href, label, desc, icon, disabled }: DashCardProps) {
         {desc && <div className="text-xs text-gray-500 mt-0.5 leading-snug">{desc}</div>}
         {disabled && <div className="text-[10px] font-bold text-rowan-red mt-1 uppercase">Coming later</div>}
       </div>
+      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-rowan-red rounded-t-full" />
     </div>
   );
 

@@ -10,7 +10,7 @@ body {
 }
 
 body {
-  background-color: #f3f4f8;
+  background-color: #fbf6f7;
   font-family: 'Inter', sans-serif;
   color: #06154b;
   -webkit-font-smoothing: antialiased;
@@ -51,14 +51,14 @@ body {
 /* Default table polish. :where() keeps specificity at zero so any
    class a page sets still wins. */
 :where(.app-main) table thead th {
-  background-color: #f8f9fc;
+  background-color: #fdf1f3;
   font-size: 11px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #6b7280;
 }
 :where(.app-main) table tbody tr:hover {
-  background-color: rgba(6, 21, 75, 0.03);
+  background-color: rgba(230, 0, 38, 0.04);
 }
 
 /* Slim scrollbars */
@@ -68,9 +68,9 @@ nav ::-webkit-scrollbar {
   height: 10px;
 }
 .app-main::-webkit-scrollbar-thumb {
-  background: #c9cde0;
+  background: #efc3c9;
   border-radius: 8px;
-  border: 2px solid #f3f4f8;
+  border: 2px solid #fbf6f7;
 }
 
 /* ------------------------------------------------------------------
@@ -93,12 +93,12 @@ nav ::-webkit-scrollbar {
 :where(.app-main) select:focus,
 :where(.app-main) textarea:focus {
   outline: none;
-  border-color: #06154b;
-  box-shadow: 0 0 0 3px rgba(6, 21, 75, 0.12);
+  border-color: #e60026;
+  box-shadow: 0 0 0 3px rgba(230, 0, 38, 0.14);
 }
 :where(.app-main) input[type='checkbox'],
 :where(.app-main) input[type='radio'] {
-  accent-color: #06154b;
+  accent-color: #e60026;
 }
 :where(.app-main) a:focus-visible,
 :where(.app-main) button:focus-visible {
@@ -110,11 +110,7 @@ nav ::-webkit-scrollbar {
   color: #06154b;
   letter-spacing: -0.01em;
 }
-/* Primary (navy) buttons turn Rowan red on hover everywhere */
-.app-main button.bg-rowan-navy:not(:disabled):hover,
-.app-main a.bg-rowan-navy:hover {
-  background-color: #e60026;
-}
+
 /* Cards: consistent radius + hairline border */
 .app-main .rounded-lg.bg-white,
 .app-main .rounded-xl.bg-white {
@@ -125,7 +121,7 @@ nav ::-webkit-scrollbar {
   position: sticky;
   top: 0;
   z-index: 1;
-  border-bottom: 2px solid #06154b;
+  border-bottom: 2px solid #e60026;
 }
 
 /* The big logo + navy/red bars at the top/bottom of each page belong to
@@ -135,6 +131,43 @@ nav ::-webkit-scrollbar {
   .app-main .rowan-page-brand,
   .app-main .rowan-page-ribbon {
     display: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   LOGIN-STYLE THEME — the look of the gate + login pages applied to the
+   whole ERP: blush background with soft red glows, white cards with a thin
+   red border and red-tinted shadow, red gradient primary buttons.
+   Screen only; printed documents are untouched.
+   ------------------------------------------------------------------ */
+@media screen {
+  .app-main {
+    background:
+      radial-gradient(560px 400px at 100% 0%, rgba(230, 0, 38, 0.07), transparent 70%),
+      radial-gradient(560px 400px at 0% 100%, rgba(230, 0, 38, 0.06), transparent 70%),
+      #fbf6f7;
+  }
+
+  /* cards */
+  .app-main :is(div, section, aside, article).bg-white:is(.rounded-lg, .rounded-xl, .rounded-2xl) {
+    border-radius: 1.125rem;
+    border: 1px solid rgba(230, 0, 38, 0.16);
+    box-shadow: 0 18px 40px -26px rgba(230, 0, 38, 0.45);
+  }
+  /* …but cards inside cards stay flat */
+  .app-main :is(div, section, aside, article).bg-white:is(.rounded-lg, .rounded-xl, .rounded-2xl)
+    :is(div, section, aside, article).bg-white:is(.rounded-lg, .rounded-xl, .rounded-2xl) {
+    box-shadow: none;
+  }
+
+  /* primary buttons: navy fill becomes the login red gradient */
+  .app-main :is(button, a).bg-rowan-navy {
+    background-image: linear-gradient(135deg, #f01323, #c00a17);
+    background-color: #e60026;
+  }
+  .app-main :is(button, a).bg-rowan-navy:not(:disabled):hover {
+    background-image: none;
+    background-color: #a80017;
   }
 }
 
@@ -203,4 +236,8 @@ nav ::-webkit-scrollbar {
     display: block !important;
     background: #fff !important;
   }
+}
+
+@media screen and (max-height: 640px) {
+  .sidebar-deco { display: none; }
 }

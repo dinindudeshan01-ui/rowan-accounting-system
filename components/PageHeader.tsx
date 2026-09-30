@@ -26,9 +26,9 @@ export function PageHeader({
 }
 
 export const btnPrimary =
-  'inline-flex items-center gap-1.5 bg-rowan-red text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-rowan-redDark transition-colors';
+  'inline-flex items-center gap-1.5 bg-gradient-to-br from-[#f01323] to-[#c00a17] text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-[0_12px_26px_-12px_rgba(230,0,38,0.75)] hover:brightness-95 transition';
 export const btnSecondary =
-  'inline-flex items-center gap-1.5 bg-white border border-gray-300 text-rowan-navy px-4 py-2.5 rounded-full text-sm font-bold hover:border-rowan-navy transition-colors';
+  'inline-flex items-center gap-1.5 bg-white border border-rowan-red/40 text-rowan-red px-4 py-2.5 rounded-full text-sm font-bold hover:bg-red-50 hover:border-rowan-red transition-colors';
 
 /** One KPI tile for the summary strip above a list. */
 export function StatTile({
@@ -44,7 +44,7 @@ export function StatTile({
 }) {
   const bar = { navy: 'bg-rowan-navy', red: 'bg-rowan-red', green: 'bg-green-600', gray: 'bg-gray-400' }[tone];
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden flex">
+    <div className="bg-white rounded-2xl border border-rowan-red/20 overflow-hidden flex">
       <div className={`w-1.5 ${bar}`} />
       <div className="px-4 py-3 min-w-0">
         <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{label}</div>
