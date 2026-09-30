@@ -139,6 +139,58 @@ nav ::-webkit-scrollbar {
 }
 
 /* ------------------------------------------------------------------
+   PHONE / TABLET (below 1024px). Desktop is untouched: every rule here
+   sits inside a max-width media query.
+   ------------------------------------------------------------------ */
+@supports (height: 100dvh) {
+  .app-root {
+    height: 100dvh; /* real visible height on phones (address bar) */
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  /* tighter page gutters */
+  .app-main .px-6 { padding-left: 0.875rem; padding-right: 0.875rem; }
+  .app-main .py-6 { padding-top: 1rem; padding-bottom: 1rem; }
+  .app-main .p-6 { padding: 0.875rem; }
+
+  /* pages that pinned themselves to the screen height now just scroll */
+  .app-main .h-screen { height: auto; min-height: 100%; }
+  .app-main .h-screen.overflow-hidden { overflow: visible; }
+
+  /* fixed-width inputs/selects fill the row instead of overflowing */
+  .app-main .w-64,
+  .app-main .w-72,
+  .app-main .w-80,
+  .app-main .w-96 { width: 100%; max-width: 100%; }
+
+  /* 16px inputs stop iPhones zooming in on tap */
+  .app-main input:not([type='checkbox']):not([type='radio']),
+  .app-main select,
+  .app-main textarea { font-size: 16px !important; }
+
+  /* wide tables scroll sideways inside the page, never push it wider */
+  .app-main table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app-main h1 { font-size: 1.375rem; }
+}
+
+@media screen and (max-width: 639px) {
+  /* form grids: 3-5 columns become 2, roomy two-column layouts become one */
+  .app-main .grid-cols-3,
+  .app-main .grid-cols-4,
+  .app-main .grid-cols-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-main .grid-cols-2.gap-6,
+  .app-main .grid-cols-2.gap-8,
+  .app-main .grid-cols-2.gap-10 { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ------------------------------------------------------------------
    Printing: drop the fixed-height app frame so long documents paginate.
    ------------------------------------------------------------------ */
 @media print {

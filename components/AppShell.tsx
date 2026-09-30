@@ -11,6 +11,7 @@ import {
   Calculator,
   ChevronDown,
   Home,
+  FileText,
   Landmark,
   LogOut,
   Menu,
@@ -194,6 +195,15 @@ function crumbsFor(pathname: string): { label: string; href: string }[] {
   return out;
 }
 
+function TabLink({ href, icon: Icon, label, active }: { href: string; icon: LucideIcon; label: string; active: boolean }) {
+  return (
+    <Link href={href} className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold ${active ? 'text-rowan-red' : 'text-gray-500'}`}>
+      <Icon size={20} />
+      {label}
+    </Link>
+  );
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -203,6 +213,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
+  const [newSheet, setNewSheet] = useState(false);
+  const [mobileSearch, setMobileSearch] = useState(false);
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const newRef = useRef<HTMLDivElement>(null);
@@ -212,6 +224,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     recordVisit(pathname);
     setMobileOpen(false);
+    setNewSheet(false);
+    setMobileSearch(false);
     mainRef.current?.scrollTo({ top: 0 });
   }, [pathname]);
 
@@ -259,7 +273,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const isHome = pathname === '/home';
 
-  const sidebar = (
+  const renderSidebar = (collapsed: boolean) => (
     <nav className="h-full flex flex-col bg-rowan-navy text-white">
       <Link
         href="/home"
@@ -332,20 +346,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside
         className={`print:hidden hidden lg:block shrink-0 transition-[width] duration-200 ${collapsed ? 'w-14' : 'w-60'}`}
       >
-        {sidebar}
+        {renderSidebar(collapsed)}
       </aside>
 
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="print:hidden lg:hidden fixed inset-0 z-50 flex">
-          <div className="w-64 h-full shadow-2xl">{sidebar}</div>
+          <div className="w-64 h-full shadow-2xl">{renderSidebar(false)}</div>
           <button className="flex-1 bg-black/40" onClick={() => setMobileOpen(false)} aria-label="Close menu" />
         </div>
       )}
 
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top bar */}
-        <header className="print:hidden shrink-0 h-14 bg-white border-b border-gray-200 flex items-center gap-2 px-3 z-40">
+        <header className="print:hidden shrink-0 h-14 bg-white border-b border-gray-200 relative flex items-center gap-2 px-3 z-40">
           <button
             onClick={() => (window.innerWidth >= 1024 ? toggleCollapsed() : setMobileOpen((o) => !o))}
             className="p-2 rounded-md text-gray-500 hover:bg-gray-100"
@@ -366,7 +380,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
 
           {/* Search */}
-          <div className="relative flex-1 max-w-md" ref={searchRef}>
+          <div
+            className={`${mobileSearch ? 'absolute left-0 right-0 top-full bg-white px-3 py-2 border-b border-gray-200 shadow-md z-50' : 'hidden'} md:block md:relative md:flex-1 md:max-w-md md:p-0 md:border-0 md:shadow-none md:bg-transparent`}
+            ref={searchRef}
+          >
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               value={query}
@@ -380,6 +397,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   router.push(results[0].href);
                   setQuery('');
                   setSearchOpen(false);
+                  setMobileSearch(false);
                 }
               }}
               placeholder="Go to… (invoices, payroll, trial balance)"
@@ -406,9 +424,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex-1" />
 
+          <button
+            onClick={() => setMobileSearch((o) => !o)}
+            className="md:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100"
+            title="Search"
+          >
+            <Search size={18} />
+          </button>
+
           {/* + New (hidden for view-only accounts) */}
           {canWrite ? (
-          <div className="relative" ref={newRef}>
+          <div className="relative hidden lg:block" ref={newRef}>
             <button
               onClick={() => setNewOpen((o) => !o)}
               className="flex items-center gap-1.5 bg-rowan-red text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-rowan-redDark transition-colors"
@@ -432,11 +458,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             )}
           </div>
           ) : (
-            <span className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5">View only</span>
+            <span className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5 hidden sm:inline">View only</span>
           )}
 
-          <OpenWindowsPanel />
-          <PresenceIndicator inline roomName="accounting-app" currentUser={currentUser} currentPage={PAGE_LABELS[pathname] ?? pathname} />
+          <div className="hidden md:block"><OpenWindowsPanel /></div>
+          <div className="hidden md:block"><PresenceIndicator inline roomName="accounting-app" currentUser={currentUser} currentPage={PAGE_LABELS[pathname] ?? pathname} /></div>
           <div className="flex items-center gap-2 pl-1">
             <div className="hidden sm:block text-right leading-tight">
               <div className="text-xs font-bold text-rowan-navy">{displayName}</div>
@@ -484,10 +510,56 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Content: full width, scrolls independently of the sidebar */}
-        <main ref={mainRef} className="app-main flex-1 min-h-0 overflow-y-auto">
+        <main ref={mainRef} className="app-main flex-1 min-h-0 overflow-y-auto pb-24 lg:pb-0">
           {children}
         </main>
       </div>
+
+      {/* ---------- Phone: bottom tab bar ---------- */}
+      <nav
+        className="print:hidden lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 grid grid-cols-5 items-end"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <TabLink href="/home" icon={Home} label="Home" active={pathname === '/home'} />
+        <TabLink href="/accounting/invoices" icon={FileText} label="Invoices" active={pathname.startsWith('/accounting/invoice')} />
+        {canWrite ? (
+          <button onClick={() => setNewSheet(true)} className="flex flex-col items-center -mt-5" aria-label="Create new">
+            <span className="w-12 h-12 rounded-full bg-rowan-red text-white flex items-center justify-center shadow-lg">
+              <Plus size={24} />
+            </span>
+            <span className="text-[10px] font-bold text-gray-500 mt-0.5 pb-2">New</span>
+          </button>
+        ) : (
+          <TabLink href="/accounting/reports/center" icon={BarChart3} label="Reports" active={pathname.startsWith('/accounting/reports')} />
+        )}
+        <TabLink href="/accounting/customers/center" icon={UserRound} label="Customers" active={pathname.startsWith('/accounting/customers')} />
+        <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-0.5 py-2 text-[10px] font-bold text-gray-500">
+          <Menu size={20} />
+          More
+        </button>
+      </nav>
+
+      {/* ---------- Phone: "create new" sheet ---------- */}
+      {newSheet && (
+        <div className="print:hidden lg:hidden fixed inset-0 z-50 flex flex-col justify-end">
+          <button className="flex-1 bg-black/40" onClick={() => setNewSheet(false)} aria-label="Close" />
+          <div className="bg-white rounded-t-3xl p-5" style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))' }}>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">Create new</p>
+            <div className="grid grid-cols-2 gap-3">
+              {NEW_MENU.map((n) => (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  onClick={() => setNewSheet(false)}
+                  className="rounded-xl border border-gray-200 px-4 py-3.5 text-sm font-bold text-rowan-navy active:bg-gray-50"
+                >
+                  {n.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

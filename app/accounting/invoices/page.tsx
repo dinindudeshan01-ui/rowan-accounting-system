@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -73,6 +73,15 @@ export default function InvoicesListPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState<'number_asc' | 'number_desc' | 'date_desc' | 'date_asc'>('number_asc');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  function openDetail(id: string) {
+    setSelectedId(id);
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1279px)').matches) {
+      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+    }
+  }
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; number: string } | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -188,7 +197,7 @@ export default function InvoicesListPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_400px] xl:grid-rows-[minmax(0,1fr)] xl:flex-1 xl:min-h-0 gap-5 items-stretch">
         {/* Left: list */}
-        <div className="bg-white rounded-xl overflow-hidden flex flex-col xl:h-full xl:min-h-0">
+        <div ref={listRef} className="bg-white rounded-xl overflow-hidden flex flex-col xl:h-full xl:min-h-0">
           {/* Status tabs */}
           <div className="flex gap-1 px-3 pt-2 border-b border-gray-200 overflow-x-auto">
             {TABS.map((t) => (
@@ -242,7 +251,7 @@ export default function InvoicesListPage() {
                     <tr className="text-left">
                       <th className="px-3 py-2">Invoice #</th>
                       <th className="px-3 py-2">Customer</th>
-                      <th className="px-3 py-2">Date</th>
+                      <th className="px-3 py-2 hidden sm:table-cell">Date</th>
                       <th className="px-3 py-2">Due</th>
                       <th className="px-3 py-2">Status</th>
                       <th className="px-3 py-2 text-right">Balance Due</th>
@@ -257,7 +266,7 @@ export default function InvoicesListPage() {
                       return (
                         <tr
                           key={r.id}
-                          onClick={() => setSelectedId(r.id)}
+                          onClick={() => openDetail(r.id)}
                           onDoubleClick={() => router.push(`/accounting/invoice?id=${r.id}`)}
                           className={`border-b border-gray-100 cursor-pointer transition-colors ${
                             isSelected ? 'bg-rowan-bgWhite border-l-4 border-l-rowan-navy' : 'hover:bg-rowan-bg/50'
@@ -265,7 +274,7 @@ export default function InvoicesListPage() {
                         >
                           <td className="px-3 py-2.5 font-bold text-rowan-navy">{r.invoice_number}</td>
                           <td className="px-3 py-2.5 max-w-[240px] truncate" title={r.purchaser_name}>{r.purchaser_name}</td>
-                          <td className="px-3 py-2.5 text-gray-500">{fmtDate(r.invoice_date)}</td>
+                          <td className="px-3 py-2.5 text-gray-500 hidden sm:table-cell">{fmtDate(r.invoice_date)}</td>
                           <td className={`px-3 py-2.5 ${r.status === 'issued' && balance > 0.01 && r.due_date && r.due_date < todayStr ? 'text-rowan-red font-bold' : 'text-gray-500'}`}>{fmtDate(r.due_date)}</td>
                           <td className="px-3 py-2.5">
                             <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded ${isPartial ? 'bg-amber-100 text-amber-800' : STATUS_COLORS[r.status] ?? 'bg-gray-100 text-gray-500'}`}>
@@ -303,11 +312,17 @@ export default function InvoicesListPage() {
           </div>
 
           {/* Right: sticky detail panel */}
-          <div className="bg-white rounded-xl overflow-hidden max-h-[80vh] xl:max-h-none xl:h-full flex flex-col">
+          <div ref={detailRef} className="bg-white rounded-xl overflow-hidden max-h-[80vh] xl:max-h-none xl:h-full flex flex-col">
             {!selected ? (
               <div className="p-8 text-center text-sm text-gray-400">Select an invoice to preview it here.</div>
             ) : (
               <>
+                <button
+                  onClick={() => listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                  className="xl:hidden text-left px-4 pt-3 text-xs font-bold text-rowan-navy hover:text-rowan-red"
+                >
+                  ↑ Back to list
+                </button>
                 <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                   <div>
                     <div className="text-sm font-black text-rowan-navy">{selected.invoice_number}</div>

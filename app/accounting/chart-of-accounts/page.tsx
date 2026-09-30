@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { AccountModal, Account as ModalAccount } from '@/components/AccountModal';
@@ -64,6 +64,15 @@ export default function ChartOfAccountsPage() {
   const [showInactive, setShowInactive] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tab, setTab] = useState<'details' | 'ledger'>('ledger');
+  const detailRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  function openDetail(id: string) {
+    setSelectedId(id);
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1279px)').matches) {
+      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+    }
+  }
+
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Account | null>(null);
@@ -201,7 +210,7 @@ export default function ChartOfAccountsPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_440px] xl:grid-rows-[minmax(0,1fr)] xl:flex-1 xl:min-h-0 gap-5 items-stretch">
         {/* Left: account table */}
-        <div className="bg-white rounded-xl overflow-hidden flex flex-col xl:h-full xl:min-h-0">
+        <div ref={listRef} className="bg-white rounded-xl overflow-hidden flex flex-col xl:h-full xl:min-h-0">
           <div className="flex gap-1 px-3 pt-2 border-b border-gray-200 overflow-x-auto shrink-0">
             {tabs.map((t) => (
               <button
@@ -261,7 +270,7 @@ export default function ChartOfAccountsPage() {
                       return (
                         <tr
                           key={a.id}
-                          onClick={() => setSelectedId(a.id)}
+                          onClick={() => openDetail(a.id)}
                           className={`cursor-pointer border-b border-gray-100 ${
                             selectedId === a.id ? 'bg-rowan-bg' : 'hover:bg-gray-50'
                           } ${!a.is_active ? 'opacity-40' : ''}`}
@@ -283,7 +292,7 @@ export default function ChartOfAccountsPage() {
         </div>
 
         {/* Right: detail panel */}
-        <div className="bg-white rounded-xl overflow-hidden flex flex-col max-h-[85vh] xl:max-h-none xl:h-full xl:min-h-0">
+        <div ref={detailRef} className="bg-white rounded-xl overflow-hidden flex flex-col max-h-[85vh] xl:max-h-none xl:h-full xl:min-h-0">
           {!selected ? (
             <div className="flex-1 flex items-center justify-center text-gray-400 text-sm py-16">
               Select an account, or add a new one.
@@ -291,6 +300,12 @@ export default function ChartOfAccountsPage() {
           ) : (
             <>
               <div className="p-5 border-b border-gray-200 shrink-0">
+                <button
+                                onClick={() => listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                                className="xl:hidden mb-3 text-xs font-bold text-rowan-navy hover:text-rowan-red"
+                              >
+                                ↑ Back to list
+                              </button>
                 <div className="flex justify-between items-start gap-3">
                   <div className="min-w-0">
                     <p className="text-[11px] font-mono text-gray-400">{selected.code}</p>

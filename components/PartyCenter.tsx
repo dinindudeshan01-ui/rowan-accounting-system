@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Mail, MapPin, Phone, Plus, Search } from 'lucide-react';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -78,6 +78,15 @@ export function PartyCenter({ kind }: { kind: PartyKind }) {
   const [editTarget, setEditTarget] = useState<Party | null>(null);
   const [tab, setTab] = useState<'transactions' | 'details'>('transactions');
   const [tx, setTx] = useState<TxRow[]>([]);
+  const detailRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  function openDetail(id: string) {
+    setSelectedId(id);
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) {
+      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+    }
+  }
+
   const [txLoading, setTxLoading] = useState(false);
 
   async function refresh() {
@@ -195,7 +204,7 @@ export function PartyCenter({ kind }: { kind: PartyKind }) {
 
       <div className="bg-white rounded-xl overflow-hidden flex flex-col lg:flex-row lg:flex-1 lg:min-h-0" style={{ minHeight: 420 }}>
         {/* Left: list */}
-        <div className="lg:w-80 shrink-0 border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col max-h-[45vh] lg:max-h-none lg:min-h-0">
+        <div ref={listRef} className="lg:w-80 shrink-0 border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col max-h-[45vh] lg:max-h-none lg:min-h-0">
           <div className="p-3 border-b border-gray-200 space-y-2">
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -220,7 +229,7 @@ export function PartyCenter({ kind }: { kind: PartyKind }) {
               return (
                 <button
                   key={p.id}
-                  onClick={() => setSelectedId(p.id)}
+                  onClick={() => openDetail(p.id)}
                   className={`w-full text-left px-3 py-2.5 border-b border-gray-100 flex items-center gap-3 transition border-l-4 ${
                     selectedId === p.id ? 'bg-rowan-bg border-l-rowan-red' : 'border-l-transparent hover:bg-gray-50'
                   } ${!p.is_active ? 'opacity-40' : ''}`}
@@ -242,13 +251,19 @@ export function PartyCenter({ kind }: { kind: PartyKind }) {
         </div>
 
         {/* Right: detail */}
-        <div className="flex-1 min-w-0 overflow-y-auto">
+        <div ref={detailRef} className="flex-1 min-w-0 overflow-y-auto">
           {!selected ? (
             <div className="h-full min-h-[240px] flex items-center justify-center text-gray-400 text-sm">
               Select a {label.toLowerCase()} on the left, or add a new one.
             </div>
           ) : (
             <div className="p-6">
+              <button
+                              onClick={() => listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                              className="lg:hidden mb-3 text-xs font-bold text-rowan-navy hover:text-rowan-red"
+                            >
+                              ↑ Back to list
+                            </button>
               {/* Header card */}
               <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
                 <div className="flex items-start gap-4 min-w-0">
