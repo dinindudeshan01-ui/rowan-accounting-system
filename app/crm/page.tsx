@@ -60,7 +60,6 @@ export default function CrmHubPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
             <h1 className="text-2xl font-black text-rowan-navy mt-1">CRM</h1>
             <p className="text-xs text-gray-500 mt-0.5">
               Leads, follow-ups, and the pipeline — open deals worth {pipelineValue.toLocaleString()}.

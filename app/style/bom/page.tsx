@@ -55,7 +55,6 @@ export default function BomHubPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
             <h1 className="text-2xl font-black text-rowan-navy mt-1">Bill of Materials</h1>
             <p className="text-xs text-gray-500 mt-0.5">Every style's material breakdown, in one place.</p>
           </div>

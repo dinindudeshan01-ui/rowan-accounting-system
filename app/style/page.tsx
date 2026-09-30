@@ -74,7 +74,6 @@ export default function StyleListPage() {
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
             <h1 className="text-xl font-black text-rowan-navy mt-1">Style Numbers</h1>
           </div>
           <Link href="/style/new" className="bg-rowan-navy text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-rowan-red transition">

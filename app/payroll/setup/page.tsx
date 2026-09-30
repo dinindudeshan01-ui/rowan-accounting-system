@@ -89,7 +89,6 @@ export default function PayrollSetupPage() {
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
               <div className="flex items-center gap-2 mt-1"><RowanWordmark /></div>
             </div>
             <div className="text-right">

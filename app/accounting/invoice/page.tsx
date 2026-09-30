@@ -367,7 +367,6 @@ function InvoiceForm() {
               >
                 ← Back
               </button>
-              <Link href="/accounting/customers" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Customers</Link>
             </div>
             <div className="flex items-center gap-2 mt-1">
               <RowanMark size={26} />

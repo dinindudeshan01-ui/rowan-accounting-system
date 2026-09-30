@@ -160,6 +160,21 @@ nav ::-webkit-scrollbar {
     box-shadow: none;
   }
 
+  /* navy header strips inside pages -> login red (round avatars stay navy) */
+  .app-main :is(div, span, section).bg-rowan-navy:not(.rounded-full) {
+    background-image: linear-gradient(135deg, #e60026, #b3001a);
+    background-color: #c00a17;
+  }
+  /* navy hover/active borders and tints -> red */
+  .app-main .border-rowan-navy,
+  .app-main [class~='hover:border-rowan-navy']:hover {
+    border-color: #e60026;
+  }
+  .app-main [class~='bg-rowan-navy/5'],
+  .app-main [class~='bg-rowan-navy/10'] {
+    background-color: rgba(230, 0, 38, 0.06);
+  }
+
   /* primary buttons: navy fill becomes the login red gradient */
   .app-main :is(button, a).bg-rowan-navy {
     background-image: linear-gradient(135deg, #f01323, #c00a17);

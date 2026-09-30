@@ -54,7 +54,6 @@ export default function CostingHubPage() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <Link href="/" className="text-xs font-bold text-rowan-navy hover:text-rowan-red">← Dashboard</Link>
             <h1 className="text-2xl font-black text-rowan-navy mt-1">Product Costing</h1>
             <p className="text-xs text-gray-500 mt-0.5">Cost per unit and margin, at a glance, across every style.</p>
           </div>
