@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { AppShell } from '@/components/AppShell';
+import { AuthProvider } from '@/components/AuthProvider';
+import { AppFrame } from '@/components/AppFrame';
 
 export const metadata: Metadata = {
   title: 'Rowan | Casual Wear Pvt Ltd',
@@ -11,7 +12,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <AppShell>{children}</AppShell>
+        <AuthProvider>
+          <AppFrame>{children}</AppFrame>
+        </AuthProvider>
       </body>
     </html>
   );

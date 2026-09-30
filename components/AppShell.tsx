@@ -12,6 +12,7 @@ import {
   ChevronDown,
   Home,
   Landmark,
+  LogOut,
   Menu,
   Plus,
   Search,
@@ -27,6 +28,7 @@ import { RowanMark, BrandRibbon } from '@/components/RowanMark';
 import { OpenWindowsPanel } from '@/components/OpenWindowsPanel';
 import { PresenceIndicator } from '@/components/PresenceIndicator';
 import { recordVisit, PAGE_LABELS } from '@/lib/navHistory';
+import { ROLE_LABEL, useAuth } from '@/components/AuthProvider';
 
 // ------------------------------------------------------------------
 // QuickBooks-style application shell: fixed left navigation, slim top
@@ -46,7 +48,7 @@ type NavGroup = {
 };
 
 const NAV: NavGroup[] = [
-  { key: 'home', label: 'Home', href: '/', icon: Home, match: [] },
+  { key: 'home', label: 'Home', href: '/home', icon: Home, match: [] },
   {
     key: 'customers',
     label: 'Customers',
@@ -166,17 +168,21 @@ const NEW_MENU: NavLeaf[] = [
   { label: 'Style', href: '/style/new' },
 ];
 
-const currentUser = { id: 'demo-user', name: 'Dinindu' };
+// Pages that exist only to enter data — not shown in an auditor's menu.
+const ENTRY_ONLY = new Set([
+  'Create Invoice', 'Receive Payment', 'Create Bill', 'Pay Bills', 'Write Checks',
+  'Make Deposit', 'Journal Entry', 'New Style', 'Stock Adjustment',
+]);
 const COLLAPSE_KEY = 'rowan_sidebar_collapsed';
 
 function isActive(pathname: string, g: NavGroup) {
-  if (g.key === 'home') return pathname === '/';
+  if (g.key === 'home') return pathname === '/home';
   return g.match.some((m) => pathname === m || pathname.startsWith(m + '/'));
 }
 
 function crumbsFor(pathname: string): { label: string; href: string }[] {
   const parts = pathname.split('/').filter(Boolean);
-  const out: { label: string; href: string }[] = [{ label: 'Home', href: '/' }];
+  const out: { label: string; href: string }[] = [{ label: 'Home', href: '/home' }];
   let acc = '';
   for (const part of parts) {
     acc += '/' + part;
@@ -191,6 +197,9 @@ function crumbsFor(pathname: string): { label: string; href: string }[] {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { session, role, displayName, canWrite, signOut } = useAuth();
+  const currentUser = { id: session?.user.id ?? 'unknown', name: displayName || 'User' };
+  const isAuditor = role === 'auditor';
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
@@ -248,12 +257,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ? searchIndex.filter((r) => r.label.toLowerCase().includes(query.trim().toLowerCase())).slice(0, 8)
     : [];
 
-  const isHome = pathname === '/';
+  const isHome = pathname === '/home';
 
   const sidebar = (
     <nav className="h-full flex flex-col bg-rowan-navy text-white">
       <Link
-        href="/"
+        href="/home"
         className={`flex items-center gap-3 h-16 shrink-0 bg-white ${collapsed ? 'justify-center' : 'px-4'}`}
         title="Rowan — Home"
       >
@@ -293,7 +302,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
               {!collapsed && active && g.children && (
                 <div className="bg-black/20 py-1">
-                  {g.children.map((c) => {
+                  {g.children.filter((c) => !(isAuditor && ENTRY_ONLY.has(c.label))).map((c) => {
                     const on = pathname === c.href;
                     return (
                       <Link
@@ -397,7 +406,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex-1" />
 
-          {/* + New */}
+          {/* + New (hidden for view-only accounts) */}
+          {canWrite ? (
           <div className="relative" ref={newRef}>
             <button
               onClick={() => setNewOpen((o) => !o)}
@@ -421,17 +431,42 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             )}
           </div>
+          ) : (
+            <span className="text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5">View only</span>
+          )}
 
           <OpenWindowsPanel />
           <PresenceIndicator inline roomName="accounting-app" currentUser={currentUser} currentPage={PAGE_LABELS[pathname] ?? pathname} />
-          <div
-            className="w-8 h-8 rounded-full bg-rowan-navy text-white text-xs font-bold flex items-center justify-center"
-            title={currentUser.name}
-          >
-            {currentUser.name.slice(0, 1).toUpperCase()}
+          <div className="flex items-center gap-2 pl-1">
+            <div className="hidden sm:block text-right leading-tight">
+              <div className="text-xs font-bold text-rowan-navy">{displayName}</div>
+              <div className="text-[10px] text-gray-400">{role ? ROLE_LABEL[role] : ''}</div>
+            </div>
+            <div
+              className="w-8 h-8 rounded-full bg-rowan-navy text-white text-xs font-bold flex items-center justify-center"
+              title={session?.user.email ?? ''}
+            >
+              {(displayName || 'U').slice(0, 1).toUpperCase()}
+            </div>
+            <button
+              onClick={async () => {
+                await signOut();
+                router.replace('/');
+              }}
+              className="p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-rowan-red"
+              title="Sign out"
+            >
+              <LogOut size={17} />
+            </button>
           </div>
         </header>
         <BrandRibbon className="h-[3px] shrink-0 print:hidden" />
+
+        {isAuditor && (
+          <div className="print:hidden shrink-0 bg-amber-50 border-b border-amber-200 px-5 py-1.5 text-[11px] font-semibold text-amber-800">
+            Read-only access — you can view everything but cannot make changes.
+          </div>
+        )}
 
         {!isHome && (
           <div className="print:hidden shrink-0 bg-white border-b border-gray-200 px-5 py-2 flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 overflow-x-auto whitespace-nowrap">

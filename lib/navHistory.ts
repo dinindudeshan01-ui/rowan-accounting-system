@@ -17,6 +17,7 @@ const MAX_RECENT = 12;
 /** Known route → friendly label. Falls back to the last path segment, titleized. */
 export const PAGE_LABELS: Record<string, string> = {
   '/': 'Main Dashboard',
+  '/home': 'Main Dashboard',
   '/crm': 'CRM',
   '/style': 'Styles',
   '/style/costing': 'Costing',
