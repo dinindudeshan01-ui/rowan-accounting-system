@@ -78,6 +78,13 @@ type LineRow = {
 
 type Movement = 'fast' | 'medium' | 'slow' | 'none';
 
+/** Posted sales revenue straight from the ledger — the same source as the Profit & Loss report. */
+type LedgerData = {
+  months: Record<string, number>; // 'YYYY-MM' -> revenue
+  mtd: number; // revenue 1st of this month -> today
+  lmSame: number; // revenue same day-range last month
+};
+
 // ------------------------------------------------------------------
 // Helpers
 // ------------------------------------------------------------------
@@ -392,6 +399,8 @@ export default function DashboardPage() {
   const [openInv, setOpenInv] = useState<InvoiceRow[]>([]);
   const [items, setItems] = useState<ItemRow[]>([]);
   const [lines, setLines] = useState<LineRow[]>([]);
+  const [ledger, setLedger] = useState<LedgerData | null>(null);
+  const [ledgerErr, setLedgerErr] = useState<string | null>(null);
   const [salesErr, setSalesErr] = useState<string | null>(null);
   const [stockErr, setStockErr] = useState<string | null>(null);
   const [linesErr, setLinesErr] = useState<string | null>(null);
@@ -399,6 +408,7 @@ export default function DashboardPage() {
   const [updated, setUpdated] = useState<Date | null>(null);
   const [range, setRange] = useState<6 | 12>(12);
   const [win, setWin] = useState<30 | 90>(90);
+  const [moveViewPick, setMoveViewPick] = useState<'stock' | 'sales' | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -456,7 +466,34 @@ export default function DashboardPage() {
         .range(from, to)
     );
 
-    const [salesRes, stockRes, linesRes] = await Promise.allSettled([salesP, stockP, linesP]);
+    // Sales revenue as the P&L sees it: posted journal entries by entry date (get_pl)
+    const ledgerP = (async (): Promise<LedgerData> => {
+      const call = async (start: string, end: string) => {
+        const { data, error } = await supabase.rpc('get_pl', { p_start: start, p_end: end });
+        if (error) throw new Error(error.message);
+        return ((data ?? []) as { account_type: string; amount: number | string }[])
+          .filter((r) => r.account_type === 'revenue')
+          .reduce((sum, r) => sum + Number(r.amount), 0);
+      };
+      const months: Record<string, number> = {};
+      const tasks: Promise<void>[] = [];
+      for (let i = 23; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+        tasks.push(call(localISO(d), localISO(end)).then((v) => void (months[monthKey(d)] = v)));
+      }
+      const lastStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const daysInLast = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+      const lastCut = new Date(lastStart.getFullYear(), lastStart.getMonth(), Math.min(now.getDate(), daysInLast));
+      let mtd = 0;
+      let lmSame = 0;
+      tasks.push(call(localISO(new Date(now.getFullYear(), now.getMonth(), 1)), localISO(now)).then((v) => void (mtd = v)));
+      tasks.push(call(localISO(lastStart), localISO(lastCut)).then((v) => void (lmSame = v)));
+      await Promise.all(tasks);
+      return { months, mtd, lmSame };
+    })();
+
+    const [salesRes, stockRes, linesRes, ledgerRes] = await Promise.allSettled([salesP, stockP, linesP, ledgerP]);
 
     if (salesRes.status === 'fulfilled') {
       setSalesInv(salesRes.value[0]);
@@ -477,6 +514,13 @@ export default function DashboardPage() {
     } else {
       setLinesErr(linesRes.reason?.message ?? 'Unknown error');
     }
+    if (ledgerRes.status === 'fulfilled') {
+      setLedger(ledgerRes.value);
+      setLedgerErr(null);
+    } else {
+      setLedger(null);
+      setLedgerErr(ledgerRes.reason?.message ?? 'Unknown error');
+    }
     setUpdated(new Date());
     setLoading(false);
   }, []);
@@ -490,13 +534,13 @@ export default function DashboardPage() {
     const now = new Date();
     const curKey = monthKey(now);
 
-    const net = new Map<string, number>();
+    const netInv = new Map<string, number>(); // by invoice date, from invoices
     const invoiced = new Map<string, number>();
     const collected = new Map<string, number>();
     const daily = new Map<string, number>();
     for (const r of salesInv) {
       const k = r.invoice_date.slice(0, 7);
-      net.set(k, (net.get(k) ?? 0) + num(r.subtotal));
+      netInv.set(k, (netInv.get(k) ?? 0) + num(r.subtotal));
       invoiced.set(k, (invoiced.get(k) ?? 0) + num(r.total_amount));
       collected.set(k, (collected.get(k) ?? 0) + Math.min(num(r.amount_paid), num(r.total_amount)));
       daily.set(r.invoice_date, (daily.get(r.invoice_date) ?? 0) + num(r.subtotal));
@@ -516,8 +560,23 @@ export default function DashboardPage() {
       });
     }
 
+    // Sales basis: posted ledger revenue (identical to the P&L). Falls back to invoices if the ledger call failed.
+    const basis: 'ledger' | 'invoices' = ledger ? 'ledger' : 'invoices';
+    const net: Map<string, number> = ledger ? new Map(Object.entries(ledger.months)) : netInv;
+
     const salesSeries = months.map((m) => net.get(m.key) ?? 0);
     const thisMonth = net.get(curKey) ?? 0;
+
+    // Where invoices (by invoice date) and the ledger (by posting date) disagree
+    const recon = ledger
+      ? months
+          .map((m) => {
+            const inv = netInv.get(m.key) ?? 0;
+            const led = net.get(m.key) ?? 0;
+            return { key: m.key, long: m.long, inv, led, diff: inv - led };
+          })
+          .filter((r) => Math.abs(r.diff) >= 1)
+      : [];
 
     // Same period last month: 1st → same day-of-month (clamped), so MTD compares like with like
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -527,13 +586,22 @@ export default function DashboardPage() {
     const lmEnd = localISO(cutoff);
     let lastMonthSamePeriod = 0;
     for (const r of salesInv) if (r.invoice_date >= lmStart && r.invoice_date <= lmEnd) lastMonthSamePeriod += num(r.subtotal);
-    const delta = lastMonthSamePeriod > 0 ? ((thisMonth - lastMonthSamePeriod) / lastMonthSamePeriod) * 100 : null;
+    const delta = ledger
+      ? ledger.lmSame > 0
+        ? ((ledger.mtd - ledger.lmSame) / ledger.lmSame) * 100
+        : null
+      : lastMonthSamePeriod > 0
+        ? ((thisMonth - lastMonthSamePeriod) / lastMonthSamePeriod) * 100
+        : null;
 
     // Sri Lankan fiscal year: 1 Apr → 31 Mar
     const fyStartYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
     const fyStart = `${fyStartYear}-04-01`;
+    const fyStartKey = fyStart.slice(0, 7);
     let fyToDate = 0;
-    for (const r of salesInv) if (r.invoice_date >= fyStart) fyToDate += num(r.subtotal);
+    net.forEach((v, k) => {
+      if (k >= fyStartKey && k <= curKey) fyToDate += v;
+    });
 
     // Receivables from ALL open issued invoices
     const buckets = { current: 0, d30: 0, d60: 0, d90: 0, d90p: 0 };
@@ -607,8 +675,10 @@ export default function DashboardPage() {
       invoiced,
       collected,
       weeks,
+      basis,
+      recon,
     };
-  }, [salesInv, openInv]);
+  }, [salesInv, openInv, ledger]);
 
   const salesCombo: ComboDatum[] = useMemo(() => {
     const full = sales.months.map((m, i) => {
@@ -624,7 +694,7 @@ export default function DashboardPage() {
         tag: m.tag,
         sublabel: m.long,
         parts: [sales.net.get(m.key) ?? 0],
-        lines: [ma, sales.net.has(m.prevKey) ? (sales.net.get(m.prevKey) as number) : null],
+        lines: [ma, (sales.net.get(m.prevKey) ?? 0) > 0 ? (sales.net.get(m.prevKey) as number) : null],
       };
     });
     return range === 6 ? full.slice(-6) : full;
@@ -745,6 +815,9 @@ export default function DashboardPage() {
       cum += a.units;
     }
 
+    // If every finished good has quantity 0, stock simply isn't tracked yet — don't pretend it's "sold out"
+    const tracked = fgAll.some((r) => num(r.quantity_on_hand) !== 0);
+
     const rows = sold.map((a) => {
       const onHand = num(a.item.quantity_on_hand);
       const rate = a.units / win;
@@ -757,7 +830,7 @@ export default function DashboardPage() {
         monthly: a.monthly,
         onHand,
         value: onHand * num(a.item.unit_cost),
-        cover: rate > 0 ? Math.min(999, onHand / rate) : null,
+        cover: tracked && rate > 0 ? Math.min(999, onHand / rate) : null,
         cls: cls.get(a.item.id) ?? 'slow',
       };
     });
@@ -773,6 +846,14 @@ export default function DashboardPage() {
       countBy[c] += 1;
     }
 
+    // Sales (revenue) and item counts by movement class — works even when stock isn't tracked
+    const salesBy: Record<Movement, number> = { fast: 0, medium: 0, slow: 0, none: 0 };
+    const soldCount: Record<Movement, number> = { fast: 0, medium: 0, slow: 0, none: 0 };
+    for (const r of rows) {
+      salesBy[r.cls] += r.revenue;
+      soldCount[r.cls] += 1;
+    }
+
     const notSelling = fgAll
       .filter((r) => num(r.quantity_on_hand) > 0 && !cls.has(r.id))
       .map((r) => ({ label: r.name, sub: r.code, value: num(r.quantity_on_hand) * num(r.unit_cost) }))
@@ -780,10 +861,12 @@ export default function DashboardPage() {
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
-    return { rows, valueBy, countBy, notSelling, matchedLines, maxUnits: rows[0]?.units ?? 0, totalUnits };
+    return { rows, valueBy, countBy, salesBy, soldCount, tracked, notSelling, matchedLines, maxUnits: rows[0]?.units ?? 0, totalUnits };
   }, [items, lines, win]);
 
   const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  const moveView: 'stock' | 'sales' = moveViewPick ?? (stock.fgValue > 0 ? 'stock' : 'sales');
+  const anyCollected = sales.months.some((m) => (sales.collected.get(m.key) ?? 0) > 0);
   const overduePct = sales.outstanding > 0 ? (sales.overdue / sales.outstanding) * 100 : 0;
   const hasAnyData = salesInv.length > 0 || openInv.length > 0 || items.length > 0;
 
@@ -809,6 +892,12 @@ export default function DashboardPage() {
           {salesErr && <SectionError what="sales and receivables" message={salesErr} />}
           {stockErr && <SectionError what="inventory" message={stockErr} />}
           {linesErr && <SectionError what="fast-moving item data" message={linesErr} />}
+          {ledgerErr && (
+            <SectionError
+              what="ledger sales (P&L source)"
+              message={`Showing invoice-based sales instead, which may not match the P&L. ${ledgerErr}`}
+            />
+          )}
 
           {/* ---------- KPI strip ---------- */}
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
@@ -827,7 +916,7 @@ export default function DashboardPage() {
               label={`Sales · ${sales.fyLabel}`}
               value={sales.fyToDate}
               format={lkrC}
-              sub="net of tax, 1 Apr to date"
+              sub={sales.basis === 'ledger' ? 'posted revenue, 1 Apr to date' : 'invoiced (net), 1 Apr to date'}
             />
             <Kpi
               icon={HandCoins}
@@ -867,7 +956,7 @@ export default function DashboardPage() {
             <Card
               className="xl:col-span-2"
               title="Sales by month"
-              subtitle="Net of VAT / SSCL · bars = monthly sales · red line = 3-month average · dashed = last year"
+              subtitle={`${sales.basis === 'ledger' ? 'Posted sales revenue — same source as the P&L' : 'Invoiced sales (net of tax)'} · red line = 3-month average · dashed = last year`}
               action={{ href: '/accounting/reports/sales-by-customer', label: 'Sales report' }}
               right={<Toggle value={range} options={[6, 12] as (6 | 12)[]} onChange={setRange} suffix="M" />}
             >
@@ -883,6 +972,32 @@ export default function DashboardPage() {
                 partialLast
                 emptyText="No issued invoices in this period."
               />
+              {sales.recon.length > 0 && (
+                <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-[11px] text-amber-900">
+                  <div className="flex items-center gap-1.5 font-bold">
+                    <TriangleAlert size={13} className="shrink-0" />
+                    Invoices and the ledger disagree in {sales.recon.length} month{sales.recon.length === 1 ? '' : 's'}
+                  </div>
+                  <p className="mt-1 text-amber-800">
+                    The chart above uses posted ledger revenue, so it matches the P&amp;L. Invoices dated in these months add up to a different
+                    amount — usually an invoice that was never posted, or one whose date was changed after it was posted:
+                  </p>
+                  <ul className="mt-2 grid sm:grid-cols-2 gap-x-6 gap-y-1">
+                    {sales.recon.slice(0, 6).map((r) => (
+                      <li key={r.key} className="flex items-baseline gap-2">
+                        <span className="font-bold">{r.long}</span>
+                        <span className="text-amber-800">
+                          invoices {lkrC(r.inv)} · ledger {lkrC(r.led)}
+                        </span>
+                        <span className={`ml-auto font-black ${r.diff > 0 ? 'text-rowan-red' : 'text-amber-900'}`}>
+                          {r.diff > 0 ? '+' : ''}
+                          {lkrC(r.diff)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </Card>
 
             <Card
@@ -924,12 +1039,25 @@ export default function DashboardPage() {
                   [CHART_COLORS.greenLight, CHART_COLORS.green],
                   ['#ff5b73', CHART_COLORS.red],
                 ]}
-                lines={[{ name: '% collected', color: CHART_COLORS.navy, axis: 'right' }]}
+                lines={anyCollected ? [{ name: '% collected', color: CHART_COLORS.navy, axis: 'right' }] : []}
                 format={lkr}
                 height={290}
                 partialLast
                 emptyText="No invoices in the last 12 months."
               />
+              {!anyCollected && sales.invoiced.size > 0 && (
+                <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-[11px] text-amber-900 flex items-start gap-2">
+                  <TriangleAlert size={13} className="mt-0.5 shrink-0" />
+                  <div>
+                    <b>No customer payments are recorded against any invoice yet</b>, so everything shows as outstanding and every invoice
+                    ages as overdue. If customers have already paid, record the receipts in{' '}
+                    <Link href="/accounting/receive-payment" className="font-bold underline">
+                      Receive Payment
+                    </Link>{' '}
+                    — collected amounts, A/R aging and this chart update from there.
+                  </div>
+                </div>
+              )}
             </Card>
 
             <Card title="Collections" subtitle="Last 12 months of invoices, incl. tax">
@@ -1041,7 +1169,7 @@ export default function DashboardPage() {
                               {r.code}
                               <span className="sm:hidden">
                                 {' '}
-                                · {r.units.toLocaleString('en-US', { maximumFractionDigits: 0 })} sold · {r.onHand.toLocaleString('en-US', { maximumFractionDigits: 0 })} in stock
+                                · {r.units.toLocaleString('en-US', { maximumFractionDigits: 0 })} sold{movers.tracked ? ` · ${r.onHand.toLocaleString('en-US', { maximumFractionDigits: 0 })} in stock` : ''}
                               </span>
                             </div>
                           </div>
@@ -1064,10 +1192,10 @@ export default function DashboardPage() {
                             <Sparkline values={r.monthly} color={meta.color} dot={CHART_COLORS.red} height={26} />
                           </div>
                           <div className="hidden sm:block text-right text-[12px] font-bold text-rowan-navy">
-                            {r.onHand.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                            {movers.tracked ? r.onHand.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'}
                           </div>
                           <div className="text-right">
-                            <CoverPill cover={r.cover} moved />
+                            <CoverPill cover={r.cover} moved={movers.tracked} />
                           </div>
                         </li>
                       );
@@ -1077,36 +1205,110 @@ export default function DashboardPage() {
                     <span>
                       <Zap size={11} className="inline -mt-0.5 text-green-600" /> Fast = first 70% of units sold · Medium = next 20% · Slow = the rest
                     </span>
-                    <span className="sm:ml-auto">
-                      Cover: <b className="text-rowan-red">&lt;15d</b> reorder soon · <b className="text-green-700">15–60d</b> healthy ·{' '}
-                      <b className="text-amber-600">&gt;60d</b> overstocked
-                    </span>
+                    {movers.tracked ? (
+                      <span className="sm:ml-auto">
+                        Cover: <b className="text-rowan-red">&lt;15d</b> reorder soon · <b className="text-green-700">15–60d</b> healthy ·{' '}
+                        <b className="text-amber-600">&gt;60d</b> overstocked
+                      </span>
+                    ) : (
+                      <span className="sm:ml-auto text-amber-700">
+                        Stock quantities are all 0 in the system, so stock and cover aren’t shown — ranking is by units sold only.
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
             </Card>
 
-            <Card title="Stock value by movement" subtitle={`Finished goods, based on sales in the last ${win} days`}>
-              <DonutChart
-                centerLabel="FG stock"
-                centerValue={lkrC(stock.fgValue)}
-                slices={(['fast', 'medium', 'slow', 'none'] as Movement[]).map((k) => ({
-                  label: `${MOVE_META[k].label} · ${movers.countBy[k]} item${movers.countBy[k] === 1 ? '' : 's'}`,
-                  value: movers.valueBy[k],
-                  color: MOVE_META[k].color,
-                }))}
-              />
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                  Cash tied up in items not selling
+            <Card
+              title={moveView === 'stock' ? 'Stock value by movement' : 'Sales by movement'}
+              subtitle={
+                moveView === 'stock'
+                  ? `Finished goods on hand, based on sales in the last ${win} days`
+                  : `Revenue from finished goods sold in the last ${win} days, by movement class`
+              }
+              right={
+                <div className="inline-flex rounded-full border border-rowan-red/30 overflow-hidden text-[11px] font-bold">
+                  {(['stock', 'sales'] as const).map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setMoveViewPick(v)}
+                      className={`px-3 py-1 capitalize transition-colors ${
+                        moveView === v ? 'bg-rowan-red text-white' : 'bg-white text-rowan-navy hover:bg-red-50'
+                      }`}
+                    >
+                      {v}
+                    </button>
+                  ))}
                 </div>
-                <HBars
-                  items={movers.notSelling}
-                  format={lkrC}
-                  color={CHART_COLORS.red}
-                  emptyText="Every item in stock has sold recently."
-                />
-              </div>
+              }
+            >
+              {moveView === 'stock' ? (
+                stock.fgValue <= 0 ? (
+                  <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center">
+                    <div className="text-[13px] font-black text-gray-500">No finished-goods stock recorded</div>
+                    <p className="mt-1.5 text-[11px] leading-relaxed text-gray-500">
+                      Every finished-good item has a quantity of 0, so there is no stock value to analyse. Sales history was imported without
+                      production runs or stock-in entries, so quantities never went up. Record production runs or stock adjustments and this
+                      view fills in.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setMoveViewPick('sales')}
+                      className="mt-3 text-[11px] font-bold text-rowan-red hover:text-rowan-navy"
+                    >
+                      See sales by movement instead →
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <DonutChart
+                      centerLabel="FG stock"
+                      centerValue={lkrC(stock.fgValue)}
+                      slices={(['fast', 'medium', 'slow', 'none'] as Movement[]).map((k) => ({
+                        label: `${MOVE_META[k].label} · ${movers.countBy[k]} item${movers.countBy[k] === 1 ? '' : 's'}`,
+                        value: movers.valueBy[k],
+                        color: MOVE_META[k].color,
+                      }))}
+                    />
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                        Cash tied up in items not selling
+                      </div>
+                      <HBars
+                        items={movers.notSelling}
+                        format={lkrC}
+                        color={CHART_COLORS.red}
+                        emptyText="Every item in stock has sold recently."
+                      />
+                    </div>
+                  </>
+                )
+              ) : movers.rows.length === 0 ? (
+                <div className="text-[12px] text-gray-400 py-10 text-center">No finished goods sold in the last {win} days.</div>
+              ) : (
+                <>
+                  <DonutChart
+                    centerLabel="Revenue"
+                    centerValue={lkrC(movers.rows.reduce((sum, r) => sum + r.revenue, 0))}
+                    slices={(['fast', 'medium', 'slow'] as Movement[]).map((k) => ({
+                      label: `${MOVE_META[k].label} · ${movers.soldCount[k]} item${movers.soldCount[k] === 1 ? '' : 's'}`,
+                      value: movers.salesBy[k],
+                      color: MOVE_META[k].color,
+                    }))}
+                  />
+                  <p className="mt-4 pt-4 border-t border-gray-100 text-[11px] leading-relaxed text-gray-500">
+                    Based on units × unit price from invoice lines, so it can differ slightly from invoice totals (discounts, tax).
+                  </p>
+                  {stock.fgValue <= 0 && (
+                    <p className="mt-2 text-[11px] leading-relaxed text-amber-700">
+                      The <b>Stock</b> view is empty because every finished-good quantity is 0 in the system — sales were imported without
+                      production runs or stock-in entries.
+                    </p>
+                  )}
+                </>
+              )}
             </Card>
           </div>
 
@@ -1133,7 +1335,7 @@ export default function DashboardPage() {
                 items={stock.fgByCategory.slice(0, 7)}
                 format={lkrC}
                 color={CHART_COLORS.red}
-                emptyText="No finished goods in stock."
+                emptyText="No finished-goods stock recorded — every quantity is 0."
               />
             </Card>
 
@@ -1153,7 +1355,7 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <Card title="Top finished goods" subtitle="Highest stock value">
-              <HBars ranked items={stock.topFg} format={lkrC} emptyText="No finished goods in stock." />
+              <HBars ranked items={stock.topFg} format={lkrC} emptyText="No finished-goods stock recorded — every quantity is 0." />
             </Card>
 
             <Card
