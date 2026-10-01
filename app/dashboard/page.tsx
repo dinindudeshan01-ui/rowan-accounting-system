@@ -2,22 +2,40 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, RefreshCw, TriangleAlert, Package, Factory, Boxes } from 'lucide-react';
+import {
+  type LucideIcon,
+  AlarmClock,
+  ArrowRight,
+  Boxes,
+  CalendarDays,
+  Factory,
+  HandCoins,
+  Package,
+  PackageMinus,
+  RefreshCw,
+  TrendingUp,
+  TriangleAlert,
+  Zap,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { PageHeader, btnSecondary } from '@/components/PageHeader';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import {
   CHART_COLORS,
   PALETTE,
-  ColumnChart,
+  ComboChart,
+  CountUp,
   DonutChart,
   Gauge,
   HBars,
+  Heatmap,
+  RingProgress,
   Sparkline,
   StackedBar,
   fmtCompact,
   fmtMoney,
-  type ColumnDatum,
+  type ComboDatum,
+  type HeatCell,
 } from '@/components/charts';
 
 // ------------------------------------------------------------------
@@ -49,6 +67,17 @@ type ItemRow = {
   styles?: { category: string | null } | { category: string | null }[] | null;
 };
 
+type InvRef = { invoice_date: string; status: string };
+type LineRow = {
+  item_id: string | null;
+  code: string | null;
+  qty: number | null;
+  unit_price: number | null;
+  invoices: InvRef | InvRef[] | null;
+};
+
+type Movement = 'fast' | 'medium' | 'slow' | 'none';
+
 // ------------------------------------------------------------------
 // Helpers
 // ------------------------------------------------------------------
@@ -75,9 +104,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
 /** Local-date ISO string (toISOString would shift the day in UTC+5:30). */
 const localISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const monthKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
 const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const num = (v: number | null | undefined) => Number(v ?? 0);
 const lkr = (n: number) => `LKR ${fmtMoney(n)}`;
+const lkrC = (n: number) => `LKR ${fmtCompact(n)}`;
 
 function daysBetween(fromISO: string, to: Date): number {
   const a = new Date(fromISO + 'T00:00:00');
@@ -96,77 +127,171 @@ const MATERIAL_CLASS_LABEL: Record<string, string> = {
   indirect_material: 'Indirect materials',
 };
 
+const MOVE_META: Record<Movement, { label: string; color: string; badge: string }> = {
+  fast: { label: 'Fast', color: CHART_COLORS.green, badge: 'bg-green-50 text-green-700 border-green-200' },
+  medium: { label: 'Medium', color: CHART_COLORS.navyLight, badge: 'bg-blue-50 text-blue-800 border-blue-200' },
+  slow: { label: 'Slow', color: CHART_COLORS.amber, badge: 'bg-amber-50 text-amber-700 border-amber-200' },
+  none: { label: 'No sales', color: CHART_COLORS.red, badge: 'bg-red-50 text-rowan-red border-red-200' },
+};
+
 // ------------------------------------------------------------------
-// Small layout pieces
+// Layout pieces
 // ------------------------------------------------------------------
 function Card({
   title,
   subtitle,
   action,
+  right,
   className = '',
   children,
 }: {
   title: string;
   subtitle?: string;
   action?: { href: string; label: string };
+  right?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className={`bg-white rounded-2xl border border-rowan-red/20 p-4 sm:p-5 min-w-0 ${className}`}>
+    <section
+      className={`relative bg-white rounded-2xl border border-rowan-red/15 p-4 sm:p-5 min-w-0 shadow-[0_1px_2px_rgba(6,21,75,0.04),0_8px_24px_-12px_rgba(6,21,75,0.12)] chart-fade ${className}`}
+    >
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="min-w-0">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-rowan-navy">{title}</h3>
-          {subtitle && <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>}
+          <h3 className="text-xs font-bold uppercase tracking-widest text-rowan-navy flex items-center gap-2">
+            <span className="inline-block w-1 h-3.5 rounded-full bg-gradient-to-b from-rowan-red to-rowan-navy" />
+            {title}
+          </h3>
+          {subtitle && <p className="text-[11px] text-gray-400 mt-1 pl-3">{subtitle}</p>}
         </div>
-        {action && (
-          <Link
-            href={action.href}
-            className="shrink-0 inline-flex items-center gap-1 text-[11px] font-bold text-rowan-navy hover:text-rowan-red print:hidden"
-          >
-            {action.label} <ArrowRight size={12} />
-          </Link>
-        )}
+        <div className="flex items-center gap-3 shrink-0">
+          {right}
+          {action && (
+            <Link
+              href={action.href}
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-rowan-navy hover:text-rowan-red print:hidden"
+            >
+              {action.label} <ArrowRight size={12} />
+            </Link>
+          )}
+        </div>
       </div>
       {children}
     </section>
   );
 }
 
+function SectionTitle({ children, note }: { children: React.ReactNode; note?: string }) {
+  return (
+    <div className="flex items-end justify-between gap-3 mb-3 mt-2">
+      <h2 className="text-[13px] font-black uppercase tracking-[0.18em] text-rowan-navy">
+        {children}
+        <span className="block mt-1.5 h-[3px] w-10 rounded-full bg-gradient-to-r from-rowan-red to-rowan-navy" />
+      </h2>
+      {note && <span className="text-[11px] text-gray-400 hidden sm:block">{note}</span>}
+    </div>
+  );
+}
+
+function Toggle<T extends string | number>({
+  value,
+  options,
+  onChange,
+  suffix = '',
+}: {
+  value: T;
+  options: T[];
+  onChange: (v: T) => void;
+  suffix?: string;
+}) {
+  return (
+    <div className="inline-flex rounded-full border border-rowan-red/30 overflow-hidden text-[11px] font-bold">
+      {options.map((o) => (
+        <button
+          key={String(o)}
+          type="button"
+          onClick={() => onChange(o)}
+          className={`px-3 py-1 transition-colors ${value === o ? 'bg-rowan-red text-white' : 'bg-white text-rowan-navy hover:bg-red-50'}`}
+        >
+          {o}
+          {suffix}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Kpi({
   label,
   value,
+  format,
   sub,
+  icon: Icon,
   tone = 'navy',
+  hero = false,
   trend,
   delta,
 }: {
   label: string;
-  value: string;
+  value: number;
+  format: (n: number) => string;
   sub?: string;
+  icon: LucideIcon;
   tone?: 'navy' | 'red' | 'green' | 'gray';
+  hero?: boolean;
   trend?: number[];
   delta?: number | null;
 }) {
-  const bar = { navy: 'bg-rowan-navy', red: 'bg-rowan-red', green: 'bg-green-600', gray: 'bg-gray-400' }[tone];
+  const chip = {
+    navy: 'bg-rowan-navy/10 text-rowan-navy',
+    red: 'bg-rowan-red/10 text-rowan-red',
+    green: 'bg-green-600/10 text-green-700',
+    gray: 'bg-gray-100 text-gray-500',
+  }[tone];
+
   return (
-    <div className="bg-white rounded-2xl border border-rowan-red/20 overflow-hidden flex min-w-0">
-      <div className={`w-1.5 shrink-0 ${bar}`} />
-      <div className="px-3.5 py-3 min-w-0 flex-1">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 truncate">{label}</div>
-        <div className="text-lg sm:text-xl font-black text-rowan-navy leading-tight mt-0.5 break-words">{value}</div>
-        <div className="flex flex-wrap items-baseline gap-x-1.5 text-[11px] mt-0.5 min-h-[16px] leading-snug">
-          {delta !== undefined && delta !== null && (
-            <span className={`font-bold ${delta >= 0 ? 'text-green-600' : 'text-rowan-red'}`}>
-              {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)}%
-            </span>
-          )}
-          {sub && <span className="text-gray-500">{sub}</span>}
+    <div
+      className={`relative rounded-2xl overflow-hidden min-w-0 p-3.5 chart-fade ${
+        hero
+          ? 'bg-gradient-to-br from-rowan-navy via-[#0b1d66] to-[#1d34a0] text-white shadow-[0_12px_28px_-10px_rgba(6,21,75,0.6)]'
+          : 'bg-white border border-rowan-red/15 shadow-[0_1px_2px_rgba(6,21,75,0.04),0_8px_24px_-12px_rgba(6,21,75,0.12)]'
+      }`}
+    >
+      {hero && <div className="absolute -right-6 -top-8 w-28 h-28 rounded-full bg-rowan-red/40 blur-2xl" />}
+      <div className="relative flex items-center justify-between gap-2">
+        <div className={`text-[10px] font-bold uppercase tracking-widest truncate ${hero ? 'text-white/65' : 'text-gray-400'}`}>
+          {label}
         </div>
-        {trend && <div className="mt-1.5">
-          <Sparkline values={trend} />
-        </div>}
+        <span className={`w-7 h-7 shrink-0 rounded-lg flex items-center justify-center ${hero ? 'bg-white/15 text-white' : chip}`}>
+          <Icon size={14} />
+        </span>
       </div>
+      <div className={`relative text-xl sm:text-[22px] font-black leading-tight mt-1.5 break-words ${hero ? 'text-white' : 'text-rowan-navy'}`}>
+        <CountUp value={value} format={format} />
+      </div>
+      <div className="relative flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] mt-1 min-h-[16px] leading-snug">
+        {delta !== undefined && delta !== null && (
+          <span
+            className={`inline-flex items-center rounded-full px-1.5 py-px font-bold text-[10px] ${
+              delta >= 0
+                ? hero
+                  ? 'bg-green-400/20 text-green-300'
+                  : 'bg-green-50 text-green-700'
+                : hero
+                  ? 'bg-red-400/25 text-red-200'
+                  : 'bg-red-50 text-rowan-red'
+            }`}
+          >
+            {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)}%
+          </span>
+        )}
+        {sub && <span className={hero ? 'text-white/65' : 'text-gray-500'}>{sub}</span>}
+      </div>
+      {trend && (
+        <div className="relative mt-2">
+          <Sparkline values={trend} color={hero ? '#ffffff' : CHART_COLORS.navy} dot={hero ? '#ff6b82' : CHART_COLORS.red} />
+        </div>
+      )}
     </div>
   );
 }
@@ -201,14 +326,20 @@ function PipelineCard({
   muted?: boolean;
   note?: string;
 }) {
-  const accent = { navy: 'bg-rowan-navy', red: 'bg-rowan-red', gray: 'bg-gray-300' }[tone];
+  const accent = {
+    navy: 'from-rowan-navy to-[#1d34a0]',
+    red: 'from-rowan-red to-[#8c0019]',
+    gray: 'from-gray-300 to-gray-200',
+  }[tone];
   const inner = (
     <div
-      className={`relative h-full rounded-2xl p-4 sm:p-5 overflow-hidden ${
-        muted ? 'bg-gray-50 border border-dashed border-gray-300' : 'bg-white border border-rowan-red/20 hover:border-rowan-red transition-colors'
+      className={`relative h-full rounded-2xl p-4 sm:p-5 overflow-hidden chart-fade ${
+        muted
+          ? 'bg-gray-50 border border-dashed border-gray-300'
+          : 'bg-white border border-rowan-red/15 shadow-[0_8px_24px_-12px_rgba(6,21,75,0.12)] hover:border-rowan-red/60 hover:-translate-y-0.5 transition-all'
       }`}
     >
-      <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${accent}`} />
+      <div className={`absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b ${accent}`} />
       <div className="flex items-center gap-2 text-gray-400 mb-2">
         {icon}
         <span className="text-[10px] font-bold uppercase tracking-widest">{title}</span>
@@ -233,6 +364,26 @@ function PipelineCard({
   );
 }
 
+function CoverPill({ cover, moved }: { cover: number | null; moved: boolean }) {
+  if (!moved || cover === null) return <span className="text-[11px] text-gray-300">—</span>;
+  const d = Math.round(cover);
+  const cls =
+    d < 15
+      ? 'bg-red-50 text-rowan-red border-red-200'
+      : d <= 60
+        ? 'bg-green-50 text-green-700 border-green-200'
+        : 'bg-amber-50 text-amber-700 border-amber-200';
+  const txt = d >= 999 ? '999+d' : `${d}d`;
+  return (
+    <span
+      title="Days of cover: stock on hand ÷ average daily units sold"
+      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-bold ${cls}`}
+    >
+      {txt}
+    </span>
+  );
+}
+
 // ------------------------------------------------------------------
 // Page
 // ------------------------------------------------------------------
@@ -240,16 +391,20 @@ export default function DashboardPage() {
   const [salesInv, setSalesInv] = useState<InvoiceRow[]>([]);
   const [openInv, setOpenInv] = useState<InvoiceRow[]>([]);
   const [items, setItems] = useState<ItemRow[]>([]);
+  const [lines, setLines] = useState<LineRow[]>([]);
   const [salesErr, setSalesErr] = useState<string | null>(null);
   const [stockErr, setStockErr] = useState<string | null>(null);
+  const [linesErr, setLinesErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [updated, setUpdated] = useState<Date | null>(null);
   const [range, setRange] = useState<6 | 12>(12);
+  const [win, setWin] = useState<30 | 90>(90);
 
   const load = useCallback(async () => {
     setLoading(true);
     const now = new Date();
     const windowStart = localISO(new Date(now.getFullYear(), now.getMonth() - 23, 1));
+    const linesStart = localISO(new Date(now.getFullYear(), now.getMonth() - 6, 1)); // 6 complete months + current
     const cols = 'id, invoice_number, invoice_date, due_date, status, subtotal, total_amount, amount_paid, purchaser_name, customer_id';
 
     const salesP = Promise.all([
@@ -264,7 +419,7 @@ export default function DashboardPage() {
           .order('id')
           .range(from, to)
       ),
-      // Every issued invoice regardless of age — needed so old unpaid balances still count as receivables
+      // Every issued invoice regardless of age — old unpaid balances still count as receivables
       fetchAll<InvoiceRow>((from, to) =>
         supabase.from('invoices').select(cols).eq('status', 'issued').order('invoice_date').order('id').range(from, to)
       ),
@@ -290,7 +445,18 @@ export default function DashboardPage() {
       }
     })();
 
-    const [salesRes, stockRes] = await Promise.allSettled([salesP, stockP]);
+    // Units sold per item: invoice lines of issued / paid invoices over the last 6 months
+    const linesP = fetchAll<LineRow>((from, to) =>
+      supabase
+        .from('invoice_lines')
+        .select('id, item_id, code, qty, unit_price, invoices!inner(invoice_date, status)')
+        .in('invoices.status', ['issued', 'paid'])
+        .gte('invoices.invoice_date', linesStart)
+        .order('id')
+        .range(from, to)
+    );
+
+    const [salesRes, stockRes, linesRes] = await Promise.allSettled([salesP, stockP, linesP]);
 
     if (salesRes.status === 'fulfilled') {
       setSalesInv(salesRes.value[0]);
@@ -305,6 +471,12 @@ export default function DashboardPage() {
     } else {
       setStockErr(stockRes.reason?.message ?? 'Unknown error');
     }
+    if (linesRes.status === 'fulfilled') {
+      setLines(linesRes.value);
+      setLinesErr(null);
+    } else {
+      setLinesErr(linesRes.reason?.message ?? 'Unknown error');
+    }
     setUpdated(new Date());
     setLoading(false);
   }, []);
@@ -318,18 +490,19 @@ export default function DashboardPage() {
     const now = new Date();
     const curKey = monthKey(now);
 
-    // Every month in the 24-month window → net sales + invoiced/collected
     const net = new Map<string, number>();
     const invoiced = new Map<string, number>();
     const collected = new Map<string, number>();
+    const daily = new Map<string, number>();
     for (const r of salesInv) {
       const k = r.invoice_date.slice(0, 7);
       net.set(k, (net.get(k) ?? 0) + num(r.subtotal));
       invoiced.set(k, (invoiced.get(k) ?? 0) + num(r.total_amount));
       collected.set(k, (collected.get(k) ?? 0) + Math.min(num(r.amount_paid), num(r.total_amount)));
+      daily.set(r.invoice_date, (daily.get(r.invoice_date) ?? 0) + num(r.subtotal));
     }
 
-    const months: { key: string; prevKey: string; label: string; tag?: string; long: string }[] = [];
+    const months: { key: string; prevKey: string; label: string; tag?: string; long: string; d: Date }[] = [];
     for (let i = 11; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const prev = new Date(d.getFullYear() - 1, d.getMonth(), 1);
@@ -339,6 +512,7 @@ export default function DashboardPage() {
         label: MONTH_ABBR[d.getMonth()],
         tag: d.getMonth() === 0 || i === 11 ? `’${String(d.getFullYear()).slice(2)}` : undefined,
         long: `${MONTH_ABBR[d.getMonth()]} ${d.getFullYear()}`,
+        d,
       });
     }
 
@@ -393,7 +567,6 @@ export default function DashboardPage() {
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
 
-    // Collection rate over the 12 displayed months
     let inv12 = 0;
     let col12 = 0;
     for (const m of months) {
@@ -401,6 +574,21 @@ export default function DashboardPage() {
       col12 += collected.get(m.key) ?? 0;
     }
     const collectionRate = inv12 > 0 ? (col12 / inv12) * 100 : null;
+
+    // Daily sales heatmap: last 26 weeks, Monday → Sunday columns
+    const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dow = (today0.getDay() + 6) % 7;
+    const startMonday = addDays(today0, -dow - 25 * 7);
+    const weeks: HeatCell[][] = [];
+    for (let w = 0; w < 26; w++) {
+      const col: HeatCell[] = [];
+      for (let d = 0; d < 7; d++) {
+        const day = addDays(startMonday, w * 7 + d);
+        const iso = localISO(day);
+        col.push({ date: iso, value: daily.get(iso) ?? 0, future: day > today0 });
+      }
+      weeks.push(col);
+    }
 
     return {
       months,
@@ -418,26 +606,42 @@ export default function DashboardPage() {
       net,
       invoiced,
       collected,
+      weeks,
     };
   }, [salesInv, openInv]);
 
-  const salesColumns: ColumnDatum[] = useMemo(() => {
-    const slice = range === 6 ? sales.months.slice(-6) : sales.months;
-    return slice.map((m) => ({
-      label: m.label,
-      tag: m.tag,
-      sublabel: m.long,
-      parts: [sales.net.get(m.key) ?? 0],
-      ref: sales.net.get(m.prevKey) ?? 0,
-    }));
+  const salesCombo: ComboDatum[] = useMemo(() => {
+    const full = sales.months.map((m, i) => {
+      const isCurrent = i === sales.months.length - 1;
+      // 3-month moving average (this month + previous two); skipped for the unfinished current month
+      let ma: number | null = null;
+      if (!isCurrent) {
+        const keys = [0, 1, 2].map((k) => monthKey(new Date(m.d.getFullYear(), m.d.getMonth() - k, 1)));
+        ma = keys.reduce((s, k) => s + (sales.net.get(k) ?? 0), 0) / 3;
+      }
+      return {
+        label: m.label,
+        tag: m.tag,
+        sublabel: m.long,
+        parts: [sales.net.get(m.key) ?? 0],
+        lines: [ma, sales.net.has(m.prevKey) ? (sales.net.get(m.prevKey) as number) : null],
+      };
+    });
+    return range === 6 ? full.slice(-6) : full;
   }, [sales, range]);
 
-  const receivableColumns: ColumnDatum[] = useMemo(
+  const receivableCombo: ComboDatum[] = useMemo(
     () =>
       sales.months.map((m) => {
         const inv = sales.invoiced.get(m.key) ?? 0;
         const col = sales.collected.get(m.key) ?? 0;
-        return { label: m.label, tag: m.tag, sublabel: `${m.long} invoices`, parts: [col, Math.max(0, inv - col)] };
+        return {
+          label: m.label,
+          tag: m.tag,
+          sublabel: `${m.long} invoices`,
+          parts: [col, Math.max(0, inv - col)],
+          lines: [inv > 0 ? (col / inv) * 100 : null],
+        };
       }),
     [sales]
   );
@@ -493,6 +697,92 @@ export default function DashboardPage() {
     return { fg, rm, fgValue, rmValue, fgUnits, rmUnits, fgByCategory, rmByClass, topFg, low, total: fgValue + rmValue };
   }, [items]);
 
+  // ---------------- Fast-moving finished goods ----------------
+  const movers = useMemo(() => {
+    const fgAll = items.filter(isFinishedGood);
+    const byId = new Map(fgAll.map((r) => [r.id, r]));
+    const byCode = new Map(fgAll.filter((r) => r.code).map((r) => [r.code.trim().toLowerCase(), r]));
+
+    const now = new Date();
+    const cutoff = localISO(addDays(new Date(now.getFullYear(), now.getMonth(), now.getDate()), -win));
+    const monthKeys: string[] = [];
+    // trend sparklines use the last 6 *complete* months (the current month is partial and would always dip)
+    for (let i = 6; i >= 1; i--) monthKeys.push(monthKey(new Date(now.getFullYear(), now.getMonth() - i, 1)));
+
+    type Agg = { item: ItemRow; units: number; revenue: number; monthly: number[] };
+    const agg = new Map<string, Agg>();
+    let matchedLines = 0;
+
+    for (const l of lines) {
+      const inv = Array.isArray(l.invoices) ? l.invoices[0] : l.invoices;
+      if (!inv || (inv.status !== 'issued' && inv.status !== 'paid')) continue;
+      const it = (l.item_id ? byId.get(l.item_id) : undefined) ?? (l.code ? byCode.get(l.code.trim().toLowerCase()) : undefined);
+      if (!it) continue;
+      matchedLines++;
+      const a = agg.get(it.id) ?? { item: it, units: 0, revenue: 0, monthly: [0, 0, 0, 0, 0, 0] };
+      const q = num(l.qty);
+      const mi = monthKeys.indexOf(inv.invoice_date.slice(0, 7));
+      if (mi >= 0) a.monthly[mi] += q;
+      if (inv.invoice_date >= cutoff) {
+        a.units += q;
+        a.revenue += q * num(l.unit_price);
+      }
+      agg.set(it.id, a);
+    }
+
+    // Rank by units sold in the chosen window; classify by cumulative share of units
+    // (first ~70% of units = Fast, next ~20% = Medium, remainder = Slow). Items that
+    // sold nothing but still hold stock are "No sales".
+    const sold = Array.from(agg.values())
+      .filter((a) => a.units > 0)
+      .sort((a, b) => b.units - a.units);
+    const totalUnits = sold.reduce((s, a) => s + a.units, 0);
+    let cum = 0;
+    const cls = new Map<string, Movement>();
+    for (const a of sold) {
+      const before = totalUnits > 0 ? cum / totalUnits : 0;
+      cls.set(a.item.id, before < 0.7 ? 'fast' : before < 0.9 ? 'medium' : 'slow');
+      cum += a.units;
+    }
+
+    const rows = sold.map((a) => {
+      const onHand = num(a.item.quantity_on_hand);
+      const rate = a.units / win;
+      return {
+        id: a.item.id,
+        name: a.item.name,
+        code: a.item.code,
+        units: a.units,
+        revenue: a.revenue,
+        monthly: a.monthly,
+        onHand,
+        value: onHand * num(a.item.unit_cost),
+        cover: rate > 0 ? Math.min(999, onHand / rate) : null,
+        cls: cls.get(a.item.id) ?? 'slow',
+      };
+    });
+
+    // Value of finished-goods stock by movement class
+    const valueBy: Record<Movement, number> = { fast: 0, medium: 0, slow: 0, none: 0 };
+    const countBy: Record<Movement, number> = { fast: 0, medium: 0, slow: 0, none: 0 };
+    for (const r of fgAll) {
+      const q = num(r.quantity_on_hand);
+      if (q <= 0) continue;
+      const c = cls.get(r.id) ?? 'none';
+      valueBy[c] += q * num(r.unit_cost);
+      countBy[c] += 1;
+    }
+
+    const notSelling = fgAll
+      .filter((r) => num(r.quantity_on_hand) > 0 && !cls.has(r.id))
+      .map((r) => ({ label: r.name, sub: r.code, value: num(r.quantity_on_hand) * num(r.unit_cost) }))
+      .filter((x) => x.value > 0)
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+
+    return { rows, valueBy, countBy, notSelling, matchedLines, maxUnits: rows[0]?.units ?? 0, totalUnits };
+  }, [items, lines, win]);
+
   const today = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   const overduePct = sales.outstanding > 0 ? (sales.overdue / sales.outstanding) * 100 : 0;
   const hasAnyData = salesInv.length > 0 || openInv.length > 0 || items.length > 0;
@@ -518,75 +808,79 @@ export default function DashboardPage() {
         <>
           {salesErr && <SectionError what="sales and receivables" message={salesErr} />}
           {stockErr && <SectionError what="inventory" message={stockErr} />}
+          {linesErr && <SectionError what="fast-moving item data" message={linesErr} />}
 
           {/* ---------- KPI strip ---------- */}
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
             <Kpi
+              hero
+              icon={TrendingUp}
               label="Sales · this month"
-              value={`LKR ${fmtCompact(sales.thisMonth)}`}
+              value={sales.thisMonth}
+              format={lkrC}
               delta={sales.delta}
               sub="vs same period last month"
               trend={sales.salesSeries}
-              tone="red"
             />
-            <Kpi label={`Sales · ${sales.fyLabel}`} value={`LKR ${fmtCompact(sales.fyToDate)}`} sub="net of tax, 1 Apr to date" tone="navy" />
             <Kpi
+              icon={CalendarDays}
+              label={`Sales · ${sales.fyLabel}`}
+              value={sales.fyToDate}
+              format={lkrC}
+              sub="net of tax, 1 Apr to date"
+            />
+            <Kpi
+              icon={HandCoins}
               label="Receivables"
-              value={`LKR ${fmtCompact(sales.outstanding)}`}
+              value={sales.outstanding}
+              format={lkrC}
               sub={`${sales.openCount} open invoice${sales.openCount === 1 ? '' : 's'}`}
-              tone="navy"
             />
             <Kpi
-              label="Overdue"
-              value={`LKR ${fmtCompact(sales.overdue)}`}
-              sub={sales.outstanding > 0 ? `${overduePct.toFixed(0)}% of receivables` : 'nothing outstanding'}
+              icon={AlarmClock}
               tone={overduePct > 40 ? 'red' : 'gray'}
+              label="Overdue"
+              value={sales.overdue}
+              format={lkrC}
+              sub={sales.outstanding > 0 ? `${overduePct.toFixed(0)}% of receivables` : 'nothing outstanding'}
             />
             <Kpi
+              icon={Boxes}
               label="Inventory value"
-              value={`LKR ${fmtCompact(stock.total)}`}
+              value={stock.total}
+              format={lkrC}
               sub="raw materials + finished goods"
-              tone="navy"
             />
             <Kpi
-              label="Low stock"
-              value={String(stock.low.length)}
-              sub={stock.low.length === 1 ? 'item at / below reorder' : 'items at / below reorder'}
+              icon={PackageMinus}
               tone={stock.low.length > 0 ? 'red' : 'green'}
+              label="Low stock"
+              value={stock.low.length}
+              format={(n) => String(Math.round(n))}
+              sub={stock.low.length === 1 ? 'item at / below reorder' : 'items at / below reorder'}
             />
           </div>
 
-          {/* ---------- Sales + aging ---------- */}
+          {/* ---------- Sales ---------- */}
+          <SectionTitle note="Net of tax unless stated">Sales &amp; receivables</SectionTitle>
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
             <Card
               className="xl:col-span-2"
               title="Sales by month"
-              subtitle="Net of VAT / SSCL · issued and paid invoices · tick marks show the same month last year"
+              subtitle="Net of VAT / SSCL · bars = monthly sales · red line = 3-month average · dashed = last year"
               action={{ href: '/accounting/reports/sales-by-customer', label: 'Sales report' }}
+              right={<Toggle value={range} options={[6, 12] as (6 | 12)[]} onChange={setRange} suffix="M" />}
             >
-              <div className="flex justify-end -mt-2 mb-2">
-                <div className="inline-flex rounded-full border border-rowan-red/30 overflow-hidden text-[11px] font-bold">
-                  {([6, 12] as const).map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setRange(n)}
-                      className={`px-3 py-1 transition-colors ${
-                        range === n ? 'bg-rowan-red text-white' : 'bg-white text-rowan-navy hover:bg-red-50'
-                      }`}
-                    >
-                      {n}M
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <ColumnChart
-                data={salesColumns}
+              <ComboChart
+                data={salesCombo}
+                barNames={['Net sales']}
+                barColors={[[CHART_COLORS.navyLight, CHART_COLORS.navy]]}
+                lines={[
+                  { name: '3-month average', color: CHART_COLORS.red },
+                  { name: 'Same month last year', color: '#9aa3b2', dashed: true },
+                ]}
                 format={lkr}
-                colors={[CHART_COLORS.navy]}
-                names={['Net sales']}
-                highlightLast
-                refName="Same month last year"
+                partialLast
                 emptyText="No issued invoices in this period."
               />
             </Card>
@@ -605,27 +899,35 @@ export default function DashboardPage() {
                   { label: 'Over 90 days', value: sales.buckets.d90p, color: CHART_COLORS.red },
                 ]}
               />
-              <div className="mt-4 pt-3 border-t border-gray-100 flex items-baseline justify-between text-[12px]">
-                <span className="text-gray-500">Total receivable</span>
-                <span className="font-black text-rowan-navy">LKR {fmtMoney(sales.outstanding)}</span>
+              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-4">
+                <RingProgress pct={overduePct} color={overduePct > 40 ? CHART_COLORS.red : CHART_COLORS.amber} label="overdue" />
+                <div className="min-w-0">
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Total receivable</div>
+                  <div className="text-lg font-black text-rowan-navy leading-tight">{lkr(sales.outstanding)}</div>
+                  <div className="text-[11px] text-gray-500">{lkr(sales.overdue)} past due</div>
+                </div>
               </div>
             </Card>
           </div>
 
-          {/* ---------- Receivables by month + collections ---------- */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
             <Card
               className="xl:col-span-2"
               title="Receivables by invoice month"
-              subtitle="Invoiced incl. tax — how much of each month’s billing has been collected vs. is still owed"
+              subtitle="Incl. tax · how much of each month’s billing is collected vs still owed · line = % collected"
               action={{ href: '/accounting/invoices', label: 'Invoices' }}
             >
-              <ColumnChart
-                data={receivableColumns}
+              <ComboChart
+                data={receivableCombo}
+                barNames={['Collected', 'Still outstanding']}
+                barColors={[
+                  [CHART_COLORS.greenLight, CHART_COLORS.green],
+                  ['#ff5b73', CHART_COLORS.red],
+                ]}
+                lines={[{ name: '% collected', color: CHART_COLORS.navy, axis: 'right' }]}
                 format={lkr}
-                height={250}
-                colors={[CHART_COLORS.green, CHART_COLORS.red]}
-                names={['Collected', 'Still outstanding']}
+                height={290}
+                partialLast
                 emptyText="No invoices in the last 12 months."
               />
             </Card>
@@ -639,12 +941,9 @@ export default function DashboardPage() {
               <div className="mt-5 pt-4 border-t border-gray-100">
                 <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Top customers owing</div>
                 <HBars
-                  items={sales.topCustomers.map((c) => ({
-                    label: c.name,
-                    value: c.amount,
-                    sub: `${c.count} inv`,
-                  }))}
-                  format={(n) => `LKR ${fmtCompact(n)}`}
+                  ranked
+                  items={sales.topCustomers.map((c) => ({ label: c.name, value: c.amount, sub: `${c.count} inv` }))}
+                  format={lkrC}
                   color={CHART_COLORS.red}
                   emptyText="No outstanding balances."
                 />
@@ -652,13 +951,21 @@ export default function DashboardPage() {
             </Card>
           </div>
 
+          <Card
+            className="mb-8"
+            title="Daily sales heatmap"
+            subtitle="Net sales per day over the last 26 weeks — darker means a bigger day"
+          >
+            <Heatmap weeks={sales.weeks} format={lkr} />
+          </Card>
+
           {/* ---------- Inventory ---------- */}
-          <h2 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Inventory pipeline</h2>
+          <SectionTitle note="Valued at weighted-average cost">Inventory</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
             <PipelineCard
               title="Raw materials"
               icon={<Package size={15} />}
-              value={`LKR ${fmtCompact(stock.rmValue)}`}
+              value={lkrC(stock.rmValue)}
               lines={[`${stock.rm.length} items in stock`, `${stock.rmUnits.toLocaleString('en-US', { maximumFractionDigits: 0 })} units on hand`]}
               tone="navy"
               href="/stock"
@@ -675,18 +982,139 @@ export default function DashboardPage() {
             <PipelineCard
               title="Finished goods"
               icon={<Boxes size={15} />}
-              value={`LKR ${fmtCompact(stock.fgValue)}`}
+              value={lkrC(stock.fgValue)}
               lines={[`${stock.fg.length} items in stock`, `${stock.fgUnits.toLocaleString('en-US', { maximumFractionDigits: 0 })} units on hand`]}
               tone="red"
               href="/warehouse/valuation"
             />
           </div>
 
+          {/* ---------- Fast-moving finished goods ---------- */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
+            <Card
+              className="xl:col-span-2"
+              title="Fast-moving finished goods"
+              subtitle={`Units sold in the last ${win} days · ranked by volume · cover = stock ÷ daily sales`}
+              right={<Toggle value={win} options={[30, 90] as (30 | 90)[]} onChange={setWin} suffix="D" />}
+            >
+              {movers.rows.length === 0 ? (
+                <div className="text-[12px] text-gray-400 py-10 text-center">
+                  {lines.length === 0
+                    ? 'No invoice lines found for the last 6 months.'
+                    : movers.matchedLines === 0
+                      ? 'Invoice lines were found, but none link to a finished-goods item (by item or code).'
+                      : `No finished goods sold in the last ${win} days.`}
+                </div>
+              ) : (
+                <div>
+                  <div className="hidden sm:grid grid-cols-[28px_minmax(0,1.5fr)_minmax(0,1.3fr)_84px_64px_80px] items-center gap-3 px-2 pb-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                    <span>#</span>
+                    <span>Item</span>
+                    <span>Units sold</span>
+                    <span title="Units sold in each of the last 6 complete months">6-mo trend</span>
+                    <span className="text-right">In stock</span>
+                    <span className="text-right">Cover</span>
+                  </div>
+                  <ul>
+                    {movers.rows.slice(0, 8).map((r, i) => {
+                      const meta = MOVE_META[r.cls];
+                      return (
+                        <li
+                          key={r.id}
+                          className="grid grid-cols-[28px_minmax(0,1fr)_auto] sm:grid-cols-[28px_minmax(0,1.5fr)_minmax(0,1.3fr)_84px_64px_80px] items-center gap-3 px-2 py-2.5 border-b border-gray-50 last:border-0 hover:bg-red-50/40 rounded-lg transition-colors"
+                        >
+                          <span
+                            className={`w-6 h-6 rounded-full text-[11px] font-black flex items-center justify-center ${
+                              i === 0 ? 'bg-rowan-red text-white' : i < 3 ? 'bg-rowan-navy text-white' : 'bg-gray-100 text-rowan-navy'
+                            }`}
+                          >
+                            {i + 1}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="font-bold text-[12px] text-rowan-navy truncate">{r.name}</span>
+                              <span className={`hidden sm:inline-flex shrink-0 rounded-full border px-1.5 py-px text-[9px] font-bold uppercase tracking-wide ${meta.badge}`}>
+                                {meta.label}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-gray-400 truncate">
+                              {r.code}
+                              <span className="sm:hidden">
+                                {' '}
+                                · {r.units.toLocaleString('en-US', { maximumFractionDigits: 0 })} sold · {r.onHand.toLocaleString('en-US', { maximumFractionDigits: 0 })} in stock
+                              </span>
+                            </div>
+                          </div>
+                          <div className="hidden sm:block min-w-0">
+                            <div className="flex items-baseline justify-between text-[12px] mb-1">
+                              <span className="font-black text-rowan-navy">{r.units.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
+                              <span className="text-[10px] text-gray-400">{lkrC(r.revenue)}</span>
+                            </div>
+                            <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                              <div
+                                className="h-full rounded-full"
+                                style={{
+                                  width: `${Math.max(4, (r.units / movers.maxUnits) * 100)}%`,
+                                  background: `linear-gradient(90deg, ${meta.color}, ${meta.color}99)`,
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className="hidden sm:block">
+                            <Sparkline values={r.monthly} color={meta.color} dot={CHART_COLORS.red} height={26} />
+                          </div>
+                          <div className="hidden sm:block text-right text-[12px] font-bold text-rowan-navy">
+                            {r.onHand.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                          </div>
+                          <div className="text-right">
+                            <CoverPill cover={r.cover} moved />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-[10px] text-gray-400">
+                    <span>
+                      <Zap size={11} className="inline -mt-0.5 text-green-600" /> Fast = first 70% of units sold · Medium = next 20% · Slow = the rest
+                    </span>
+                    <span className="sm:ml-auto">
+                      Cover: <b className="text-rowan-red">&lt;15d</b> reorder soon · <b className="text-green-700">15–60d</b> healthy ·{' '}
+                      <b className="text-amber-600">&gt;60d</b> overstocked
+                    </span>
+                  </div>
+                </div>
+              )}
+            </Card>
+
+            <Card title="Stock value by movement" subtitle={`Finished goods, based on sales in the last ${win} days`}>
+              <DonutChart
+                centerLabel="FG stock"
+                centerValue={lkrC(stock.fgValue)}
+                slices={(['fast', 'medium', 'slow', 'none'] as Movement[]).map((k) => ({
+                  label: `${MOVE_META[k].label} · ${movers.countBy[k]} item${movers.countBy[k] === 1 ? '' : 's'}`,
+                  value: movers.valueBy[k],
+                  color: MOVE_META[k].color,
+                }))}
+              />
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                  Cash tied up in items not selling
+                </div>
+                <HBars
+                  items={movers.notSelling}
+                  format={lkrC}
+                  color={CHART_COLORS.red}
+                  emptyText="Every item in stock has sold recently."
+                />
+              </div>
+            </Card>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
-            <Card title="Inventory value mix" subtitle="At weighted-average cost">
+            <Card title="Inventory value mix" subtitle="Raw materials vs finished goods">
               <DonutChart
                 centerLabel="Total"
-                centerValue={`LKR ${fmtCompact(stock.total)}`}
+                centerValue={lkrC(stock.total)}
                 slices={[
                   { label: 'Raw materials', value: stock.rmValue, color: CHART_COLORS.navy },
                   { label: 'Work in progress', value: 0, color: CHART_COLORS.gray, note: 'n/a' },
@@ -701,8 +1129,9 @@ export default function DashboardPage() {
               action={{ href: '/warehouse/valuation', label: 'Valuation' }}
             >
               <HBars
+                ranked
                 items={stock.fgByCategory.slice(0, 7)}
-                format={(n) => `LKR ${fmtCompact(n)}`}
+                format={lkrC}
                 color={CHART_COLORS.red}
                 emptyText="No finished goods in stock."
               />
@@ -714,9 +1143,9 @@ export default function DashboardPage() {
               action={{ href: '/stock', label: 'Stock' }}
             >
               <DonutChart
-                size={130}
+                size={140}
                 centerLabel="Materials"
-                centerValue={`LKR ${fmtCompact(stock.rmValue)}`}
+                centerValue={lkrC(stock.rmValue)}
                 slices={stock.rmByClass.map((g, i) => ({ label: g.label, value: g.value, color: PALETTE[i % PALETTE.length] }))}
               />
             </Card>
@@ -724,7 +1153,7 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <Card title="Top finished goods" subtitle="Highest stock value">
-              <HBars items={stock.topFg} format={(n) => `LKR ${fmtCompact(n)}`} emptyText="No finished goods in stock." />
+              <HBars ranked items={stock.topFg} format={lkrC} emptyText="No finished goods in stock." />
             </Card>
 
             <Card

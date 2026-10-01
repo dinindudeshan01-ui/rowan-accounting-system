@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 
 // ------------------------------------------------------------------
-// Dependency-free chart primitives (CSS + SVG) used by /dashboard.
-// Colours follow the Rowan brand: navy / red, with neutral support tones.
+// Dependency-free chart primitives (SVG + CSS) used by /dashboard.
+// Brand colours: navy / red, with neutral + status support tones.
+// Animations live in globals.css (.chart-rise / .chart-draw / .chart-pop).
 // ------------------------------------------------------------------
 
 export const CHART_COLORS = {
@@ -13,6 +14,7 @@ export const CHART_COLORS = {
   red: '#e60026',
   redDark: '#5c0011',
   green: '#16a34a',
+  greenLight: '#4ade80',
   amber: '#d97706',
   gray: '#9ca3af',
   grayLight: '#e5e7eb',
@@ -27,6 +29,8 @@ export const PALETTE = [
   '#f26b7f',
   CHART_COLORS.gray,
 ];
+
+// ---------------------------- formatting ----------------------------
 
 /** 1,234,567 -> "1.23M". Keeps axis labels and tiles short. */
 export function fmtCompact(n: number): string {
@@ -53,182 +57,411 @@ function niceMax(v: number): number {
   return nice * exp;
 }
 
+// ------------------------------ hooks -------------------------------
+
+function useWidth<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    setW(Math.floor(el.getBoundingClientRect().width));
+    const ro = new ResizeObserver(([e]) => setW(Math.floor(e.contentRect.width)));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, w] as const;
+}
+
+/** Flips to true shortly after mount so CSS transitions can animate from empty. */
+function useGrown(delay = 40) {
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setGrown(true), delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+  return grown;
+}
+
+function useCountUp(target: number, duration = 900) {
+  const [v, setV] = useState(0);
+  const from = useRef(0);
+  useEffect(() => {
+    const start = performance.now();
+    const a = from.current;
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const e = 1 - Math.pow(1 - t, 3);
+      const cur = a + (target - a) * e;
+      setV(cur);
+      from.current = cur;
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return v;
+}
+
+export function CountUp({ value, format }: { value: number; format: (n: number) => string }) {
+  const v = useCountUp(value);
+  return <>{format(v)}</>;
+}
+
+// --------------------------- curve helpers --------------------------
+
+/** Monotone cubic interpolation (like d3.curveMonotoneX): smooth, never overshoots the data. */
+function monotonePath(pts: [number, number][]): string {
+  const n = pts.length;
+  if (n === 0) return '';
+  if (n === 1) return `M${pts[0][0]},${pts[0][1]}`;
+  if (n === 2) return `M${pts[0][0]},${pts[0][1]}L${pts[1][0]},${pts[1][1]}`;
+  const dx: number[] = [];
+  const m: number[] = [];
+  for (let i = 0; i < n - 1; i++) {
+    dx[i] = pts[i + 1][0] - pts[i][0];
+    m[i] = (pts[i + 1][1] - pts[i][1]) / dx[i];
+  }
+  const t: number[] = new Array(n);
+  t[0] = m[0];
+  t[n - 1] = m[n - 2];
+  for (let i = 1; i < n - 1; i++) t[i] = m[i - 1] * m[i] <= 0 ? 0 : (m[i - 1] + m[i]) / 2;
+  for (let i = 0; i < n - 1; i++) {
+    if (m[i] === 0) {
+      t[i] = 0;
+      t[i + 1] = 0;
+    } else {
+      const a = t[i] / m[i];
+      const b = t[i + 1] / m[i];
+      const s = a * a + b * b;
+      if (s > 9) {
+        const k = 3 / Math.sqrt(s);
+        t[i] = k * a * m[i];
+        t[i + 1] = k * b * m[i];
+      }
+    }
+  }
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < n - 1; i++) {
+    const c = dx[i] / 3;
+    d += `C${pts[i][0] + c},${pts[i][1] + t[i] * c},${pts[i + 1][0] - c},${pts[i + 1][1] - t[i + 1] * c},${pts[i + 1][0]},${pts[i + 1][1]}`;
+  }
+  return d;
+}
+
+function roundedTop(x: number, y: number, w: number, h: number, r: number): string {
+  const rr = Math.max(0, Math.min(r, h, w / 2));
+  return `M${x},${y + h}L${x},${y + rr}Q${x},${y} ${x + rr},${y}L${x + w - rr},${y}Q${x + w},${y} ${x + w},${y + rr}L${x + w},${y + h}Z`;
+}
+
 // ------------------------------------------------------------------
-// Column chart — single or stacked series, optional reference tick
-// (used for "same month last year"). Click / hover a column to read it.
+// ComboChart — gradient (stacked) bars + smooth line overlays,
+// dual axis, hover tooltip, clickable legend, hatched "in-progress" month.
 // ------------------------------------------------------------------
-export type ColumnDatum = {
+export type ComboDatum = {
   label: string;
-  parts: number[];
-  ref?: number;
-  sublabel?: string;
-  /** Small second line under the label, e.g. the year (’25). */
   tag?: string;
+  sublabel?: string;
+  parts: number[];
+  lines?: (number | null)[];
 };
 
-export function ColumnChart({
+export type LineDef = {
+  name: string;
+  color: string;
+  dashed?: boolean;
+  axis?: 'left' | 'right';
+  format?: (n: number) => string;
+};
+
+export function ComboChart({
   data,
-  colors,
-  names,
+  barNames,
+  barColors,
+  lines = [],
   format = fmtMoney,
-  height = 190,
-  refName = 'Prior year',
-  highlightLast = false,
+  height = 270,
+  rightMax = 100,
+  rightFormat = (n: number) => `${n.toFixed(0)}%`,
+  partialLast = false,
   emptyText = 'No data for this period.',
 }: {
-  data: ColumnDatum[];
-  colors: string[];
-  names: string[];
+  data: ComboDatum[];
+  barNames: string[];
+  barColors: [string, string][]; // [top, bottom] gradient stops per bar series
+  lines?: LineDef[];
   format?: (n: number) => string;
   height?: number;
-  refName?: string;
-  highlightLast?: boolean;
+  rightMax?: number;
+  rightFormat?: (n: number) => string;
+  partialLast?: boolean;
   emptyText?: string;
 }) {
-  const [sel, setSel] = useState<number | null>(null);
-  const totals = data.map((d) => d.parts.reduce((s, v) => s + v, 0));
-  const hasRef = data.some((d) => d.ref !== undefined);
-  const rawMax = Math.max(0, ...totals, ...data.map((d) => d.ref ?? 0));
-  const max = niceMax(rawMax);
-  const ticks = [0, 0.25, 0.5, 0.75, 1];
-  const active = sel ?? data.length - 1;
-  const a = data[active];
+  const uid = useId().replace(/:/g, '');
+  const [ref, width] = useWidth<HTMLDivElement>();
+  const [hov, setHov] = useState<number | null>(null);
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
 
-  if (rawMax <= 0) {
-    return <div className="text-[12px] text-gray-400 py-10 text-center">{emptyText}</div>;
-  }
+  const toggle = (name: string) =>
+    setHidden((h) => {
+      const n = new Set(h);
+      if (n.has(name)) n.delete(name);
+      else n.add(name);
+      return n;
+    });
+
+  const visBar = barNames.map((n) => !hidden.has(n));
+  const visLine = lines.map((l) => !hidden.has(l.name));
+  const hasRight = lines.some((l, i) => l.axis === 'right' && visLine[i]);
+
+  const totals = data.map((d) => d.parts.reduce((s, v, i) => s + (visBar[i] ? v : 0), 0));
+  const leftLineVals = data.flatMap((d) =>
+    (d.lines ?? []).map((v, i) => (lines[i]?.axis !== 'right' && visLine[i] && v !== null ? v : 0))
+  );
+  const rawMax = Math.max(0, ...totals, ...leftLineVals);
+  const allZero = data.every((d) => d.parts.every((p) => p <= 0) && (d.lines ?? []).every((v) => !v));
+
+  if (allZero) return <div className="text-[12px] text-gray-400 py-10 text-center">{emptyText}</div>;
+
+  const leftMax = niceMax(rawMax);
+  const M = { l: 46, r: hasRight ? 40 : 8, t: 10, b: 38 };
+  const pw = Math.max(10, width - M.l - M.r);
+  const ph = height - M.t - M.b;
+  const n = data.length;
+  const band = pw / n;
+  const barW = Math.min(band * 0.64, 40);
+  const xc = (i: number) => M.l + band * (i + 0.5);
+  const yL = (v: number) => M.t + ph * (1 - v / leftMax);
+  const yR = (v: number) => M.t + ph * (1 - v / rightMax);
+  const ticks = [0, 0.25, 0.5, 0.75, 1];
+
+  const tip = hov !== null ? data[hov] : null;
+  const tipX = hov !== null ? xc(hov) : 0;
+  const flip = tipX > width * 0.58;
 
   return (
     <div>
-      {/* Readout for the selected (default: latest) column */}
-      {a && (
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 mb-3 min-h-[34px]">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
-            {a.sublabel ?? a.label}
-          </span>
-          {a.parts.length === 1 ? (
-            <span className="text-lg font-black text-rowan-navy">{format(totals[active])}</span>
-          ) : (
-            <>
-              <span className="text-lg font-black text-rowan-navy">{format(totals[active])}</span>
-              {a.parts.map((p, i) => (
-                <span key={i} className="text-[11px] text-gray-500 inline-flex items-center gap-1">
-                  <i className="inline-block w-2 h-2 rounded-sm" style={{ background: colors[i] }} />
-                  {names[i]} {format(p)}
-                </span>
+      <div ref={ref} className="relative w-full select-none" style={{ height }}>
+        {width > 0 && (
+          <svg width={width} height={height} className="overflow-visible block">
+            <defs>
+              {barColors.map(([top, bottom], i) => (
+                <linearGradient key={i} id={`${uid}-b${i}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={top} />
+                  <stop offset="100%" stopColor={bottom} />
+                </linearGradient>
               ))}
-            </>
-          )}
-          {a.ref !== undefined && (
-            <span className="text-[11px] text-gray-400">
-              {refName}: {format(a.ref)}
-            </span>
-          )}
-        </div>
-      )}
+              <pattern id={`${uid}-hatch`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="7" stroke="#fff" strokeOpacity="0.55" strokeWidth="3" />
+              </pattern>
+            </defs>
 
-      <div className="flex">
-        {/* Y axis */}
-        <div className="relative w-11 shrink-0" style={{ height }}>
-          {ticks.map((t) => (
-            <span
-              key={t}
-              className="absolute right-1.5 text-[9px] text-gray-400 leading-none -translate-y-1/2"
-              style={{ bottom: `${t * 100}%` }}
-            >
-              {fmtCompact(t * max)}
-            </span>
-          ))}
-        </div>
+            {/* Grid + left axis */}
+            {ticks.map((t) => (
+              <g key={t}>
+                <line
+                  x1={M.l}
+                  x2={M.l + pw}
+                  y1={yL(t * leftMax)}
+                  y2={yL(t * leftMax)}
+                  stroke={t === 0 ? '#d1d5db' : '#eef0f3'}
+                  strokeDasharray={t === 0 ? undefined : '3 4'}
+                />
+                <text x={M.l - 8} y={yL(t * leftMax) + 3} textAnchor="end" fontSize="9.5" fill="#9ca3af">
+                  {fmtCompact(t * leftMax)}
+                </text>
+                {hasRight && (
+                  <text x={M.l + pw + 8} y={yR(t * rightMax) + 3} textAnchor="start" fontSize="9.5" fill="#9ca3af">
+                    {rightFormat(t * rightMax)}
+                  </text>
+                )}
+              </g>
+            ))}
 
-        {/* Plot */}
-        <div className="relative flex-1 min-w-0" style={{ height }}>
-          {ticks.map((t) => (
-            <div
-              key={t}
-              className={`absolute left-0 right-0 border-t ${t === 0 ? 'border-gray-300' : 'border-gray-100'}`}
-              style={{ bottom: `${t * 100}%` }}
-            />
-          ))}
-          <div className="absolute inset-0 flex items-stretch gap-[3px]">
+            {/* Hover column highlight + guide */}
+            {hov !== null && (
+              <rect x={M.l + band * hov} y={M.t} width={band} height={ph} fill="#e60026" opacity="0.05" rx="6" />
+            )}
+
+            {/* Bars */}
             {data.map((d, i) => {
-              const isLast = i === data.length - 1;
+              let acc = 0;
+              const segs: React.ReactNode[] = [];
+              const visibleIdx = d.parts.map((_, pi) => pi).filter((pi) => visBar[pi]);
+              const topPi = visibleIdx[visibleIdx.length - 1];
+              d.parts.forEach((p, pi) => {
+                if (!visBar[pi] || p <= 0) return;
+                const h = (p / leftMax) * ph;
+                const y = M.t + ph - acc - h;
+                const x = xc(i) - barW / 2;
+                acc += h;
+                const isTop = pi === topPi;
+                const dPath = isTop ? roundedTop(x, y, barW, h, 5) : `M${x},${y}h${barW}v${h}h${-barW}Z`;
+                segs.push(
+                  <g key={pi}>
+                    <path d={dPath} fill={`url(#${uid}-b${pi})`} opacity={hov === null || hov === i ? 1 : 0.55} style={{ transition: 'opacity .15s' }} />
+                    {partialLast && i === n - 1 && <path d={dPath} fill={`url(#${uid}-hatch)`} />}
+                  </g>
+                );
+              });
               return (
-                <button
-                  key={i}
-                  type="button"
-                  onMouseEnter={() => setSel(i)}
-                  onFocus={() => setSel(i)}
-                  onClick={() => setSel(i)}
-                  aria-label={`${d.label}: ${format(totals[i])}`}
-                  className={`relative flex-1 min-w-0 h-full outline-none rounded-sm transition-colors ${
-                    i === active ? 'bg-red-50/70' : 'hover:bg-gray-50'
-                  }`}
+                <g key={i} className="chart-rise" style={{ animationDelay: `${i * 45}ms` }}>
+                  {segs}
+                </g>
+              );
+            })}
+
+            {/* Lines */}
+            {lines.map((l, li) => {
+              if (!visLine[li]) return null;
+              const y = l.axis === 'right' ? yR : yL;
+              const pts: [number, number][] = [];
+              data.forEach((d, i) => {
+                const v = d.lines?.[li];
+                if (v !== null && v !== undefined) pts.push([xc(i), y(v)]);
+              });
+              if (pts.length === 0) return null;
+              return (
+                <g key={l.name}>
+                  <path
+                    d={monotonePath(pts)}
+                    fill="none"
+                    stroke={l.color}
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeDasharray={l.dashed ? '5 5' : undefined}
+                    pathLength={l.dashed ? undefined : 1}
+                    className={l.dashed ? 'chart-fade' : 'chart-draw'}
+                  />
+                  {pts.map(([px, py], k) => (
+                    <circle key={k} cx={px} cy={py} r={3.2} fill="#fff" stroke={l.color} strokeWidth="2" className="chart-pop" />
+                  ))}
+                </g>
+              );
+            })}
+
+            {/* X labels */}
+            {data.map((d, i) => (
+              <g key={i}>
+                <text
+                  x={xc(i)}
+                  y={M.t + ph + 16}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontWeight={hov === i || (hov === null && i === n - 1) ? 800 : 500}
+                  fill={hov === i || (hov === null && i === n - 1) ? '#e60026' : '#9ca3af'}
                 >
-                  <div className="absolute inset-x-[14%] bottom-0 flex flex-col-reverse" style={{ height: '100%' }}>
-                    {d.parts.map((p, pi) => (
-                      <div
-                        key={pi}
-                        style={{
-                          height: `${(p / max) * 100}%`,
-                          background: highlightLast && isLast && pi === 0 ? CHART_COLORS.red : colors[pi],
-                        }}
-                        className={pi === d.parts.length - 1 ? 'rounded-t-[3px]' : ''}
-                      />
-                    ))}
-                  </div>
-                  {d.ref !== undefined && d.ref > 0 && (
-                    <div
-                      className="absolute inset-x-[4%] h-[2px] bg-gray-700/70"
-                      style={{ bottom: `calc(${(d.ref / max) * 100}% - 1px)` }}
-                    />
-                  )}
-                </button>
+                  {d.label}
+                </text>
+                {d.tag && (
+                  <text x={xc(i)} y={M.t + ph + 28} textAnchor="middle" fontSize="8.5" fill="#b8bec9">
+                    {d.tag}
+                  </text>
+                )}
+              </g>
+            ))}
+
+            {/* Hit areas */}
+            {data.map((_, i) => (
+              <rect
+                key={i}
+                x={M.l + band * i}
+                y={M.t}
+                width={band}
+                height={ph + M.b}
+                fill="transparent"
+                onMouseEnter={() => setHov(i)}
+                onMouseMove={() => setHov(i)}
+                onMouseLeave={() => setHov(null)}
+                onClick={() => setHov(i)}
+                style={{ cursor: 'pointer' }}
+              />
+            ))}
+          </svg>
+        )}
+
+        {/* Tooltip */}
+        {tip && (
+          <div
+            className="pointer-events-none absolute z-20 rounded-xl border border-white/10 bg-rowan-navy/95 text-white shadow-xl backdrop-blur px-3 py-2 min-w-[150px]"
+            style={{
+              top: 6,
+              left: tipX,
+              transform: `translateX(${flip ? 'calc(-100% - 14px)' : '14px'})`,
+            }}
+          >
+            <div className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">{tip.sublabel ?? tip.label}</div>
+            {tip.parts.map((p, pi) =>
+              visBar[pi] ? (
+                <div key={pi} className="flex items-center gap-2 text-[11px]">
+                  <i className="inline-block w-2 h-2 rounded-sm" style={{ background: barColors[pi][0] }} />
+                  <span className="text-white/75">{barNames[pi]}</span>
+                  <span className="ml-auto font-bold pl-3">{format(p)}</span>
+                </div>
+              ) : null
+            )}
+            {tip.parts.filter((_, pi) => visBar[pi]).length > 1 && (
+              <div className="flex items-center gap-2 text-[11px] border-t border-white/15 mt-1 pt-1">
+                <span className="text-white/75">Total</span>
+                <span className="ml-auto font-black pl-3">{format(totals[hov!])}</span>
+              </div>
+            )}
+            {lines.map((l, li) => {
+              const v = tip.lines?.[li];
+              if (!visLine[li] || v === null || v === undefined) return null;
+              return (
+                <div key={l.name} className="flex items-center gap-2 text-[11px] mt-0.5">
+                  <i className="inline-block w-2.5 h-[3px] rounded" style={{ background: l.color }} />
+                  <span className="text-white/75">{l.name}</span>
+                  <span className="ml-auto font-bold pl-3">{(l.format ?? (l.axis === 'right' ? rightFormat : format))(v)}</span>
+                </div>
               );
             })}
           </div>
-        </div>
-      </div>
-
-      {/* X axis labels */}
-      <div className="flex mt-1.5">
-        <div className="w-11 shrink-0" />
-        <div className="flex-1 min-w-0 flex gap-[3px]">
-          {data.map((d, i) => (
-            <div
-              key={i}
-              className={`flex-1 min-w-0 text-center text-[9px] sm:text-[10px] truncate ${
-                i === active ? 'font-bold text-rowan-red' : 'text-gray-400'
-              }`}
-            >
-              {d.label}
-              <div className="text-[8px] leading-tight font-normal text-gray-400 h-[10px]">{d.tag ?? ''}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-[10px] text-gray-500">
-        {names.map((n, i) => (
-          <span key={i} className="inline-flex items-center gap-1.5">
-            <i className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: colors[i] }} />
-            {n}
-          </span>
-        ))}
-        {hasRef && (
-          <span className="inline-flex items-center gap-1.5">
-            <i className="inline-block w-3 h-[2px] bg-gray-700/70" />
-            {refName}
-          </span>
         )}
+      </div>
+
+      {/* Legend (click to show / hide a series) */}
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 mt-3">
+        {barNames.map((nm, i) => (
+          <button
+            key={nm}
+            type="button"
+            onClick={() => toggle(nm)}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold transition-all ${
+              hidden.has(nm) ? 'border-gray-200 text-gray-300 line-through' : 'border-gray-200 text-gray-600 hover:border-rowan-red/40'
+            }`}
+          >
+            <i className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: `linear-gradient(${barColors[i][0]}, ${barColors[i][1]})` }} />
+            {nm}
+          </button>
+        ))}
+        {lines.map((l) => (
+          <button
+            key={l.name}
+            type="button"
+            onClick={() => toggle(l.name)}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold transition-all ${
+              hidden.has(l.name) ? 'border-gray-200 text-gray-300 line-through' : 'border-gray-200 text-gray-600 hover:border-rowan-red/40'
+            }`}
+          >
+            <i
+              className="inline-block w-3.5 h-0 border-t-2 rounded"
+              style={{ borderColor: l.color, borderStyle: l.dashed ? 'dashed' : 'solid' }}
+            />
+            {l.name}
+          </button>
+        ))}
+        {partialLast && <span className="text-[10px] text-gray-400 ml-auto">▨ current month in progress</span>}
       </div>
     </div>
   );
 }
 
 // ------------------------------------------------------------------
-// Donut chart with centre label and legend
+// Donut chart — animated draw-in, hover to focus a slice
 // ------------------------------------------------------------------
 export type Slice = { label: string; value: number; color: string; note?: string };
 
@@ -237,7 +470,7 @@ export function DonutChart({
   centerLabel,
   centerValue,
   format = fmtMoney,
-  size = 150,
+  size = 160,
 }: {
   slices: Slice[];
   centerLabel?: string;
@@ -245,21 +478,25 @@ export function DonutChart({
   format?: (n: number) => string;
   size?: number;
 }) {
+  const grown = useGrown();
+  const [hov, setHov] = useState<number | null>(null);
   const total = slices.reduce((s, x) => s + Math.max(0, x.value), 0);
   const r = 54;
   const c = 2 * Math.PI * r;
   let offset = 0;
+  const h = hov !== null ? slices[hov] : null;
 
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="relative shrink-0" style={{ width: size, height: size }}>
         <svg viewBox="0 0 140 140" width={size} height={size} className="-rotate-90">
-          <circle cx="70" cy="70" r={r} fill="none" stroke={CHART_COLORS.grayLight} strokeWidth="18" />
+          <circle cx="70" cy="70" r={r} fill="none" stroke="#f1f3f5" strokeWidth="16" />
           {total > 0 &&
             slices.map((s, i) => {
               const v = Math.max(0, s.value);
               if (v <= 0) return null;
               const len = (v / total) * c;
+              const vis = Math.max(0, len - 2.5);
               const el = (
                 <circle
                   key={i}
@@ -268,29 +505,46 @@ export function DonutChart({
                   r={r}
                   fill="none"
                   stroke={s.color}
-                  strokeWidth="18"
-                  strokeDasharray={`${Math.max(0, len - 1.5)} ${c - Math.max(0, len - 1.5)}`}
+                  strokeWidth={hov === i ? 21 : 16}
+                  strokeDasharray={`${grown ? vis : 0} ${c}`}
                   strokeDashoffset={-offset}
-                >
-                  <title>{`${s.label}: ${format(v)} (${((v / total) * 100).toFixed(1)}%)`}</title>
-                </circle>
+                  opacity={hov === null || hov === i ? 1 : 0.3}
+                  onMouseEnter={() => setHov(i)}
+                  onMouseLeave={() => setHov(null)}
+                  style={{
+                    transition: 'stroke-dasharray .95s cubic-bezier(.2,.8,.2,1), stroke-width .18s, opacity .18s',
+                    cursor: 'pointer',
+                  }}
+                />
               );
               offset += len;
               return el;
             })}
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none">
-          <div className="text-[9px] font-bold uppercase tracking-widest text-gray-400 leading-tight">
-            {centerLabel}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-7 pointer-events-none">
+          <div className="text-[9px] font-bold uppercase tracking-widest text-gray-400 leading-tight truncate max-w-full">
+            {h ? h.label : centerLabel}
           </div>
-          <div className="text-[15px] font-black text-rowan-navy leading-tight">{centerValue}</div>
+          <div className="text-[15px] font-black text-rowan-navy leading-tight">
+            {h ? (h.note ?? format(h.value)) : centerValue}
+          </div>
+          {h && !h.note && total > 0 && (
+            <div className="text-[10px] font-bold text-rowan-red">{((Math.max(0, h.value) / total) * 100).toFixed(1)}%</div>
+          )}
         </div>
       </div>
 
-      <ul className="w-full min-w-0 space-y-1.5">
+      <ul className="w-full min-w-0 space-y-1">
         {slices.map((s, i) => (
-          <li key={i} className="flex items-center gap-2 text-[12px] min-w-0">
-            <i className="inline-block w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: s.color }} />
+          <li
+            key={i}
+            onMouseEnter={() => setHov(i)}
+            onMouseLeave={() => setHov(null)}
+            className={`flex items-center gap-2 text-[12px] min-w-0 rounded-lg px-1.5 py-1 transition-colors ${
+              hov === i ? 'bg-red-50' : ''
+            }`}
+          >
+            <i className="inline-block w-2.5 h-2.5 rounded-full shrink-0" style={{ background: s.color }} />
             <span className="truncate text-gray-600">{s.label}</span>
             <span className="ml-auto font-bold text-rowan-navy shrink-0">{s.note ?? format(s.value)}</span>
             {!s.note && (
@@ -306,7 +560,7 @@ export function DonutChart({
 }
 
 // ------------------------------------------------------------------
-// Horizontal bar list (rankings, category breakdowns)
+// Horizontal bar list — gradient bars that grow in
 // ------------------------------------------------------------------
 export type HBarItem = { label: string; value: number; sub?: string; color?: string };
 
@@ -314,42 +568,59 @@ export function HBars({
   items,
   format = fmtMoney,
   color = CHART_COLORS.navy,
+  ranked = false,
   emptyText = 'Nothing to show yet.',
 }: {
   items: HBarItem[];
   format?: (n: number) => string;
   color?: string;
+  ranked?: boolean;
   emptyText?: string;
 }) {
+  const grown = useGrown();
   const max = Math.max(0, ...items.map((i) => i.value));
   if (items.length === 0 || max <= 0) {
     return <div className="text-[12px] text-gray-400 py-6 text-center">{emptyText}</div>;
   }
   return (
-    <ul className="space-y-2.5">
-      {items.map((it, i) => (
-        <li key={i}>
-          <div className="flex items-baseline gap-2 text-[12px] mb-1 min-w-0">
-            <span className="font-semibold text-rowan-navy truncate" title={it.label}>
-              {it.label}
-            </span>
-            {it.sub && <span className="text-[10px] text-gray-400 shrink-0">{it.sub}</span>}
-            <span className="ml-auto font-bold text-rowan-navy shrink-0">{format(it.value)}</span>
-          </div>
-          <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
-            <div
-              className="h-full rounded-full"
-              style={{ width: `${Math.max(2, (it.value / max) * 100)}%`, background: it.color ?? color }}
-            />
-          </div>
-        </li>
-      ))}
+    <ul className="space-y-3">
+      {items.map((it, i) => {
+        const col = it.color ?? color;
+        return (
+          <li key={i} className="flex items-start gap-2.5">
+            {ranked && (
+              <span className="mt-0.5 w-5 h-5 shrink-0 rounded-full bg-gray-100 text-[10px] font-black text-rowan-navy flex items-center justify-center">
+                {i + 1}
+              </span>
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline gap-2 text-[12px] mb-1 min-w-0">
+                <span className="font-semibold text-rowan-navy truncate" title={it.label}>
+                  {it.label}
+                </span>
+                {it.sub && <span className="text-[10px] text-gray-400 shrink-0">{it.sub}</span>}
+                <span className="ml-auto font-bold text-rowan-navy shrink-0">{format(it.value)}</span>
+              </div>
+              <div className="h-2.5 rounded-full bg-gray-100 overflow-hidden">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: grown ? `${Math.max(3, (it.value / max) * 100)}%` : '0%',
+                    background: `linear-gradient(90deg, ${col}, ${col}99)`,
+                    transition: `width .9s cubic-bezier(.2,.8,.2,1) ${i * 70}ms`,
+                  }}
+                />
+              </div>
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }
 
 // ------------------------------------------------------------------
-// Single horizontal stacked bar with a legend table (AR aging)
+// Horizontal stacked bar with legend table (AR aging)
 // ------------------------------------------------------------------
 export function StackedBar({
   segments,
@@ -358,17 +629,22 @@ export function StackedBar({
   segments: Slice[];
   format?: (n: number) => string;
 }) {
+  const grown = useGrown();
   const total = segments.reduce((s, x) => s + Math.max(0, x.value), 0);
   return (
     <div>
-      <div className="flex h-5 rounded-full overflow-hidden bg-gray-100">
+      <div className="flex h-6 rounded-full overflow-hidden bg-gray-100 gap-[2px]">
         {total > 0 &&
           segments.map((s, i) =>
             s.value > 0 ? (
               <div
                 key={i}
-                style={{ width: `${(s.value / total) * 100}%`, background: s.color }}
                 title={`${s.label}: ${format(s.value)}`}
+                style={{
+                  width: grown ? `${(s.value / total) * 100}%` : '0%',
+                  background: `linear-gradient(180deg, ${s.color}, ${s.color}cc)`,
+                  transition: `width .9s cubic-bezier(.2,.8,.2,1) ${i * 90}ms`,
+                }}
               />
             ) : null
           )}
@@ -376,7 +652,7 @@ export function StackedBar({
       <ul className="mt-3 space-y-1.5">
         {segments.map((s, i) => (
           <li key={i} className="flex items-center gap-2 text-[12px]">
-            <i className="inline-block w-2.5 h-2.5 rounded-sm shrink-0" style={{ background: s.color }} />
+            <i className="inline-block w-2.5 h-2.5 rounded-full shrink-0" style={{ background: s.color }} />
             <span className="text-gray-600">{s.label}</span>
             <span className="ml-auto font-bold text-rowan-navy">{format(s.value)}</span>
             <span className="w-10 text-right text-[10px] text-gray-400">
@@ -390,62 +666,210 @@ export function StackedBar({
 }
 
 // ------------------------------------------------------------------
-// Sparkline — tiny trend line for KPI tiles
+// Sparkline — smooth trend with gradient area
 // ------------------------------------------------------------------
-export function Sparkline({ values, color = CHART_COLORS.navy }: { values: number[]; color?: string }) {
-  if (values.length < 2 || Math.max(...values) <= 0) return <div className="h-7" />;
+export function Sparkline({
+  values,
+  color = CHART_COLORS.navy,
+  dot = CHART_COLORS.red,
+  height = 28,
+}: {
+  values: number[];
+  color?: string;
+  dot?: string;
+  height?: number;
+}) {
+  const uid = useId().replace(/:/g, '');
+  if (values.length < 2 || Math.max(...values) <= 0) return <div style={{ height }} />;
   const w = 100;
-  const h = 28;
+  const h = height;
   const max = Math.max(...values);
   const min = Math.min(...values, 0);
   const span = max - min || 1;
-  const pts = values.map((v, i) => [(i / (values.length - 1)) * w, h - 2 - ((v - min) / span) * (h - 4)] as const);
-  const line = pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
-  const area = `0,${h} ${line} ${w},${h}`;
+  const pts = values.map((v, i) => [(i / (values.length - 1)) * w, h - 3 - ((v - min) / span) * (h - 6)] as [number, number]);
+  const line = monotonePath(pts);
+  const area = `${line}L${w},${h}L0,${h}Z`;
   const [lx, ly] = pts[pts.length - 1];
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full h-7" aria-hidden>
-      <polygon points={area} fill={color} opacity="0.08" />
-      <polyline points={line} fill="none" stroke={color} strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
-      <circle cx={lx} cy={ly} r="1.8" fill={CHART_COLORS.red} vectorEffect="non-scaling-stroke" />
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full overflow-visible" style={{ height }} aria-hidden>
+      <defs>
+        <linearGradient id={`${uid}-a`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.28" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${uid}-a)`} />
+      <path d={line} fill="none" stroke={color} strokeWidth="1.8" vectorEffect="non-scaling-stroke" strokeLinecap="round" />
+      <circle cx={lx} cy={ly} r="2.2" fill={dot} vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
 
 // ------------------------------------------------------------------
-// Semicircular gauge (0–100 %)
+// Gauge — gradient semicircle with ticks (0–100 %)
 // ------------------------------------------------------------------
 export function Gauge({
   pct,
   label,
-  goodAbove = 80,
-  warnAbove = 60,
+  invert = false,
 }: {
   pct: number;
   label: string;
-  goodAbove?: number;
-  warnAbove?: number;
+  /** invert: high values are bad (e.g. overdue share) */
+  invert?: boolean;
 }) {
+  const uid = useId().replace(/:/g, '');
+  const grown = useGrown();
   const p = Math.max(0, Math.min(100, pct));
   const r = 52;
   const half = Math.PI * r;
-  const color = p >= goodAbove ? CHART_COLORS.green : p >= warnAbove ? CHART_COLORS.amber : CHART_COLORS.red;
+  const stops = invert
+    ? [CHART_COLORS.green, CHART_COLORS.amber, CHART_COLORS.red]
+    : [CHART_COLORS.red, CHART_COLORS.amber, CHART_COLORS.green];
+  const ticks = [0, 25, 50, 75, 100].map((t) => {
+    const a = Math.PI - (t / 100) * Math.PI;
+    return { x1: 70 + Math.cos(a) * 62, y1: 70 - Math.sin(a) * 62, x2: 70 + Math.cos(a) * 66, y2: 70 - Math.sin(a) * 66 };
+  });
   return (
-    <div className="relative w-full max-w-[220px] mx-auto">
-      <svg viewBox="0 0 140 82" className="w-full">
-        <path d="M 18 70 A 52 52 0 0 1 122 70" fill="none" stroke={CHART_COLORS.grayLight} strokeWidth="13" strokeLinecap="round" />
+    <div className="relative w-full max-w-[230px] mx-auto">
+      <svg viewBox="0 0 140 84" className="w-full">
+        <defs>
+          <linearGradient id={`${uid}-g`} gradientUnits="userSpaceOnUse" x1="18" y1="0" x2="122" y2="0">
+            <stop offset="0%" stopColor={stops[0]} />
+            <stop offset="50%" stopColor={stops[1]} />
+            <stop offset="100%" stopColor={stops[2]} />
+          </linearGradient>
+        </defs>
+        <path d="M 18 70 A 52 52 0 0 1 122 70" fill="none" stroke="#eef0f3" strokeWidth="13" strokeLinecap="round" />
         <path
           d="M 18 70 A 52 52 0 0 1 122 70"
           fill="none"
-          stroke={color}
+          stroke={`url(#${uid}-g)`}
           strokeWidth="13"
           strokeLinecap="round"
-          strokeDasharray={`${(p / 100) * half} ${half}`}
+          strokeDasharray={`${grown ? (p / 100) * half : 0} ${half}`}
+          style={{ transition: 'stroke-dasharray 1.2s cubic-bezier(.2,.8,.2,1)' }}
         />
+        {ticks.map((t, i) => (
+          <line key={i} {...t} stroke="#cbd0d8" strokeWidth="1" />
+        ))}
       </svg>
       <div className="absolute inset-x-0 bottom-0 text-center">
-        <div className="text-2xl font-black text-rowan-navy leading-none">{p.toFixed(0)}%</div>
+        <div className="text-2xl font-black text-rowan-navy leading-none">
+          <CountUp value={p} format={(n) => `${n.toFixed(0)}%`} />
+        </div>
         <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">{label}</div>
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------
+// RingProgress — compact circular progress
+// ------------------------------------------------------------------
+export function RingProgress({
+  pct,
+  color = CHART_COLORS.red,
+  size = 76,
+  label,
+}: {
+  pct: number;
+  color?: string;
+  size?: number;
+  label?: string;
+}) {
+  const grown = useGrown();
+  const p = Math.max(0, Math.min(100, pct));
+  const r = 30;
+  const c = 2 * Math.PI * r;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg viewBox="0 0 76 76" width={size} height={size} className="-rotate-90">
+        <circle cx="38" cy="38" r={r} fill="none" stroke="#eef0f3" strokeWidth="8" />
+        <circle
+          cx="38"
+          cy="38"
+          r={r}
+          fill="none"
+          stroke={color}
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray={`${grown ? (p / 100) * c : 0} ${c}`}
+          style={{ transition: 'stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1)' }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
+        <span className="text-[15px] font-black text-rowan-navy">{p.toFixed(0)}%</span>
+        {label && <span className="text-[8px] font-bold uppercase tracking-wider text-gray-400 mt-0.5">{label}</span>}
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------
+// Calendar heatmap — weeks as columns, Monday → Sunday as rows
+// ------------------------------------------------------------------
+export type HeatCell = { date: string; value: number; future?: boolean };
+
+const HEAT_SCALE = ['#fde8ec', '#f8a9b6', '#ee5a74', '#e60026', '#8c0019'];
+
+export function Heatmap({
+  weeks,
+  format = fmtMoney,
+}: {
+  weeks: HeatCell[][];
+  format?: (n: number) => string;
+}) {
+  const max = Math.max(0, ...weeks.flat().map((c) => c.value));
+  const level = (v: number) => {
+    const t = v / max;
+    return t <= 0.15 ? 0 : t <= 0.4 ? 1 : t <= 0.7 ? 2 : t < 1 ? 3 : 4;
+  };
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthLabel = (wi: number) => {
+    const m = Number(weeks[wi][0].date.slice(5, 7));
+    const prev = wi > 0 ? Number(weeks[wi - 1][0].date.slice(5, 7)) : -1;
+    return m !== prev ? MONTHS[m - 1] : '';
+  };
+  const DAYS = ['Mon', '', 'Wed', '', 'Fri', '', 'Sun'];
+
+  return (
+    <div>
+      <div className="flex gap-1.5">
+        <div className="flex flex-col gap-[3px] shrink-0 w-7 text-[9px] text-gray-400">
+          <div className="h-[15px]" />
+          {DAYS.map((d, i) => (
+            <div key={i} className="h-[13px] sm:h-[20px] flex items-center leading-none">
+              {d}
+            </div>
+          ))}
+        </div>
+        <div className="flex-1 min-w-0 flex gap-[3px]">
+          {weeks.map((wk, wi) => (
+            <div key={wi} className="flex-1 min-w-0 flex flex-col gap-[3px]">
+              <div className="h-[15px] text-[9px] text-gray-400 leading-[15px] whitespace-nowrap overflow-visible">{monthLabel(wi)}</div>
+              {wk.map((c, di) => (
+                <div
+                  key={di}
+                  title={c.future ? '' : `${c.date} · ${c.value > 0 ? format(c.value) : 'no sales'}`}
+                  className="w-full h-[13px] sm:h-[20px] rounded-[4px] transition-transform hover:scale-110 hover:z-10 chart-fade"
+                  style={{
+                    animationDelay: `${wi * 18}ms`,
+                    background: c.future ? 'transparent' : c.value > 0 ? HEAT_SCALE[level(c.value)] : '#f3f4f6',
+                  }}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex items-center justify-end gap-1.5 mt-3 text-[10px] text-gray-400">
+        Less
+        <i className="inline-block w-3 h-3 rounded-[3px] bg-gray-100" />
+        {HEAT_SCALE.map((c) => (
+          <i key={c} className="inline-block w-3 h-3 rounded-[3px]" style={{ background: c }} />
+        ))}
+        More
       </div>
     </div>
   );
