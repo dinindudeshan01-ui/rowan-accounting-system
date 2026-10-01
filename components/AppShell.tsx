@@ -108,6 +108,7 @@ const NAV: NavGroup[] = [
     icon: BarChart3,
     match: ['/accounting/reports'],
     children: [
+      { label: 'Report Center', href: '/accounting/reports/center' },
       { label: 'Profit & Loss / Balance Sheet', href: '/accounting/reports' },
       { label: 'Trial Balance', href: '/accounting/reports/trial-balance' },
       { label: 'A/R Aging', href: '/accounting/reports/ar-aging' },

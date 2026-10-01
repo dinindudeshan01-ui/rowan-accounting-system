@@ -23,8 +23,8 @@ import {
 // things (Company & Financial, Customers & Receivables, Sales,
 // Vendors & Payables, Inventory, Employees & Payroll, Banking,
 // Accountant & Taxes ...). Reports that exist link straight to their
-// page; reports not built yet show as disabled "Coming later" tiles
-// so the full catalog is visible from day one.
+// page. (A tile can be passed `disabled` to show a greyed-out
+// "Coming later" placeholder for a report that isn't built yet.)
 // ------------------------------------------------------------------
 
 function CategoryHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
@@ -54,9 +54,9 @@ export default function ReportCenterPage() {
           <CategoryHeader icon={<CustomersReceivablesIcon />} title="Customers &amp; Receivables" />
           <DashGrid>
             <DashCard href="/accounting/reports/ar-aging" label="A/R Aging Summary" desc="Open invoices bucketed by overdue days" icon={<CustomersReceivablesIcon />} />
-            <DashCard href="/accounting/reports/ar-aging" label="A/R Aging Detail" desc="Every open invoice, individually" icon={<CustomersReceivablesIcon />} />
+            <DashCard href="/accounting/reports/ar-aging?view=detail" label="A/R Aging Detail" desc="Every open invoice, individually" icon={<CustomersReceivablesIcon />} />
             <DashCard href="/accounting/reports/ar-aging" label="Customer Balance Summary" desc="Same data as Aging Summary, per customer" icon={<CustomersReceivablesIcon />} />
-            <DashCard href="#" label="Open Invoices" desc="Unpaid invoices by customer" icon={<CustomersReceivablesIcon />} disabled />
+            <DashCard href="/accounting/reports/open-invoices" label="Open Invoices" desc="Unpaid invoices by customer" icon={<CustomersReceivablesIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<SalesIcon />} title="Sales" />
@@ -68,33 +68,33 @@ export default function ReportCenterPage() {
           <CategoryHeader icon={<VendorsPayablesIcon />} title="Vendors &amp; Payables" />
           <DashGrid>
             <DashCard href="/accounting/reports/ap-aging" label="A/P Aging Summary" desc="Open bills bucketed by overdue days" icon={<VendorsPayablesIcon />} />
-            <DashCard href="/accounting/reports/ap-aging" label="A/P Aging Detail" desc="Every open bill, individually" icon={<VendorsPayablesIcon />} />
+            <DashCard href="/accounting/reports/ap-aging?view=detail" label="A/P Aging Detail" desc="Every open bill, individually" icon={<VendorsPayablesIcon />} />
             <DashCard href="/accounting/reports/ap-aging" label="Unpaid Bills" desc="Same data as Aging Summary, per vendor" icon={<VendorsPayablesIcon />} />
             <DashCard href="/accounting/reports/expenses-by-vendor" label="Expenses by Vendor" desc="Every posted expense & bill, per vendor" icon={<VendorsPayablesIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<InventoryReportsIcon />} title="Inventory" />
           <DashGrid>
-            <DashCard href="#" label="Inventory Valuation" desc="Summary &amp; detail" icon={<InventoryReportsIcon />} disabled />
-            <DashCard href="#" label="Stock Status by Item" desc="On-hand, on-order" icon={<InventoryReportsIcon />} disabled />
+            <DashCard href="/accounting/reports/inventory-valuation" label="Inventory Valuation" desc="Summary &amp; detail, checked against the ledger" icon={<InventoryReportsIcon />} />
+            <DashCard href="/accounting/reports/stock-status" label="Stock Status by Item" desc="On-hand, reorder level, days of cover" icon={<InventoryReportsIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<ManufacturingReportsIcon />} title="Manufacturing" />
           <DashGrid>
-            <DashCard href="#" label="BOM Cost Report" desc="Style bill-of-materials costing" icon={<ManufacturingReportsIcon />} disabled />
-            <DashCard href="#" label="Costing Variance" desc="Standard vs. actual" icon={<ManufacturingReportsIcon />} disabled />
+            <DashCard href="/accounting/reports/bom-cost" label="BOM Cost Report" desc="Style bill-of-materials costing" icon={<ManufacturingReportsIcon />} />
+            <DashCard href="/accounting/reports/costing-variance" label="Costing Variance" desc="Standard vs. actual, labour &amp; overhead absorption" icon={<ManufacturingReportsIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<PayrollReportsIcon />} title="Employees &amp; Payroll" />
           <DashGrid>
-            <DashCard href="#" label="Payroll Summary" desc="By pay period" icon={<PayrollReportsIcon />} disabled />
-            <DashCard href="#" label="EPF / ETF / APIT Liability" desc="Sri Lanka statutory report" icon={<PayrollReportsIcon />} disabled />
+            <DashCard href="/accounting/reports/payroll-summary" label="Payroll Summary" desc="By pay period, employee or department" icon={<PayrollReportsIcon />} />
+            <DashCard href="/accounting/reports/epf-etf-apit" label="EPF / ETF / APIT Liability" desc="Sri Lanka statutory report" icon={<PayrollReportsIcon />} />
           </DashGrid>
 
           <CategoryHeader icon={<BankingReportsIcon />} title="Banking" />
           <DashGrid>
-            <DashCard href="#" label="Reconciliation Report" desc="Per bank account, per period" icon={<BankingReportsIcon />} disabled />
-            <DashCard href="#" label="Deposit Detail" desc="All deposits in a period" icon={<BankingReportsIcon />} disabled />
+            <DashCard href="/accounting/reports/bank-reconciliation" label="Reconciliation Report" desc="Per bank account, per period" icon={<BankingReportsIcon />} />
+            <DashCard href="/accounting/reports/deposit-detail" label="Deposit Detail" desc="All deposits in a period" icon={<BankingReportsIcon />} />
             <DashCard href="/accounting/reports/check-detail" label="Check Detail" desc="Every check written, with its expense lines" icon={<BankingReportsIcon />} />
           </DashGrid>
 
@@ -102,7 +102,7 @@ export default function ReportCenterPage() {
           <DashGrid>
             <DashCard href="/accounting/reports/trial-balance" label="Trial Balance" desc="Every account's debit/credit balance" icon={<TrialBalanceIcon />} />
             <DashCard href="/accounting/audit-log" label="Audit Trail" desc="Every change made in the system" icon={<AccountantTaxesIcon />} />
-            <DashCard href="#" label="VAT / SSCL Return" desc="Sri Lanka tax reports" icon={<AccountantTaxesIcon />} disabled />
+            <DashCard href="/accounting/reports/vat-sscl" label="VAT / SSCL Return" desc="Output tax by month and invoice, checked against the ledger" icon={<AccountantTaxesIcon />} />
           </DashGrid>
       </div>
     </div>

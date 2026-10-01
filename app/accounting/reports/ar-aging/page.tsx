@@ -52,6 +52,11 @@ export default function ARAgingPage() {
   const [asOf, setAsOf] = useState(new Date().toISOString().slice(0, 10));
   const [preparedBy, setPreparedBy] = useState('');
   const [view, setView] = useState<'summary' | 'detail'>('summary');
+
+  // Report Center "Aging Detail" tiles link here with ?view=detail
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('view') === 'detail') setView('detail');
+  }, []);
   const [rows, setRows] = useState<ARRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

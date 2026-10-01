@@ -18,6 +18,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { fetchAll } from '@/lib/fetchAll';
 import { PageHeader, btnSecondary } from '@/components/PageHeader';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import {
@@ -88,25 +89,6 @@ type LedgerData = {
 // ------------------------------------------------------------------
 // Helpers
 // ------------------------------------------------------------------
-const PAGE = 1000;
-const MAX_PAGES = 60; // safety stop
-
-/** PostgREST returns at most 1,000 rows per request — page through all of them. */
-async function fetchAll<T>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  make: (from: number, to: number) => PromiseLike<{ data: any; error: { message: string } | null }>
-): Promise<T[]> {
-  const out: T[] = [];
-  for (let p = 0; p < MAX_PAGES; p++) {
-    const { data, error } = await make(p * PAGE, p * PAGE + PAGE - 1);
-    if (error) throw new Error(error.message);
-    const rows = (data ?? []) as T[];
-    out.push(...rows);
-    if (rows.length < PAGE) break;
-  }
-  return out;
-}
-
 const pad = (n: number) => String(n).padStart(2, '0');
 /** Local-date ISO string (toISOString would shift the day in UTC+5:30). */
 const localISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;

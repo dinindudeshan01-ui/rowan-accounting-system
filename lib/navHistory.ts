@@ -49,6 +49,18 @@ export const PAGE_LABELS: Record<string, string> = {
   '/accounting/reports': 'Reports (P&L / BS)',
   '/accounting/reports/center': 'Report Center',
   '/accounting/reports/trial-balance': 'Trial Balance',
+  '/accounting/reports/open-invoices': 'Open Invoices',
+  '/accounting/reports/expenses-by-vendor': 'Expenses by Vendor',
+  '/accounting/reports/check-detail': 'Check Detail',
+  '/accounting/reports/deposit-detail': 'Deposit Detail',
+  '/accounting/reports/bank-reconciliation': 'Reconciliation Report',
+  '/accounting/reports/inventory-valuation': 'Inventory Valuation',
+  '/accounting/reports/stock-status': 'Stock Status by Item',
+  '/accounting/reports/bom-cost': 'BOM Cost Report',
+  '/accounting/reports/costing-variance': 'Costing Variance',
+  '/accounting/reports/payroll-summary': 'Payroll Summary',
+  '/accounting/reports/epf-etf-apit': 'EPF / ETF / APIT Liability',
+  '/accounting/reports/vat-sscl': 'VAT / SSCL Return',
   '/stock': 'Stock',
 };
 
