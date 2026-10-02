@@ -79,6 +79,17 @@ type LineRow = {
 
 type Movement = 'fast' | 'medium' | 'slow' | 'none';
 
+/** Row shapes returned by the same RPCs the Sales by Customer and A/R Aging reports call. */
+type SalesLine = { invoice_number: string; invoice_date: string; line_total: number | string };
+type ArRow = {
+  customer_id: string | null;
+  customer_name: string;
+  invoice_number: string;
+  open_amount: number | string;
+  days_overdue: number | string;
+  bucket: string;
+};
+
 /** Posted sales revenue straight from the ledger — the same source as the Profit & Loss report. */
 type LedgerData = {
   months: Record<string, number>; // 'YYYY-MM' -> revenue
@@ -95,7 +106,7 @@ const localISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad
 const monthKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
 const addDays = (d: Date, n: number) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
 const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const num = (v: number | null | undefined) => Number(v ?? 0);
+const num = (v: number | string | null | undefined) => Number(v ?? 0);
 const lkr = (n: number) => `LKR ${fmtMoney(n)}`;
 const lkrC = (n: number) => `LKR ${fmtCompact(n)}`;
 
@@ -381,6 +392,10 @@ export default function DashboardPage() {
   const [openInv, setOpenInv] = useState<InvoiceRow[]>([]);
   const [items, setItems] = useState<ItemRow[]>([]);
   const [lines, setLines] = useState<LineRow[]>([]);
+  const [salesLines, setSalesLines] = useState<SalesLine[] | null>(null);
+  const [arRows, setArRows] = useState<ArRow[] | null>(null);
+  const [repErr, setRepErr] = useState<string | null>(null);
+  const [basisPick, setBasisPick] = useState<'P&L' | 'Sales reports'>('P&L');
   const [ledger, setLedger] = useState<LedgerData | null>(null);
   const [ledgerErr, setLedgerErr] = useState<string | null>(null);
   const [salesErr, setSalesErr] = useState<string | null>(null);
@@ -475,7 +490,34 @@ export default function DashboardPage() {
       return { months, mtd, lmSame };
     })();
 
-    const [salesRes, stockRes, linesRes, ledgerRes] = await Promise.allSettled([salesP, stockP, linesP, ledgerP]);
+    // Exactly what the Sales by Customer report returns (invoice lines by invoice date), one call per month
+    const salesRepP = (async () => {
+      const calls: Promise<SalesLine[]>[] = [];
+      for (let i = 23; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+        calls.push(
+          fetchAll<SalesLine>((from, to) =>
+            supabase.rpc('get_sales_by_customer', { p_start: localISO(d), p_end: localISO(end) }).range(from, to)
+          )
+        );
+      }
+      return (await Promise.all(calls)).flat();
+    })();
+
+    // Exactly what the A/R Aging report returns
+    const arP = fetchAll<ArRow>((from, to) =>
+      supabase.rpc('get_ar_aging', { p_as_of: localISO(now) }).range(from, to)
+    );
+
+    const [salesRes, stockRes, linesRes, ledgerRes, repRes, arRes] = await Promise.allSettled([
+      salesP,
+      stockP,
+      linesP,
+      ledgerP,
+      salesRepP,
+      arP,
+    ]);
 
     if (salesRes.status === 'fulfilled') {
       setSalesInv(salesRes.value[0]);
@@ -496,6 +538,14 @@ export default function DashboardPage() {
     } else {
       setLinesErr(linesRes.reason?.message ?? 'Unknown error');
     }
+    if (repRes.status === 'fulfilled') {
+      setSalesLines(repRes.value);
+      setRepErr(null);
+    } else {
+      setSalesLines(null);
+      setRepErr(repRes.reason?.message ?? 'Unknown error');
+    }
+    setArRows(arRes.status === 'fulfilled' ? arRes.value : null);
     if (ledgerRes.status === 'fulfilled') {
       setLedger(ledgerRes.value);
       setLedgerErr(null);
@@ -516,16 +566,24 @@ export default function DashboardPage() {
     const now = new Date();
     const curKey = monthKey(now);
 
-    const netInv = new Map<string, number>(); // by invoice date, from invoices
+    const netInv = new Map<string, number>(); // invoice sales by invoice date (Sales by Customer / Item basis)
     const invoiced = new Map<string, number>();
     const collected = new Map<string, number>();
     const daily = new Map<string, number>();
     for (const r of salesInv) {
       const k = r.invoice_date.slice(0, 7);
-      netInv.set(k, (netInv.get(k) ?? 0) + num(r.subtotal));
       invoiced.set(k, (invoiced.get(k) ?? 0) + num(r.total_amount));
       collected.set(k, (collected.get(k) ?? 0) + Math.min(num(r.amount_paid), num(r.total_amount)));
-      daily.set(r.invoice_date, (daily.get(r.invoice_date) ?? 0) + num(r.subtotal));
+      if (!salesLines) {
+        // fallback only if the Sales report RPC failed
+        netInv.set(k, (netInv.get(k) ?? 0) + num(r.subtotal));
+        daily.set(r.invoice_date, (daily.get(r.invoice_date) ?? 0) + num(r.subtotal));
+      }
+    }
+    for (const r of salesLines ?? []) {
+      const k = r.invoice_date.slice(0, 7);
+      netInv.set(k, (netInv.get(k) ?? 0) + num(r.line_total));
+      daily.set(r.invoice_date, (daily.get(r.invoice_date) ?? 0) + num(r.line_total));
     }
 
     const months: { key: string; prevKey: string; label: string; tag?: string; long: string; d: Date }[] = [];
@@ -542,9 +600,10 @@ export default function DashboardPage() {
       });
     }
 
-    // Sales basis: posted ledger revenue (identical to the P&L). Falls back to invoices if the ledger call failed.
-    const basis: 'ledger' | 'invoices' = ledger ? 'ledger' : 'invoices';
-    const net: Map<string, number> = ledger ? new Map(Object.entries(ledger.months)) : netInv;
+    // Sales basis: "P&L" = posted ledger revenue (identical to the P&L report);
+    // "Sales reports" = invoice lines by invoice date (identical to Sales by Customer / Sales by Item).
+    const basis: 'ledger' | 'invoices' = ledger && basisPick === 'P&L' ? 'ledger' : 'invoices';
+    const net: Map<string, number> = basis === 'ledger' && ledger ? new Map(Object.entries(ledger.months)) : netInv;
 
     const salesSeries = months.map((m) => net.get(m.key) ?? 0);
     const thisMonth = net.get(curKey) ?? 0;
@@ -554,7 +613,7 @@ export default function DashboardPage() {
       ? months
           .map((m) => {
             const inv = netInv.get(m.key) ?? 0;
-            const led = net.get(m.key) ?? 0;
+            const led = ledger.months[m.key] ?? 0;
             return { key: m.key, long: m.long, inv, led, diff: inv - led };
           })
           .filter((r) => Math.abs(r.diff) >= 1)
@@ -567,8 +626,10 @@ export default function DashboardPage() {
     const lmStart = localISO(lastMonthStart);
     const lmEnd = localISO(cutoff);
     let lastMonthSamePeriod = 0;
-    for (const r of salesInv) if (r.invoice_date >= lmStart && r.invoice_date <= lmEnd) lastMonthSamePeriod += num(r.subtotal);
-    const delta = ledger
+    daily.forEach((v, d) => {
+      if (d >= lmStart && d <= lmEnd) lastMonthSamePeriod += v;
+    });
+    const delta = basis === 'ledger' && ledger
       ? ledger.lmSame > 0
         ? ((ledger.mtd - ledger.lmSame) / ledger.lmSame) * 100
         : null
@@ -585,35 +646,49 @@ export default function DashboardPage() {
       if (k >= fyStartKey && k <= curKey) fyToDate += v;
     });
 
-    // Receivables from ALL open issued invoices
+    // Receivables: the A/R Aging report's own rows (get_ar_aging). Falls back to raw invoices only if that call failed.
     const buckets = { current: 0, d30: 0, d60: 0, d90: 0, d90p: 0 };
-    const byCustomer = new Map<string, { name: string; amount: number; count: number }>();
+    const byCustomer = new Map<string, { name: string; amount: number; invs: Set<string> }>();
+    const openInvoices = new Set<string>();
     let outstanding = 0;
     let overdue = 0;
-    let openCount = 0;
-    for (const r of openInv) {
-      const bal = num(r.total_amount) - num(r.amount_paid);
-      if (bal <= 0.01) continue;
-      openCount++;
+    const addAr = (invNo: string, custKey: string, name: string, bal: number, bucket: 'current' | 'd30' | 'd60' | 'd90' | 'd90p') => {
+      openInvoices.add(invNo);
       outstanding += bal;
-      const due = r.due_date ?? r.invoice_date;
-      const days = daysBetween(due, now);
-      if (days <= 0) buckets.current += bal;
-      else {
-        overdue += bal;
-        if (days <= 30) buckets.d30 += bal;
-        else if (days <= 60) buckets.d60 += bal;
-        else if (days <= 90) buckets.d90 += bal;
-        else buckets.d90p += bal;
-      }
-      const name = r.purchaser_name?.trim() || 'Unknown customer';
-      const key = r.customer_id ?? name;
-      const c = byCustomer.get(key) ?? { name, amount: 0, count: 0 };
+      buckets[bucket] += bal;
+      if (bucket !== 'current') overdue += bal;
+      const c = byCustomer.get(custKey) ?? { name, amount: 0, invs: new Set<string>() };
       c.amount += bal;
-      c.count += 1;
-      byCustomer.set(key, c);
+      c.invs.add(invNo);
+      byCustomer.set(custKey, c);
+    };
+    if (arRows) {
+      const BUCKET: Record<string, 'current' | 'd30' | 'd60' | 'd90' | 'd90p'> = {
+        Current: 'current',
+        '1-30': 'd30',
+        '31-60': 'd60',
+        '61-90': 'd90',
+        '90+': 'd90p',
+      };
+      for (const r of arRows) {
+        const bal = num(r.open_amount);
+        if (bal <= 0.005) continue;
+        const name = r.customer_name?.trim() || 'Unknown customer';
+        addAr(r.invoice_number, r.customer_id ?? name, name, bal, BUCKET[r.bucket] ?? 'd90p');
+      }
+    } else {
+      for (const r of openInv) {
+        const bal = num(r.total_amount) - num(r.amount_paid);
+        if (bal <= 0.01) continue;
+        const days = daysBetween(r.due_date ?? r.invoice_date, now);
+        const bucket = days <= 0 ? 'current' : days <= 30 ? 'd30' : days <= 60 ? 'd60' : days <= 90 ? 'd90' : 'd90p';
+        const name = r.purchaser_name?.trim() || 'Unknown customer';
+        addAr(r.invoice_number, r.customer_id ?? name, name, bal, bucket);
+      }
     }
+    const openCount = openInvoices.size;
     const topCustomers = Array.from(byCustomer.values())
+      .map((c) => ({ name: c.name, amount: c.amount, count: c.invs.size }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
 
@@ -659,8 +734,10 @@ export default function DashboardPage() {
       weeks,
       basis,
       recon,
+      arFromReport: !!arRows,
+      salesFromReport: !!salesLines,
     };
-  }, [salesInv, openInv, ledger]);
+  }, [salesInv, openInv, ledger, salesLines, arRows, basisPick]);
 
   const salesCombo: ComboDatum[] = useMemo(() => {
     const full = sales.months.map((m, i) => {
@@ -874,6 +951,12 @@ export default function DashboardPage() {
           {salesErr && <SectionError what="sales and receivables" message={salesErr} />}
           {stockErr && <SectionError what="inventory" message={stockErr} />}
           {linesErr && <SectionError what="fast-moving item data" message={linesErr} />}
+          {repErr && (
+            <SectionError
+              what="the Sales report figures"
+              message={`Using invoice subtotals instead, which can differ slightly from the Sales by Customer report. ${repErr}`}
+            />
+          )}
           {ledgerErr && (
             <SectionError
               what="ledger sales (P&L source)"
@@ -898,7 +981,7 @@ export default function DashboardPage() {
               label={`Sales · ${sales.fyLabel}`}
               value={sales.fyToDate}
               format={lkrC}
-              sub={sales.basis === 'ledger' ? 'posted revenue, 1 Apr to date' : 'invoiced (net), 1 Apr to date'}
+              sub={sales.basis === 'ledger' ? 'P&L revenue, 1 Apr to date' : 'Sales reports, 1 Apr to date'}
             />
             <Kpi
               icon={HandCoins}
@@ -938,9 +1021,14 @@ export default function DashboardPage() {
             <Card
               className="xl:col-span-2"
               title="Sales by month"
-              subtitle={`${sales.basis === 'ledger' ? 'Posted sales revenue — same source as the P&L' : 'Invoiced sales (net of tax)'} · red line = 3-month average · dashed = last year`}
+              subtitle={`${sales.basis === 'ledger' ? 'Same figures as the P&L “Sales Revenue”' : 'Same figures as Sales by Customer / Sales by Item'} · red line = 3-month average · dashed = last year`}
               action={{ href: '/accounting/reports/sales-by-customer', label: 'Sales report' }}
-              right={<Toggle value={range} options={[6, 12] as (6 | 12)[]} onChange={setRange} suffix="M" />}
+              right={
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <Toggle value={basisPick} options={['P&L', 'Sales reports'] as ('P&L' | 'Sales reports')[]} onChange={setBasisPick} />
+                  <Toggle value={range} options={[6, 12] as (6 | 12)[]} onChange={setRange} suffix="M" />
+                </div>
+              }
             >
               <ComboChart
                 data={salesCombo}
@@ -958,18 +1046,20 @@ export default function DashboardPage() {
                 <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-[11px] text-amber-900">
                   <div className="flex items-center gap-1.5 font-bold">
                     <TriangleAlert size={13} className="shrink-0" />
-                    Invoices and the ledger disagree in {sales.recon.length} month{sales.recon.length === 1 ? '' : 's'}
+                    The P&amp;L and the Sales reports disagree in {sales.recon.length} month{sales.recon.length === 1 ? '' : 's'}
                   </div>
                   <p className="mt-1 text-amber-800">
-                    The chart above uses posted ledger revenue, so it matches the P&amp;L. Invoices dated in these months add up to a different
-                    amount — usually an invoice that was never posted, or one whose date was changed after it was posted:
+                    The P&amp;L adds up <b>posted ledger entries by posting date</b>; Sales by Customer / Item add up <b>invoices by invoice date</b>. They differ
+                    when an invoice was never posted, or its date was changed after posting. The chart is showing{' '}
+                    <b>{sales.basis === 'ledger' ? 'the P&L' : 'the Sales reports'}</b> — use the switch above to see the other. The same differences exist in the
+                    reports themselves.
                   </p>
                   <ul className="mt-2 grid sm:grid-cols-2 gap-x-6 gap-y-1">
                     {sales.recon.slice(0, 6).map((r) => (
                       <li key={r.key} className="flex items-baseline gap-2">
                         <span className="font-bold">{r.long}</span>
                         <span className="text-amber-800">
-                          invoices {lkrC(r.inv)} · ledger {lkrC(r.led)}
+                          Sales reports {lkrC(r.inv)} · P&amp;L {lkrC(r.led)}
                         </span>
                         <span className={`ml-auto font-black ${r.diff > 0 ? 'text-rowan-red' : 'text-amber-900'}`}>
                           {r.diff > 0 ? '+' : ''}
@@ -984,7 +1074,7 @@ export default function DashboardPage() {
 
             <Card
               title="Receivables aging"
-              subtitle="Open invoice balances by days past due"
+              subtitle={sales.arFromReport ? 'Same figures as the A/R Aging report' : 'Open invoice balances by days past due'}
               action={{ href: '/accounting/reports/ar-aging', label: 'A/R aging' }}
             >
               <StackedBar
