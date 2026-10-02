@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useState } from 'react';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import {
@@ -27,7 +29,7 @@ export function BalanceModal({
   onPosted: (result: { entryNumber: string; offsetAccountCreated: boolean; offsetAccount: Account }) => void;
 }) {
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(todayISO());
   const [memo, setMemo] = useState('Opening balance');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

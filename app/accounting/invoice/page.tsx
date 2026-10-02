@@ -1,5 +1,7 @@
 'use client';
 
+import { localISODate, todayISO } from '@/lib/dates';
+
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -51,7 +53,7 @@ function fmt(n: number) {
 function addDays(dateStr: string, days: number) {
   const d = new Date(dateStr + 'T00:00:00');
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return localISODate(d);
 }
 
 export default function InvoicePage() {
@@ -76,7 +78,7 @@ function InvoiceForm() {
   const [loading, setLoading] = useState(!!editId);
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
   const [invoiceNumber, setInvoiceNumber] = useState('(next)');
-  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().slice(0, 10));
+  const [invoiceDate, setInvoiceDate] = useState(todayISO());
   const [terms, setTerms] = useState<PartyTerms>('net_30');
   const [dueDate, setDueDate] = useState('');
   const [currency, setCurrency] = useState('LKR');

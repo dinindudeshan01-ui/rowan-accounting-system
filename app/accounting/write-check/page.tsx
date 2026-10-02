@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -47,7 +49,7 @@ export default function WriteCheckPage() {
   const [vendorSeed, setVendorSeed] = useState('');
   const [showVendorModal, setShowVendorModal] = useState(false);
 
-  const [checkDate, setCheckDate] = useState(new Date().toISOString().slice(0, 10));
+  const [checkDate, setCheckDate] = useState(todayISO());
   const [checkNumber, setCheckNumber] = useState('');
   const [previewNumber, setPreviewNumber] = useState<string | null>(null);
   const [printLater, setPrintLater] = useState(false);
@@ -131,7 +133,7 @@ export default function WriteCheckPage() {
     setPayeeVendor(null);
     setPayeeCustomer(null);
     setPayeeName('');
-    setCheckDate(new Date().toISOString().slice(0, 10));
+    setCheckDate(todayISO());
     setCheckNumber('');
     setPrintLater(false);
     setMemo('');

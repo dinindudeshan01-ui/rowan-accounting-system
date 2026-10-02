@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -56,7 +58,7 @@ export default function ReceivePaymentPage() {
   const [accountSeed, setAccountSeed] = useState('');
   const [showAccountModal, setShowAccountModal] = useState(false);
 
-  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().slice(0, 10));
+  const [paymentDate, setPaymentDate] = useState(todayISO());
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
   const [reference, setReference] = useState('');
@@ -176,7 +178,7 @@ export default function ReceivePaymentPage() {
   function resetForm() {
     setCustomer(null);
     setDepositAccount(null);
-    setPaymentDate(new Date().toISOString().slice(0, 10));
+    setPaymentDate(todayISO());
     setAmount('');
     setPaymentMethod('bank_transfer');
     setReference('');

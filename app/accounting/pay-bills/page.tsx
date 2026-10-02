@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -35,7 +37,7 @@ export default function PayBillsPage() {
   const [accountSeed, setAccountSeed] = useState('');
   const [showAccountModal, setShowAccountModal] = useState(false);
 
-  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().slice(0, 10));
+  const [paymentDate, setPaymentDate] = useState(todayISO());
   const [amount, setAmount] = useState('');
   const [reference, setReference] = useState('');
   const [memo, setMemo] = useState('');
@@ -121,7 +123,7 @@ export default function PayBillsPage() {
   function resetForm() {
     setVendor(null);
     setBankAccount(null);
-    setPaymentDate(new Date().toISOString().slice(0, 10));
+    setPaymentDate(todayISO());
     setAmount('');
     setReference('');
     setMemo('');

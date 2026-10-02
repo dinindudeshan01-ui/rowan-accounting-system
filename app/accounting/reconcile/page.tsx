@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -27,7 +29,7 @@ export default function ReconcilePage() {
   const [bankAccounts, setBankAccounts] = useState<Account[]>([]);
   const [bankAccount, setBankAccount] = useState<Account | null>(null);
 
-  const [statementDate, setStatementDate] = useState(new Date().toISOString().slice(0, 10));
+  const [statementDate, setStatementDate] = useState(todayISO());
   const [beginningBalance, setBeginningBalance] = useState('0.00');
   const [endingBalance, setEndingBalance] = useState('');
 

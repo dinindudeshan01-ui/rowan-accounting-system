@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
@@ -115,7 +117,7 @@ export default function JournalEntryPage() {
   const [entryStatus, setEntryStatus] = useState<RecentEntry['status'] | null>(null);
   const [previewNumber, setPreviewNumber] = useState<string | null>(null);
 
-  const [entryDate, setEntryDate] = useState(new Date().toISOString().slice(0, 10));
+  const [entryDate, setEntryDate] = useState(todayISO());
   const [reference, setReference] = useState('');
   const [memo, setMemo] = useState('');
   const [isRecurring, setIsRecurring] = useState(false);
@@ -225,7 +227,7 @@ export default function JournalEntryPage() {
     setEntryId(null);
     setEntryNumber(null);
     setEntryStatus(null);
-    setEntryDate(new Date().toISOString().slice(0, 10));
+    setEntryDate(todayISO());
     setReference('');
     setMemo('');
     setIsRecurring(false);
@@ -472,7 +474,7 @@ export default function JournalEntryPage() {
       const { data: newEntry, error: entryErr } = await supabase
         .from('journal_entries')
         .insert({
-          entry_date: new Date().toISOString().slice(0, 10),
+          entry_date: todayISO(),
           reference,
           memo: `Reversal of ${entryNumber}`,
           status: 'draft',

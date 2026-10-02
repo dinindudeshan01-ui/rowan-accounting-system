@@ -1,5 +1,7 @@
 'use client';
 
+import { localISODate } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
@@ -31,7 +33,7 @@ function fmtDate(d: string) {
 
 type Period = { key: string; label: string; start: string; end: string };
 function isoDate(d: Date) {
-  return d.toISOString().slice(0, 10);
+  return localISODate(d);
 }
 function buildMonthOptions(count = 24): Period[] {
   const out: Period[] = [];

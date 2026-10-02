@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -153,7 +155,7 @@ export default function InvoicesListPage() {
   }, [rows, search, statusFilter, sortBy]);
 
   const stats = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = todayISO();
     const cur = rows[0]?.currency ?? 'LKR';
     let unpaid = 0, unpaidN = 0, overdue = 0, overdueN = 0, paid = 0, paidN = 0, drafts = 0;
     const counts: Record<string, number> = { all: rows.length, draft: 0, issued: 0, paid: 0, void: 0 };
@@ -170,7 +172,7 @@ export default function InvoicesListPage() {
     return { cur, unpaid, unpaidN, overdue, overdueN, paid, paidN, drafts, counts };
   }, [rows]);
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = todayISO();
 
   const selected = rows.find((r) => r.id === selectedId) ?? null;
 

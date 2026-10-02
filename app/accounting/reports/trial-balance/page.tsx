@@ -1,5 +1,7 @@
 'use client';
 
+import { localISODate, todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
@@ -45,7 +47,7 @@ function DrillAmount({ amount, onClick }: { amount: number; onClick?: () => void
 /* Period helpers, same shape as app/accounting/reports/page.tsx so the two pages feel identical */
 type Period = { key: string; label: string; start: string; end: string };
 function isoDate(d: Date) {
-  return d.toISOString().slice(0, 10);
+  return localISODate(d);
 }
 function buildMonthOptions(count = 24): Period[] {
   const out: Period[] = [];
@@ -111,7 +113,7 @@ export default function TrialBalancePage() {
 
   const options = mode === 'month' ? monthOptions : mode === 'year' ? yearOptions : [];
   const [period, setPeriod] = useState<Period>(monthOptions[0]);
-  const [customAsOf, setCustomAsOf] = useState(new Date().toISOString().slice(0, 10));
+  const [customAsOf, setCustomAsOf] = useState(todayISO());
 
   useEffect(() => {
     if (mode === 'custom') return;

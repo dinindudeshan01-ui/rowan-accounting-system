@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -58,7 +60,7 @@ export default function RecordExpensePage() {
   const [showAccountModal, setShowAccountModal] = useState<{ target: 'line' | 'paidFrom'; lineKey?: string } | null>(null);
 
   const [paymentType, setPaymentType] = useState<'paid_now' | 'bill'>('paid_now');
-  const [expenseDate, setExpenseDate] = useState(new Date().toISOString().slice(0, 10));
+  const [expenseDate, setExpenseDate] = useState(todayISO());
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [reference, setReference] = useState('');
   const [memo, setMemo] = useState('');
@@ -147,7 +149,7 @@ export default function RecordExpensePage() {
     setVendor(null);
     setPaidFromAccount(null);
     setPaymentType('paid_now');
-    setExpenseDate(new Date().toISOString().slice(0, 10));
+    setExpenseDate(todayISO());
     setPaymentMethod('cash');
     setReference('');
     setMemo('');

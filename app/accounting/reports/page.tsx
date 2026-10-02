@@ -1,5 +1,7 @@
 'use client';
 
+import { localISODate, todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
@@ -50,7 +52,7 @@ function DrillAmount({
 type Period = { key: string; label: string; start: string; end: string };
 
 function isoDate(d: Date) {
-  return d.toISOString().slice(0, 10);
+  return localISODate(d);
 }
 
 /** Last N calendar months, most recent first. */
@@ -700,7 +702,7 @@ function BalanceSheet() {
 
   const [periodA, setPeriodA] = useState<Period>(yearOptions[0]);
   const [periodB, setPeriodB] = useState<Period>(yearOptions[1] ?? yearOptions[0]);
-  const [customAsOfA, setCustomAsOfA] = useState(new Date().toISOString().slice(0, 10));
+  const [customAsOfA, setCustomAsOfA] = useState(todayISO());
   const [customAsOfB, setCustomAsOfB] = useState(yearOptions[1]?.end ?? yearOptions[0].end);
 
   useEffect(() => {

@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { RowanWordmark, BrandRibbon } from '@/components/RowanMark';
@@ -49,7 +51,7 @@ function PrintLetterhead({ title, periodText, preparedBy }: { title: string; per
 }
 
 export default function APAgingPage() {
-  const [asOf, setAsOf] = useState(new Date().toISOString().slice(0, 10));
+  const [asOf, setAsOf] = useState(todayISO());
   const [preparedBy, setPreparedBy] = useState('');
   const [view, setView] = useState<'summary' | 'detail'>('summary');
 

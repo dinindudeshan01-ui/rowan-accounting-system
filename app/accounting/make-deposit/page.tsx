@@ -1,5 +1,7 @@
 'use client';
 
+import { todayISO } from '@/lib/dates';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -35,7 +37,7 @@ export default function MakeDepositPage() {
   const [accountSeed, setAccountSeed] = useState('');
   const [showAccountModal, setShowAccountModal] = useState<{ target: 'line' | 'bank'; lineKey?: string } | null>(null);
 
-  const [depositDate, setDepositDate] = useState(new Date().toISOString().slice(0, 10));
+  const [depositDate, setDepositDate] = useState(todayISO());
   const [previewNumber, setPreviewNumber] = useState<string | null>(null);
   const [memo, setMemo] = useState('');
   const [lines, setLines] = useState<Line[]>([emptyLine()]);
@@ -103,7 +105,7 @@ export default function MakeDepositPage() {
 
   function resetForm() {
     setBankAccount(null);
-    setDepositDate(new Date().toISOString().slice(0, 10));
+    setDepositDate(todayISO());
     setMemo('');
     setLines([emptyLine()]);
     setError(null);
